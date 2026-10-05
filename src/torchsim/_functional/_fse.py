@@ -2,6 +2,8 @@
 
 __all__ = ["fse_sim"]
 
+from typing import Any
+
 import numpy.typing as npt
 import torch
 
@@ -18,11 +20,12 @@ def fse_sim(
     TR: float | npt.ArrayLike = 1e6,
     exc_flip: float = 90.0,
     exc_phase: float = 90.0,
-    diff: str | tuple[str] = None,
+    diff: str | tuple[str, ...] | None = None,
     B1: float | npt.ArrayLike = 1.0,
     M0: float | npt.ArrayLike = 1.0,
     states: int = 10,
-    device: str | torch.device = None,
+    device: str | torch.device | None = None,
+    **values: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     Fast Spin Echo simulator wrapper.
@@ -35,7 +38,7 @@ def fse_sim(
         Echo spacing in milliseconds.
     phases : float | npt.ArrayLike, optional
         Refocusing flip angle phases in degrees.
-        The default is ``90.0``.
+        The default is ``0.0``.
     TR : float | npt.ArrayLike, optional
         Repetition time in milliseconds.
         The default is ``1e6``.
@@ -44,7 +47,7 @@ def fse_sim(
         The default is ``90.0``.
     exc_phase : float, optional
         Excitation flip angle phase in degrees.
-        The default is ``0.0``.
+        The default is ``90.0``.
     T1 : float | npt.ArrayLike
         Longitudinal relaxation time in milliseconds.
     T2 : float | npt.ArrayLike
@@ -64,6 +67,12 @@ def fse_sim(
     states : int, optional
         Number of EPG states to be retained.
         The default is ``10``.
+    phases : float or array-like, optional
+        Sequence phase schedule in degrees. The default is ``0.0``.
+    **values : optional
+        Additional tissue, protocol or run settings accepted by the corresponding
+        ``Simulator`` class. Explicit wrapper arguments remain available for
+        backwards compatibility.
     device : str | torch.device, optional
         Computational device for simulation.
         The default is ``None`` (infer from input).
@@ -93,4 +102,5 @@ def fse_sim(
         exc_flip=exc_flip,
         exc_phase=exc_phase,
         states=states,
+        **values,
     )
