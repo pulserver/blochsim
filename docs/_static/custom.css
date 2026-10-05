@@ -7,8 +7,7 @@
    light/dark-safe foreground, so do not put them on a white card or dim them. */
 html[data-theme="dark"] .bd-content img.sphx-glr-single-img,
 html[data-theme="dark"] .bd-content img.sphx-glr-multi-img,
-html[data-theme="dark"] .bd-content img[src*="/generated/figures/"],
-html[data-theme="dark"] .bd-content img[src^="generated/figures/"] {
+html[data-theme="dark"] .bd-content figure img {
   background-color: transparent;
   filter: none;
 }
