@@ -55,7 +55,7 @@ class ColabLinkDirective(SphinxDirective):
         )
 
         # Generate the Colab URL based on GitHub repo information
-        self.colab_url = f"https://colab.research.google.com/github/FiRMLAB-Pisa/torchsim/blob/{binder['branch']}/{on_the_branch}"
+        self.colab_url = f"https://colab.research.google.com/github/pulserver/torchsim/blob/{binder['branch']}/{on_the_branch}"
 
         # Create the HTML button or link
         self.html = f"""<div class="colab-button">

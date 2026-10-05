@@ -1,36 +1,16 @@
+# Homepage
+
 ```{include} ../README.md
 ```
 
 ```{toctree}
 :hidden:
 :maxdepth: 2
-:caption: Guides
 
 user_guide
 developer_guide
-```
-
-```{toctree}
-:hidden:
-:maxdepth: 2
-:caption: Examples
-
+explanations/index
 generated/autoexamples/index
-```
-
-```{toctree}
-:hidden:
-:caption: API References
-
 api/index
-```
-
-```{toctree}
-:hidden:
-:caption: Miscellaneous
-
-misc/related
-misc/contributors
-misc/code_of_conduct
-misc/license
+misc/index
 ```

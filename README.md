@@ -1,73 +1,101 @@
 # TorchSim
 
-TorchSim is a pure Pytorch-based MR simulator, including analytical and EPG model.
+TorchSim is a differentiable MR signal simulator built on PyTorch, with
+closed-form signal models and a fused extended-phase-graph (EPG) state machine
+for pulse trains.
 
-[![codecov](https://codecov.io/gh/FiRMLAB-Pisa/torchsim/graph/badge.svg?token=l8xhIVORYm)](https://codecov.io/gh/FiRMLAB-Pisa/torchsim)
-[![Tests](https://github.com/FiRMLAB-Pisa/torchsim/actions/workflows/test.yml/badge.svg)](https://github.com/FiRMLAB-Pisa/torchsim/actions/workflows/test.yml)
-[![Lint](https://github.com/FiRMLAB-Pisa/torchsim/actions/workflows/lint.yml/badge.svg)](https://github.com/FiRMLAB-Pisa/torchsim/actions/workflows/lint.yml)
-[![License](https://img.shields.io/github/license/FiRMLAB-Pisa/torchsim)](https://github.com/FiRMLAB-Pisa/torchsim/blob/main/LICENSE.txt)
-[![Codefactor](https://www.codefactor.io/repository/github/FiRMLAB-Pisa/torchsim/badge)](https://www.codefactor.io/repository/github/FiRMLAB-Pisa/torchsim)
-[![Documentation](https://github.com/FiRMLAB-Pisa/torchsim/actions/workflows/docs.yml/badge.svg)](https://firmlab-pisa.github.io/torchsim/)
+[![codecov](https://codecov.io/gh/pulserver/torchsim/graph/badge.svg?token=l8xhIVORYm)](https://codecov.io/gh/pulserver/torchsim)
+[![Tests](https://github.com/pulserver/torchsim/actions/workflows/test.yml/badge.svg)](https://github.com/pulserver/torchsim/actions/workflows/test.yml)
+[![Lint](https://github.com/pulserver/torchsim/actions/workflows/lint.yml/badge.svg)](https://github.com/pulserver/torchsim/actions/workflows/lint.yml)
+[![License](https://img.shields.io/github/license/pulserver/torchsim)](https://github.com/pulserver/torchsim/blob/main/LICENSE.txt)
+[![Documentation](https://github.com/pulserver/torchsim/actions/workflows/docs.yml/badge.svg)](https://pulserver.github.io/torchsim/)
 [![PyPi](https://img.shields.io/pypi/v/torchsim)](https://pypi.org/project/torchsim)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![PythonVersion](https://img.shields.io/badge/Python-%3E=3.10-blue?logo=python&logoColor=white)](https://python.org)
 
-## Features
+## What it provides
 
-TorchSim contains tools to implement parallelized and differentiable MR simulators. Specifically, we provide
-
-1. Automatic vectorization of across multiple atoms (e.g., voxels).
-2. Automatic generation of forward and jacobian methods (based on forward-mode autodiff) to be used in parameter fitting or model-based reconstructions.
-3. Support for custom manual defined jacobian methods to override auto-generated jacobian.
-4. Support for advanced signal models, including diffusion, flow, magnetization transfer and chemical exchange.
-5. GPU support.
+- Vectorized signal simulation over voxels/atoms on CPU and NVIDIA GPU.
+- Forward-mode Jacobians with respect to tissue properties and reverse-mode
+  differentiation with respect to sequence parameters.
+- Closed-form models and an EPG state machine with relaxation,
+  off-resonance, diffusion, flow, transmit variation, magnetization transfer
+  and chemical exchange.
+- Parameter inference, model-based reconstruction and sequence-design tools
+  written against the same simulator interface.
+- Pulseq and MRD sequence-description input, so the same sequence model can be
+  used offline or driven from a scanner stream.
 
 ## Installation
 
-TorchSim can be installed via pip as:
+Install the PyTorch build appropriate for your machine first, then TorchSim:
 
 ```bash
 pip install torchsim
 ```
 
-## Basic Usage
+See the [User Guide](https://pulserver.github.io/torchsim/latest/user_guide.html)
+for CPU, CUDA, macOS and source-build details.
 
-Using TorchSim, we can quickly implement and run MR simulations.
-We also provide pre-defined simulators for several applications:
+## Basic usage
+
+The central public object is a `Simulator`. A shipped simulator fixes the
+sequence; `simulate` and `jacobian` evaluate it over the tissue you pass:
 
 ```python
 import numpy as np
-import torchsim
+from torchsim.simulators import MRFSimulator
 
-# generate a flip angle pattern
-flip = np.concatenate((np.linspace(5, 60.0, 300), np.linspace(60.0, 2.0, 300), np.ones(280)*2.0))
-sig, jac = torchsim.mrf_sim(flip=flip, TR=10.0, T1=1000.0, T2=100.0, diff=("T1","T2"))
+flip = np.concatenate(
+    (np.linspace(5.0, 60.0, 300), np.linspace(60.0, 2.0, 300), np.full(280, 2.0))
+)
+sequence = MRFSimulator(flip=flip, TR=10.0)
+
+signal, jacobian = sequence.jacobian(
+    ("T1", "T2"),
+    T1=1000.0,
+    T2=100.0,
+)
 ```
 
-This way we obtained the forward pass signal (`sig`) as well as the jacobian
-calculated with respect to `T1` and `T2`.
+Functional helpers such as `torchsim.mrf_sim(...)` remain convenient for
+one-off calls. The class interface is the canonical one for reusable models,
+parameter estimation, reconstruction, optimization, Pulseq input and scanner
+descriptions.
+
+## Implementing a sequence
+
+Subclass `torchsim.model.Simulator`. For a state-machine sequence you define:
+
+1. the event handlers that say how excitation, refocusing, inversion,
+   saturation, readout and delay commands are interpreted; and
+2. `layout()`, which returns those operators in order for offline use.
+
+An incoming Pulseq/MRD description already supplies the layout, so
+`Simulator.from_description()` replays its commands through the same handlers.
+That gives offline design and scanner-driven simulation one public sequence
+abstraction.
+
+The executable
+[Framework course](https://pulserver.github.io/torchsim/latest/generated/autoexamples/01-framework/index.html)
+walks through the complete pattern.
 
 ## Development
 
-If you are interested in improving this project, install TorchSim in editable mode:
-
 ```bash
-git clone git@github.com:FiRMLAB-Pisa/torchsim
+git clone git@github.com:pulserver/torchsim
 cd torchsim
 pip install -e ".[dev]"
 pre-commit install
 ```
 
-The install compiles the two C++ kernels, so it needs a C++17 compiler; CMake
-and Ninja arrive as build-time wheels. `pre-commit` runs the formatter and the
-linter -- both `ruff` -- on every commit, which is exactly what CI checks.
+The install compiles the two C++ kernels, so it needs a C++17 compiler. CMake
+and Ninja arrive as build-time dependencies. `pre-commit` runs the same Ruff
+format/lint checks as CI.
 
 ## Related projects
 
-This package is inspired by the following excellent projects:
-
-- epyg \<<https://github.com/brennerd11/EpyG>\>
-- sycomore \<<https://github.com/lamyj/sycomore/>\>
-- mri-sim-py \<<https://somnathrakshit.github.io/projects/project-mri-sim-py-epg/>\>
-- ssfp \<<https://github.com/mckib2/ssfp>\>
-- erwin \<<https://github.com/lamyj/erwin>\>
+The documentation's
+[Related projects](https://pulserver.github.io/torchsim/latest/misc/related.html)
+page places TorchSim among other MR simulators and links to the relevant
+packages and literature.

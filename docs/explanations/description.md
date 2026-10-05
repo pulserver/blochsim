@@ -1,5 +1,16 @@
 # Sequence description
 
+```{admonition} TL;DR
+:class: tldr
+
+- TorchSim consumes a compact sequence description made of RF, ADC and wait
+  events plus reusable RF definitions.
+- Pulseq files and scanner MRD streams are both decoded into this same
+  description.
+- The description states what was played; a {class}`~torchsim.model.Simulator`
+  supplies the handlers that decide how those commands affect the EPG state.
+```
+
 A sequence reaches TorchSim as an **event stream**: one repetition's worth of
 events, each with a timestamp and the few numbers its kind carries. This page
 is what that stream holds, how it is read out of a Pulseq file, and how a

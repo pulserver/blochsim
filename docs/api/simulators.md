@@ -55,8 +55,16 @@ Trains that have to be played out, run on the extended phase graph engine.
 
 ## Functional wrappers
 
-One call, protocol and tissue together, for a signal and optionally its
-derivative. What the classes above do, without holding one.
+The `*_sim` functions are convenience calls for a subset of the shipped
+simulators: protocol and tissue go into one function call, with an optional
+Jacobian. They are not a second extension API. New sequence families are
+implemented as {class}`~torchsim.model.Simulator` subclasses, so they can use
+both an offline {meth}`~torchsim.model.Simulator.layout` and the same handlers
+when a Pulseq/MRD description arrives from a scanner.
+
+Prefer the simulator classes whenever the same sequence is reused, bound to a
+protocol, passed to an estimator/reconstruction/design object, or constructed
+from a description. The wrappers remain useful for compact one-off calls.
 
 ### Analytical
 

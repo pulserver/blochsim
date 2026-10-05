@@ -184,49 +184,46 @@ seems to hang is almost always that compile.
 
 ## Your first simulation
 
-A simulator carries a sequence and the tissue it is being asked about; what
-you pass at the call is whatever is actually varying. Asking for derivatives
-alongside the signal costs one extra pass:
+The central public object in TorchSim is a
+{class}`~torchsim.model.Simulator`. A shipped simulator fixes the sequence;
+`simulate` receives the tissue and anything you want to vary. Asking for a
+Jacobian is the same model and the same protocol:
 
 ```python
 import numpy as np
-import torchsim
+from torchsim.simulators import MRFSimulator
 
 flip = np.concatenate(
     (np.linspace(5.0, 60.0, 300), np.linspace(60.0, 2.0, 300), np.full(280, 2.0))
 )
-signal, jacobian = torchsim.mrf_sim(
-    flip=flip, TR=10.0, T1=1000.0, T2=100.0, diff=("T1", "T2")
-)
+sequence = MRFSimulator(flip=flip, TR=10.0)
+signal, jacobian = sequence.jacobian(("T1", "T2"), T1=1000.0, T2=100.0)
 ```
 
-`signal` is the forward pass; `jacobian` holds its derivative with respect
-to T1 and T2. That derivative is what a dictionary fit, a nonlinear
-least-squares map, a model-based reconstruction and a sequence design all
-start from, which is why it is one keyword rather than a separate call.
+`signal` is the forward pass; `jacobian` holds its derivatives with
+respect to T1 and T2. Dictionary fitting, nonlinear least squares,
+model-based reconstruction and sequence design all consume the same simulator
+interface.
+
+Functional calls such as {func}`torchsim.mrf_sim` are convenience wrappers
+around the shipped simulator classes. They are useful for a one-off call, but
+{class}`~torchsim.model.Simulator` is the interface to learn and the class to
+subclass when you implement a sequence.
 
 Arrays go in and come back in whatever library you wrote them in -- NumPy here,
 CuPy or PyTorch elsewhere -- over the same memory rather than a copy.
 
 ## Finding your way around this documentation
 
-{doc}`explanations/epg`
-: What configuration states are, why a train of pulses generates more echoes
-  than it has pulses, and where relaxation, diffusion, flow and a second
-  proton pool enter. Read this if EPG is new, or if you want to know what
-  the simulator is actually computing.
-
-{doc}`explanations/implementation`
-: How that algorithm is realized here: a sequence as a stream of events, one
-  fused kernel per voxel, derivatives taken forward or backward depending on
-  what you differentiate, and the shortcuts a run takes when your sequence
-  allows them.
+{doc}`explanations/index`
+: The conceptual pages: the sequence description, the EPG physics and the
+  fused implementation.
 
 {doc}`generated/autoexamples/index`
-: Worked examples you can run, download or open in Colab. They go from
-  calling a simulator that ships with TorchSim, through writing one of your
-  own, to parameter inference, sequence design and model-based
-  reconstruction.
+: The executable Course and Tours. The Course starts with a shipped simulator,
+  then shows how to implement a new sequence by subclassing
+  {class}`~torchsim.model.Simulator`; the Tours cover inference, design and
+  model-based reconstruction.
 
 {doc}`api/index`
 : The reference. Start at {doc}`api/simulators` for what ships, at
@@ -240,13 +237,13 @@ CuPy or PyTorch elsewhere -- over the same memory rather than a copy.
 ## Getting help, and reporting what breaks
 
 **Ask a question** in
-[Discussions](https://github.com/FiRMLAB-Pisa/torchsim/discussions). How to model
+[Discussions](https://github.com/pulserver/torchsim/discussions). How to model
 a sequence, whether a signal you got is expected, which estimator suits a
 problem -- these belong there, and the answer is then findable by whoever asks
 next.
 
 **Report a bug** in
-[Issues](https://github.com/FiRMLAB-Pisa/torchsim/issues/new/choose), where a
+[Issues](https://github.com/pulserver/torchsim/issues/new/choose), where a
 form asks for what a fix needs:
 
 - the shortest script that reproduces it, pasted whole -- a sequence is enough
@@ -265,8 +262,8 @@ the same form chooser. Name the paper the model comes from and the figure it
 would have to reproduce; that is what makes it implementable.
 
 **Report a vulnerability** privately instead: open a draft advisory from the
-repository's [Security tab](https://github.com/FiRMLAB-Pisa/torchsim/security/advisories/new),
-or email the address in the [security policy](https://github.com/FiRMLAB-Pisa/torchsim/blob/main/.github/SECURITY.md).
+repository's [Security tab](https://github.com/pulserver/torchsim/security/advisories/new),
+or email the address in the [security policy](https://github.com/pulserver/torchsim/blob/main/.github/SECURITY.md).
 The kernels index raw pointers, so anything reachable from ordinary arguments
 that reads or writes out of bounds is worth reporting that way rather than in a
 public issue. Wrong physics is a bug report, not a vulnerability.

@@ -28,7 +28,7 @@ build the pages without running any of them, pass `-D plot_gallery=0`.
 ## Where the published pages are built
 
 `.github/workflows/docs.yml` builds them, and GitHub Pages serves them from
-the `gh-pages` branch at <https://firmlab-pisa.github.io/torchsim/>.
+the `gh-pages` branch at <https://pulserver.github.io/torchsim/>.
 
 Its **HTML** job runs on every branch and pull request with the `doc` extra:
 every page is written and the examples needing nothing but TorchSim are
@@ -93,3 +93,33 @@ The audience is MR scientists: pulse sequences and physics, not software
 architecture. Describe what TorchSim does and why that is right on its own
 terms. These pages are not a changelog — never justify a design by describing
 the design it replaced.
+
+
+## Documentation architecture
+
+Keep the public sidebar shallow and in this order:
+
+1. User Guide
+2. Developer Guide
+3. Explanations
+4. Examples
+5. API
+6. Miscellaneous
+
+The first four Framework examples are the Course. They teach the public
+abstraction in order; the remaining example sections are standalone Tours.
+
+For a new sequence, teach {class}`torchsim.model.Simulator` as the extension
+point. A state-machine simulator has two complementary inputs: its class-level
+handlers interpret commands from an incoming Pulseq/MRD description, and
+`layout()` constructs the same sequence offline. Lower-level
+`SequenceDescription`, `SpinPhysics` and operator machinery are important
+reference/developer concepts, not competing user-facing sequence APIs.
+
+Functional `*_sim` calls are conveniences around shipped simulators. Do not
+present them as the abstraction a user implements.
+
+Figures must remain readable at final documentation width in both light and
+dark mode. Use `docs/figure_style.py` for common typography, transparent
+backgrounds and foreground colors; examples set only figure-specific geometry
+and scientific encodings.
