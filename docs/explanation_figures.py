@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from figure_style import FOREGROUND, STYLE
+
 from torchsim.model import Simulator
 from torchsim.sequence import Delay, EventAction, Excitation, SPGRReadout
 from torchsim.simulators import FSESimulator, MRFSimulator, SPGRSimulator
