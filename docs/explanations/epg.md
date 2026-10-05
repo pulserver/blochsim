@@ -1,5 +1,16 @@
 # Extended phase graphs
 
+```{admonition} TL;DR
+:class: tldr
+
+- EPG represents a voxel by transverse and longitudinal configuration states
+  indexed by dephasing order.
+- RF pulses mix state families, gradients shift transverse orders, and
+  relaxation/evolution acts between events.
+- TorchSim extends that state machine with off-resonance, diffusion, flow and
+  exchange while retaining the same sequence-level abstraction.
+```
+
 Three pulses generate five echoes, and a train of a hundred generates far more
 than a hundred. A refocused train, a gradient-echo steady state, a
 fingerprinting schedule: in each, what you sample is not one decaying
