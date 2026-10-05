@@ -42,6 +42,7 @@ def test_multiple_gradient(flip):
     _, grad = mrf_sim(flip, TR=10.0, T1=(200, 500, 1000.0), T2=100.0, diff=("T1", "T2"))
     assert grad.shape == (3, 2, 100)
 
+
 def test_current_simulator_protocol_arguments_pass_through(flip):
     """The convenience call accepts protocol fields added to MRFSimulator."""
     from torchsim.simulators import MRFSimulator
