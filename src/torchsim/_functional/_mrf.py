@@ -2,6 +2,8 @@
 
 __all__ = ["mrf_sim"]
 
+from typing import Any
+
 import numpy.typing as npt
 import torch
 
@@ -14,14 +16,16 @@ def mrf_sim(
     TR: float | npt.ArrayLike,
     T1: float | npt.ArrayLike,
     T2: float | npt.ArrayLike,
-    diff: str | tuple[str] = None,
+    diff: str | tuple[str, ...] | None = None,
     B1: float | npt.ArrayLike = 1.0,
     inv_efficiency: float | npt.ArrayLike = 1.0,
     M0: float | npt.ArrayLike = 1.0,
     TI: float = 0.0,
+    phases: float | npt.ArrayLike = 0.0,
     states: int = 10,
     nreps: int = 1,
-    device: str | torch.device = None,
+    device: str | torch.device | None = None,
+    **values: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     SSFP MR Fingerprinting simulator wrapper.
@@ -54,6 +58,12 @@ def mrf_sim(
     nreps : int, optional
         Number of simulation repetitions.
         The default is ``1``.
+    phases : float or array-like, optional
+        Sequence phase schedule in degrees. The default is ``0.0``.
+    **values : optional
+        Additional tissue, protocol or run settings accepted by the corresponding
+        ``Simulator`` class. Explicit wrapper arguments remain available for
+        backwards compatibility.
     device : str | torch.device, optional
         Computational device for simulation.
         The default is ``None`` (infer from input).
@@ -80,6 +90,7 @@ def mrf_sim(
         flip=flip,
         TR=TR,
         TI=TI,
+        phases=phases,
         states=states,
-        repetitions=nreps,
+        **{"repetitions": nreps, **values},
     )
