@@ -28,7 +28,7 @@ build the pages without running any of them, pass `-D plot_gallery=0`.
 ## Where the published pages are built
 
 `.github/workflows/docs.yml` builds them, and GitHub Pages serves them from
-the `gh-pages` branch at <https://firmlab-pisa.github.io/torchsim/>.
+the `gh-pages` branch at <https://pulserver.github.io/torchsim/>.
 
 Its **HTML** job runs on every branch and pull request with the `doc` extra:
 every page is written and the examples needing nothing but TorchSim are
