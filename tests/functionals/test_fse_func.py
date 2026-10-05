@@ -41,3 +41,24 @@ def test_scalar_gradient(flip):
 def test_multiple_gradient(flip):
     _, grad = fse_sim(flip, ESP=1.0, T1=(200, 500, 1000.0), T2=100.0, diff=("T1", "T2"))
     assert grad.shape == (3, 2, 100)
+
+def test_current_simulator_physics_passes_through(flip):
+    """The convenience call does not hide physics the Simulator accepts."""
+    from torchsim.simulators import FSESimulator
+
+    got = fse_sim(
+        flip,
+        ESP=5.0,
+        T1=1000.0,
+        T2=100.0,
+        B0=17.0,
+        crusher_dephasing_rad=2 * np.pi,
+        voxel_size_m=1e-3,
+    )
+    expected = FSESimulator(
+        flip=flip,
+        ESP=5.0,
+        crusher_dephasing_rad=2 * np.pi,
+        voxel_size_m=1e-3,
+    ).simulate(T1=1000.0, T2=100.0, B0=17.0)
+    np.testing.assert_allclose(got, expected)
