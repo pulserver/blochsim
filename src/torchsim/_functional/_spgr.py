@@ -49,9 +49,9 @@ def spgr_sim(
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
     **values : optional
-        Additional tissue, protocol or run settings accepted by the corresponding
-        ``Simulator`` class. Explicit wrapper arguments remain available for
-        backwards compatibility.
+        Additional call-time tissue, protocol or run settings accepted by
+        ``Simulator.simulate``. Settings fixed only at simulator construction
+        remain class-interface features.
     device : str | torch.device, optional
         Computational device for simulation.
         The default is ``None`` (infer from input).
