@@ -473,7 +473,7 @@ basis keeps before anything is projected through it.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.890 seconds)
+   **Total running time of the script:** (0 minutes 2.107 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_01-linear-subspace.py:
@@ -485,7 +485,7 @@ basis keeps before anything is projected through it.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/04-model-based-imaging/01-linear-subspace.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/04-model-based-imaging/01-linear-subspace.ipynb
         :alt: Launch binder
         :width: 150 px
 

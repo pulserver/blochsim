@@ -270,12 +270,12 @@ card while the slice was mapped, and a dash on a machine with no card.
     method                           atoms   train     map     model      peak      T2
     ----------------------------------------------------------------------------------
     match, T2 only                     400    0.0s   0.01s   0.1 MiB        --   17.9%
-    match, T2 x 10 offsets            4000    0.0s   0.11s   0.5 MiB        --    1.8%
-    match, T2 x 20 offsets            8000    0.0s   0.22s   1.1 MiB        --    1.8%
-    match, T2 x 40 offsets           16000    0.0s   0.45s   2.1 MiB        --    1.8%
-    match, T2 x 80 offsets           32000    0.0s   0.96s   4.3 MiB        --    1.7%
-    fit, T2 + M0, floor known           --    0.0s   0.59s   0.0 MiB        --    0.6%
-    fit, T2 + M0 + offset               --    0.0s   0.97s   0.0 MiB        --    1.8%
+    match, T2 x 10 offsets            4000    0.0s   0.14s   0.5 MiB        --    1.8%
+    match, T2 x 20 offsets            8000    0.0s   0.28s   1.1 MiB        --    1.8%
+    match, T2 x 40 offsets           16000    0.0s   0.57s   2.1 MiB        --    1.8%
+    match, T2 x 80 offsets           32000    0.0s   1.14s   4.3 MiB        --    1.7%
+    fit, T2 + M0, floor known           --    0.0s   0.53s   0.0 MiB        --    0.6%
+    fit, T2 + M0 + offset               --    0.0s   0.91s   0.0 MiB        --    1.8%
 
 
 
@@ -317,7 +317,7 @@ already.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7f07a1de7f50>
+    <matplotlib.legend.Legend object at 0x7fbfd6f03e90>
 
 
 
@@ -361,7 +361,7 @@ that must sum to one are written with one as the unknown and the other as
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.452 seconds)
+   **Total running time of the script:** (0 minutes 13.348 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_03-nonlinear-least-squares.py:
@@ -373,7 +373,7 @@ that must sum to one are written with one as the unknown and the other as
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares.ipynb
         :alt: Launch binder
         :width: 150 px
 

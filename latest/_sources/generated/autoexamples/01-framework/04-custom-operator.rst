@@ -407,7 +407,7 @@ top of it.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.599 seconds)
+   **Total running time of the script:** (0 minutes 0.530 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_04-custom-operator.py:
@@ -419,7 +419,7 @@ top of it.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/04-custom-operator.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/04-custom-operator.ipynb
         :alt: Launch binder
         :width: 150 px
 

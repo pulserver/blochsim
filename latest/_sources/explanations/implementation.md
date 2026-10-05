@@ -1,5 +1,17 @@
 # How TorchSim runs it
 
+```{admonition} TL;DR
+:class: tldr
+
+- {class}`~torchsim.model.Simulator` is the public sequence abstraction.
+  Offline it builds a description from `layout()`; scanner-driven use starts
+  from an incoming description and applies the simulator's handlers.
+- The resulting event stream is packed once and executed by fused CPU or
+  Triton kernels, one program per voxel.
+- Tissue Jacobians use forward mode; sequence optimization uses reverse mode;
+  execution/offload policy is shared by every simulator.
+```
+
 {doc}`epg` says what is being computed. This page says how, and why the shape
 of the code is what it is: one description of a sequence, one fused kernel per
 voxel, and derivatives taken in whichever direction the question asks for.

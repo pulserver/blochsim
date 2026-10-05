@@ -587,7 +587,7 @@ Starting from the prescription the abstract reports: a 45 echo train at
 
  .. code-block:: none
 
-    a whole protocol designed in 0.46 s, 11.5 ms per iteration
+    a whole protocol designed in 0.74 s, 18.6 ms per iteration
 
 
 
@@ -651,7 +651,7 @@ would leave.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f07a9bf30b0>, <matplotlib.legend.Legend object at 0x7f07a9872150>, <matplotlib.legend.Legend object at 0x7f07a9f34b90>]
+    [<matplotlib.legend.Legend object at 0x7fbfd69f0fe0>, <matplotlib.legend.Legend object at 0x7fbfdc1898e0>, <matplotlib.legend.Legend object at 0x7fbfd6f19400>]
 
 
 
@@ -674,7 +674,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.260 seconds)
+   **Total running time of the script:** (0 minutes 2.395 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_01-echo-train-design.py:
@@ -686,7 +686,7 @@ References
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/01-echo-train-design.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/01-echo-train-design.ipynb
         :alt: Launch binder
         :width: 150 px
 

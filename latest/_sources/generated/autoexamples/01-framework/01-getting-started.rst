@@ -119,7 +119,7 @@ will affect the resulting signal evolution
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7f07b19f4560>
+    <matplotlib.legend.Legend object at 0x7fbfdebd3710>
 
 
 
@@ -364,8 +364,8 @@ minutes or hours.
 
  .. code-block:: none
 
-      held             0.99 ms a call
-      rebuilt anew    13.65 ms a call
+      held             1.02 ms a call
+      rebuilt anew    12.31 ms a call
 
 
 
@@ -510,7 +510,7 @@ to check that a layout laid down what you meant.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f07b1421df0>]
+    [<matplotlib.legend.Legend object at 0x7fbfde8cd6a0>]
 
 
 
@@ -641,7 +641,7 @@ equilibrium the shipped object adds does not come along.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f07b0d07f50>]
+    [<matplotlib.legend.Legend object at 0x7fbfdc18b230>]
 
 
 
@@ -715,7 +715,7 @@ notebooks say what to write instead.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.842 seconds)
+   **Total running time of the script:** (0 minutes 7.299 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_01-getting-started.py:
@@ -727,7 +727,7 @@ notebooks say what to write instead.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb
         :alt: Launch binder
         :width: 150 px
 

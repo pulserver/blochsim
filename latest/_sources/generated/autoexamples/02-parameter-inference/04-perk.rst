@@ -162,7 +162,7 @@ arithmetic that searches it.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f07a1bcede0>]
+    [<matplotlib.legend.Legend object at 0x7fbfdc1e4410>]
 
 
 
@@ -268,7 +268,7 @@ keeps is the relative squared error of projecting through it and back.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f07b14f9430>]
+    [<matplotlib.legend.Legend object at 0x7fbfd69a3230>]
 
 
 
@@ -343,10 +343,10 @@ dictionary row is the reference point.
 
     method                       train     map     model      peak      T1      T2
     ------------------------------------------------------------------------------
-    match, rank 4                 1.2s   1.86s   1.4 MiB        --    0.6%    1.6%
-    PERK, 500 features            1.4s   0.03s   0.0 MiB        --    1.4%   15.0%
-    PERK, 1000 features           1.9s   0.04s   0.1 MiB        --    0.9%    3.2%
-    PERK, 4000 features          10.7s   0.11s   0.4 MiB        --    1.0%    6.9%
+    match, rank 4                 1.0s   2.14s   1.4 MiB        --    0.6%    1.6%
+    PERK, 500 features            1.1s   0.03s   0.0 MiB        --    2.4%   19.2%
+    PERK, 1000 features           1.3s   0.04s   0.1 MiB        --    0.8%    7.0%
+    PERK, 4000 features           6.3s   0.11s   0.4 MiB        --    1.0%    5.6%
 
 
 
@@ -438,8 +438,8 @@ sequence, so the gap is what the method loses.
  .. code-block:: none
 
                 PERK      CRLB     PERK   (median over the brain)
-    T1        9.2 ms    2.4 ms     1.3%
-    T2       11.1 ms    0.5 ms    14.0%
+    T1        9.4 ms    2.4 ms     1.3%
+    T2       12.1 ms    0.5 ms    16.9%
 
 
 
@@ -463,7 +463,7 @@ realization, so repeating the scan would never show that part.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 33.431 seconds)
+   **Total running time of the script:** (0 minutes 25.754 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_04-perk.py:
@@ -475,7 +475,7 @@ realization, so repeating the scan would never show that part.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb
         :alt: Launch binder
         :width: 150 px
 

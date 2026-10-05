@@ -223,7 +223,7 @@ value itself.
 
     published spread   sigma(T1)/T1 = 11.0%, 12.9%   sigma(T2)/T2 = 10.1%, 12.1%
     designed           sigma(T1)/T1 = 7.4%, 8.9%   sigma(T2)/T2 = 7.4%, 9.1%
-    designed in 4.1 s
+    designed in 3.6 s
 
 
 
@@ -253,7 +253,7 @@ differing only in flip angle. Before and after.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7f07a9e901a0>
+    <matplotlib.legend.Legend object at 0x7fbfd733b440>
 
 
 
@@ -528,7 +528,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.050 seconds)
+   **Total running time of the script:** (0 minutes 10.687 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_02-joint-relaxometry.py:
@@ -540,7 +540,7 @@ References
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb
         :alt: Launch binder
         :width: 150 px
 

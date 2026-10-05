@@ -233,7 +233,7 @@ all where B1 is low, while outside it the leakage stays at the sinc's level:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.337 seconds)
+   **Total running time of the script:** (0 minutes 7.029 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_03-rf-pulse-design.py:
@@ -245,7 +245,7 @@ all where B1 is low, while outside it the leakage stays at the sinc's level:
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/03-rf-pulse-design.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/03-rf-pulse-design.ipynb
         :alt: Launch binder
         :width: 150 px
 

@@ -38,6 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=b3c09d27" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
@@ -56,13 +57,13 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/01-framework/01-getting-started';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://firmlab-pisa.github.io/torchsim/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/torchsim/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://firmlab-pisa.github.io/torchsim/latest/generated/autoexamples/01-framework/01-getting-started.html" />
+    <link rel="canonical" href="https://pulserver.github.io/torchsim/latest/generated/autoexamples/01-framework/01-getting-started.html" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Expanded Physics" href="02-expanded-physics.html" />
@@ -116,50 +117,6 @@
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
-<div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
-    <span class="fa-solid fa-bars"></span>
-  </button>
-  
-  
-  <div class="col-lg-9 navbar-header-items">
-    
-    
-    <div class="navbar-header-items__end">
-      
-        <div class="navbar-item navbar-persistent--container">
-          
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button>
-        </div>
-      
-      
-    </div>
-    
-  </div>
-  
-  
-    <div class="navbar-persistent--mobile">
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button>
-    </div>
-  
-
-  
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
-</div>
-
     </header>
   
 
@@ -229,27 +186,26 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../../../index.html">
-                    TorchSim
+                    Homepage
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
-<ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explanations/index.html">Explanations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/description.html">Sequence description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/epg.html">Extended phase graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/implementation.html">How TorchSim runs it</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul class="current nav bd-sidenav">
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Examples</a></li>
 
 
 
 
 
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">API References</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API References</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/model.html">Signal models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.Simulator.html">Simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.SpinPhysics.html">SpinPhysics</a></li>
@@ -346,13 +302,13 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/related.html">Related Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/contributors.html">Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/license.html">License</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Miscellaneous</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/related.html">Related Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/code_of_conduct.html">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/license.html">License</a></li>
+</details></li>
 </ul>
 
     </div>
@@ -412,7 +368,7 @@
       
       
       
-      <li><a href="https://github.com/FiRMLAB-Pisa/torchsim" target="_blank"
+      <li><a href="https://github.com/pulserver/torchsim" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -429,7 +385,7 @@
       
       
       
-      <li><a href="https://github.com/FiRMLAB-Pisa/torchsim/edit/main/generated/autoexamples/01-framework/01-getting-started.rst" target="_blank"
+      <li><a href="https://github.com/pulserver/torchsim/edit/main/generated/autoexamples/01-framework/01-getting-started.rst" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -446,7 +402,7 @@
       
       
       
-      <li><a href="https://github.com/FiRMLAB-Pisa/torchsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/01-framework/01-getting-started.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pulserver/torchsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/01-framework/01-getting-started.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -599,7 +555,7 @@ to download the full example code or to run this example in your browser via Bin
 including how to simulate a signal, calculating derivatives etc.</p>
 <p>This example uses a fast spin echo that ships with TorchSim.</p>
 <div class="colab-button">
-            <a href="https://colab.research.google.com/github/FiRMLAB-Pisa/torchsim/blob/gh-pages/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb" target="_blank">
+            <a href="https://colab.research.google.com/github/pulserver/torchsim/blob/gh-pages/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb" target="_blank">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg"
                 alt="Open In Colab"/>
             </a>
@@ -636,7 +592,7 @@ if we pass a list of T2s but just a single T1, the same T1 is used for all atoms
 will affect the resulting signal evolution</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">signal60</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.FSESimulator.html#torchsim.simulators.FSESimulator" title="torchsim.simulators.FSESimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">ECHOES</span></a><span class="p">,</span><span class="p">)</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_01-getting-started_001.png" srcset="../../../_images/sphx_glr_01-getting-started_001.png" alt="a 180 degree train, a 60 degree train" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f07b19f4560&gt;
+<img src="../../../_images/sphx_glr_01-getting-started_001.png" srcset="../../../_images/sphx_glr_01-getting-started_001.png" alt="a 180 degree train, a 60 degree train" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fbfdebd3710&gt;
 </pre></div>
 </div>
 </section>
@@ -757,8 +713,8 @@ minutes or hours.</p>
 </span>        <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.FSESimulator.html#torchsim.simulators.FSESimulator" title="torchsim.simulators.FSESimulator"><span class="n">candidate</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">flip</span><span class="p">)</span><span class="w">
 </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">  </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="si">:</span><span class="s2">14s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="mf">1e3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.perf_counter" title="time.perf_counter"><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span></a><span class="p">(</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">start</span></a><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">20</span><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> ms a call</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>held             0.99 ms a call
-rebuilt anew    13.65 ms a call
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>held             1.02 ms a call
+rebuilt anew    12.31 ms a call
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">execution</span></code> says where the work goes. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> weighs the problem against
@@ -816,7 +772,7 @@ to check that a layout laid down what you meant.</p>
 <li><img src="../../../_images/sphx_glr_01-getting-started_002.png" srcset="../../../_images/sphx_glr_01-getting-started_002.png" alt="01 getting started" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../../_images/sphx_glr_01-getting-started_003.png" srcset="../../../_images/sphx_glr_01-getting-started_003.png" alt="the first 6 echoes of the description above" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7f07b1421df0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7fbfde8cd6a0&gt;]
 </pre></div>
 </div>
 <p>A description normally arrives; it is not typed. Writing one by hand once is
@@ -872,7 +828,7 @@ them. <a class="reference internal" href="../../torchsim.simulators.FSESimulator
 between one train and the next in closed form, which is not an event and so
 is not in the stream. The shape of the train is the same; the driven
 equilibrium the shipped object adds does not come along.</p>
-<img src="../../../_images/sphx_glr_01-getting-started_004.png" srcset="../../../_images/sphx_glr_01-getting-started_004.png" alt="white matter, the same train both ways" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7f07b0d07f50&gt;]
+<img src="../../../_images/sphx_glr_01-getting-started_004.png" srcset="../../../_images/sphx_glr_01-getting-started_004.png" alt="white matter, the same train both ways" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7fbfdc18b230&gt;]
 </pre></div>
 </div>
 </section>
@@ -908,10 +864,10 @@ respect to the schedule instead is what designs a protocol, and is the
 subject of the sequence optimization notebooks.</p>
 <p>When the sequence you want is not one of the ones that ship, the next
 notebooks say what to write instead.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.842 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.299 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-01-framework-01-getting-started-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo.svg" style="width: 150px;" />
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo.svg" style="width: 150px;" />
 </a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

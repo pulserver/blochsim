@@ -423,7 +423,7 @@ thing a physicist would name rather than as a pulse and a spoiler.
 
       largest disagreement with the closed form: 7.45e-09
 
-    [<matplotlib.legend.Legend object at 0x7f07a9e6e780>]
+    [<matplotlib.legend.Legend object at 0x7fbfd739aed0>]
 
 
 
@@ -460,7 +460,7 @@ signal it produces.
 
       49 events, 6350 ms long
 
-    [<matplotlib.legend.Legend object at 0x7f07b0d35010>]
+    [<matplotlib.legend.Legend object at 0x7fbfd7340890>]
 
 
 
@@ -533,7 +533,7 @@ The shipped models come with one, and yours can too:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.217 seconds)
+   **Total running time of the script:** (0 minutes 1.990 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_03-writing-a-simulator.py:
@@ -545,7 +545,7 @@ The shipped models come with one, and yours can too:
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/03-writing-a-simulator.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/03-writing-a-simulator.ipynb
         :alt: Launch binder
         :width: 150 px
 

@@ -150,7 +150,7 @@ makes ignoring it a bias in both.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f07b8198bc0>]
+    [<matplotlib.legend.Legend object at 0x7fbfe7eef1a0>]
 
 
 
@@ -225,7 +225,7 @@ machine sees it, so a single pair of per-voxel buffers reaches the kernels.
       driven alike     [0.0, 0.0, 0.0]
       counter-rotated  [0.8234, 0.8765, 0.8949]
 
-    [<matplotlib.legend.Legend object at 0x7f07a9fc7110>]
+    [<matplotlib.legend.Legend object at 0x7fbfde8ce480>]
 
 
 
@@ -658,7 +658,7 @@ to the engine rather than a name in a call.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 25.140 seconds)
+   **Total running time of the script:** (0 minutes 22.512 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_02-expanded-physics.py:
@@ -670,7 +670,7 @@ to the engine rather than a name in a call.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/02-expanded-physics.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/02-expanded-physics.ipynb
         :alt: Launch binder
         :width: 150 px
 

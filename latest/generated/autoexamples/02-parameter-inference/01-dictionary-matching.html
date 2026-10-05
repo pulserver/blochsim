@@ -38,6 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=b3c09d27" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
@@ -56,13 +57,13 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/02-parameter-inference/01-dictionary-matching';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://firmlab-pisa.github.io/torchsim/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/torchsim/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://firmlab-pisa.github.io/torchsim/latest/generated/autoexamples/02-parameter-inference/01-dictionary-matching.html" />
+    <link rel="canonical" href="https://pulserver.github.io/torchsim/latest/generated/autoexamples/02-parameter-inference/01-dictionary-matching.html" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="MP2RAGE lookup table" href="02-lookup-table.html" />
@@ -116,50 +117,6 @@
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
-<div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
-    <span class="fa-solid fa-bars"></span>
-  </button>
-  
-  
-  <div class="col-lg-9 navbar-header-items">
-    
-    
-    <div class="navbar-header-items__end">
-      
-        <div class="navbar-item navbar-persistent--container">
-          
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button>
-        </div>
-      
-      
-    </div>
-    
-  </div>
-  
-  
-    <div class="navbar-persistent--mobile">
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button>
-    </div>
-  
-
-  
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
-</div>
-
     </header>
   
 
@@ -229,27 +186,26 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../../../index.html">
-                    TorchSim
+                    Homepage
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
-<ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explanations/index.html">Explanations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/description.html">Sequence description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/epg.html">Extended phase graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/implementation.html">How TorchSim runs it</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul class="current nav bd-sidenav">
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Examples</a></li>
 
 
 
 
 
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">API References</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API References</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/model.html">Signal models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.Simulator.html">Simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.SpinPhysics.html">SpinPhysics</a></li>
@@ -346,13 +302,13 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/related.html">Related Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/contributors.html">Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/license.html">License</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Miscellaneous</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/related.html">Related Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/code_of_conduct.html">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../misc/license.html">License</a></li>
+</details></li>
 </ul>
 
     </div>
@@ -412,7 +368,7 @@
       
       
       
-      <li><a href="https://github.com/FiRMLAB-Pisa/torchsim" target="_blank"
+      <li><a href="https://github.com/pulserver/torchsim" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -429,7 +385,7 @@
       
       
       
-      <li><a href="https://github.com/FiRMLAB-Pisa/torchsim/edit/main/generated/autoexamples/02-parameter-inference/01-dictionary-matching.rst" target="_blank"
+      <li><a href="https://github.com/pulserver/torchsim/edit/main/generated/autoexamples/02-parameter-inference/01-dictionary-matching.rst" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -446,7 +402,7 @@
       
       
       
-      <li><a href="https://github.com/FiRMLAB-Pisa/torchsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/02-parameter-inference/01-dictionary-matching.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pulserver/torchsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/02-parameter-inference/01-dictionary-matching.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -605,7 +561,7 @@ product of the grids and each atom is as long as the train. The two savings are
 independent and multiply; what each costs and what each gets wrong is read off
 the same slice.</p>
 <div class="colab-button">
-            <a href="https://colab.research.google.com/github/FiRMLAB-Pisa/torchsim/blob/gh-pages/latest/examples/generated/autoexamples/02-parameter-inference/01-dictionary-matching.ipynb" target="_blank">
+            <a href="https://colab.research.google.com/github/pulserver/torchsim/blob/gh-pages/latest/examples/generated/autoexamples/02-parameter-inference/01-dictionary-matching.ipynb" target="_blank">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg"
                 alt="Open In Colab"/>
             </a>
@@ -638,237 +594,231 @@ continuum and not four values.</p>
 Downloading phantom_1.0mm_normal_bck: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 1.00kB [00:00, 8.42kB/s]
+Downloading phantom_1.0mm_normal_bck: 1.00kB [00:00, 9.40kB/s]
 
 
 Downloading phantom_1.0mm_normal_bck: 97.0kB [00:00, 476kB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 433kB [00:00, 1.54MB/s]
+Downloading phantom_1.0mm_normal_bck: 425kB [00:00, 1.45MB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 657kB [00:00, 1.59MB/s]
+Downloading phantom_1.0mm_normal_bck: 817kB [00:00, 2.16MB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 993kB [00:00, 2.06MB/s]
+Downloading phantom_1.0mm_normal_bck: 1.08MB [00:00, 2.28MB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 1.24MB [00:00, 2.17MB/s]
+Downloading phantom_1.0mm_normal_bck: 1.34MB [00:00, 2.28MB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 1.52MB [00:00, 2.24MB/s]
+Downloading phantom_1.0mm_normal_bck: 1.58MB [00:00, 2.30MB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 1.74MB [00:00, 2.23MB/s]
+Downloading phantom_1.0mm_normal_bck: 1.80MB [00:00, 2.26MB/s]
 
 
-Downloading phantom_1.0mm_normal_bck: 1.97MB [00:01, 2.21MB/s]
-
-
-Downloading phantom_1.0mm_normal_bck: 2.19MB [00:01, 2.14MB/s]
+Downloading phantom_1.0mm_normal_bck: 2.02MB [00:01, 2.11MB/s]
 
 
 
 
-Downloading tissues:  10%|█         | 1/10 [00:02&lt;00:18,  2.11s/it]
+Downloading tissues:  10%|█         | 1/10 [00:01&lt;00:17,  1.96s/it]
 
 
 Downloading phantom_1.0mm_normal_csf: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_csf: 1.00kB [00:00, 8.61kB/s]
+Downloading phantom_1.0mm_normal_csf: 8.81kB [00:00, 70.5kB/s]
 
 
-Downloading phantom_1.0mm_normal_csf: 97.0kB [00:00, 462kB/s]
+Downloading phantom_1.0mm_normal_csf: 201kB [00:00, 1.07MB/s]
 
 
-Downloading phantom_1.0mm_normal_csf: 441kB [00:00, 1.50MB/s]
+Downloading phantom_1.0mm_normal_csf: 561kB [00:00, 2.12MB/s]
 
 
 
 
-Downloading tissues:  20%|██        | 2/10 [00:02&lt;00:11,  1.39s/it]
+Downloading tissues:  20%|██        | 2/10 [00:02&lt;00:10,  1.36s/it]
 
 
 Downloading phantom_1.0mm_normal_gry: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_gry: 1.00kB [00:00, 7.79kB/s]
+Downloading phantom_1.0mm_normal_gry: 1.00kB [00:00, 9.81kB/s]
 
 
-Downloading phantom_1.0mm_normal_gry: 97.0kB [00:00, 462kB/s]
+Downloading phantom_1.0mm_normal_gry: 97.0kB [00:00, 506kB/s]
 
 
-Downloading phantom_1.0mm_normal_gry: 424kB [00:00, 1.48MB/s]
-
-
-Downloading phantom_1.0mm_normal_gry: 1.06MB [00:00, 3.06MB/s]
+Downloading phantom_1.0mm_normal_gry: 457kB [00:00, 1.78MB/s]
 
 
 
 
-Downloading tissues:  30%|███       | 3/10 [00:03&lt;00:08,  1.21s/it]
+Downloading tissues:  30%|███       | 3/10 [00:03&lt;00:07,  1.11s/it]
 
 
 Downloading phantom_1.0mm_normal_wht: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_wht: 8.81kB [00:00, 65.5kB/s]
+Downloading phantom_1.0mm_normal_wht: 1.00kB [00:00, 7.13kB/s]
 
 
-Downloading phantom_1.0mm_normal_wht: 177kB [00:00, 814kB/s]
+Downloading phantom_1.0mm_normal_wht: 97.0kB [00:00, 428kB/s]
 
 
-Downloading phantom_1.0mm_normal_wht: 561kB [00:00, 1.87MB/s]
+Downloading phantom_1.0mm_normal_wht: 447kB [00:00, 1.57MB/s]
 
 
 
 
-Downloading tissues:  40%|████      | 4/10 [00:04&lt;00:06,  1.03s/it]
+Downloading tissues:  40%|████      | 4/10 [00:04&lt;00:05,  1.01it/s]
 
 
 Downloading phantom_1.0mm_normal_fat: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_fat: 8.81kB [00:00, 78.1kB/s]
+Downloading phantom_1.0mm_normal_fat: 8.81kB [00:00, 84.4kB/s]
 
 
-Downloading phantom_1.0mm_normal_fat: 193kB [00:00, 957kB/s]
+Downloading phantom_1.0mm_normal_fat: 177kB [00:00, 979kB/s]
+
+
+Downloading phantom_1.0mm_normal_fat: 465kB [00:00, 1.76MB/s]
 
 
 
 
-Downloading tissues:  50%|█████     | 5/10 [00:05&lt;00:04,  1.10it/s]
+Downloading tissues:  50%|█████     | 5/10 [00:05&lt;00:04,  1.07it/s]
 
 
 Downloading phantom_1.0mm_normal_m-s: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 1.00kB [00:00, 10.2kB/s]
+Downloading phantom_1.0mm_normal_m-s: 1.00kB [00:00, 9.08kB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 96.6kB [00:00, 491kB/s]
+Downloading phantom_1.0mm_normal_m-s: 97.0kB [00:00, 470kB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 425kB [00:00, 1.49MB/s]
+Downloading phantom_1.0mm_normal_m-s: 416kB [00:00, 1.43MB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 1.11MB [00:00, 3.35MB/s]
+Downloading phantom_1.0mm_normal_m-s: 1.05MB [00:00, 3.23MB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 1.52MB [00:00, 3.63MB/s]
+Downloading phantom_1.0mm_normal_m-s: 1.49MB [00:00, 3.65MB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 1.87MB [00:00, 3.54MB/s]
+Downloading phantom_1.0mm_normal_m-s: 1.88MB [00:00, 3.77MB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 2.21MB [00:00, 3.55MB/s]
+Downloading phantom_1.0mm_normal_m-s: 2.25MB [00:00, 3.73MB/s]
 
 
-Downloading phantom_1.0mm_normal_m-s: 2.55MB [00:00, 3.55MB/s]
+Downloading phantom_1.0mm_normal_m-s: 2.62MB [00:00, 3.67MB/s]
 
 
 
 
-Downloading tissues:  60%|██████    | 6/10 [00:06&lt;00:04,  1.06s/it]
+Downloading tissues:  60%|██████    | 6/10 [00:06&lt;00:04,  1.07s/it]
 
 
 Downloading phantom_1.0mm_normal_skn: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 1.00kB [00:00, 6.24kB/s]
+Downloading phantom_1.0mm_normal_skn: 1.00kB [00:00, 9.81kB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 97.0kB [00:00, 417kB/s]
+Downloading phantom_1.0mm_normal_skn: 97.0kB [00:00, 505kB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 441kB [00:00, 1.46MB/s]
+Downloading phantom_1.0mm_normal_skn: 417kB [00:00, 1.52MB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 0.99MB [00:00, 2.87MB/s]
+Downloading phantom_1.0mm_normal_skn: 1.05MB [00:00, 3.30MB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 1.36MB [00:00, 3.12MB/s]
+Downloading phantom_1.0mm_normal_skn: 1.41MB [00:00, 3.38MB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 1.72MB [00:00, 3.19MB/s]
+Downloading phantom_1.0mm_normal_skn: 1.78MB [00:00, 3.49MB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 2.13MB [00:00, 3.37MB/s]
+Downloading phantom_1.0mm_normal_skn: 2.17MB [00:00, 3.52MB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 2.46MB [00:00, 3.40MB/s]
+Downloading phantom_1.0mm_normal_skn: 2.55MB [00:00, 3.50MB/s]
 
 
-Downloading phantom_1.0mm_normal_skn: 2.79MB [00:01, 3.25MB/s]
-
-
-Downloading phantom_1.0mm_normal_skn: 3.10MB [00:01, 3.05MB/s]
+Downloading phantom_1.0mm_normal_skn: 2.88MB [00:01, 3.27MB/s]
 
 
 
 
-Downloading tissues:  70%|███████   | 7/10 [00:08&lt;00:03,  1.24s/it]
+Downloading tissues:  70%|███████   | 7/10 [00:08&lt;00:03,  1.22s/it]
 
 
 Downloading phantom_1.0mm_normal_skl: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_skl: 8.81kB [00:00, 69.1kB/s]
+Downloading phantom_1.0mm_normal_skl: 8.81kB [00:00, 72.3kB/s]
 
 
-Downloading phantom_1.0mm_normal_skl: 177kB [00:00, 832kB/s]
+Downloading phantom_1.0mm_normal_skl: 185kB [00:00, 850kB/s]
 
 
-Downloading phantom_1.0mm_normal_skl: 625kB [00:00, 2.14MB/s]
+Downloading phantom_1.0mm_normal_skl: 673kB [00:00, 2.20MB/s]
 
 
 
 
-Downloading tissues:  80%|████████  | 8/10 [00:09&lt;00:02,  1.08s/it]
+Downloading tissues:  80%|████████  | 8/10 [00:08&lt;00:02,  1.08s/it]
 
 
 Downloading phantom_1.0mm_normal_gli: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_gli: 1.00kB [00:00, 6.26kB/s]
+Downloading phantom_1.0mm_normal_gli: 1.00kB [00:00, 6.56kB/s]
 
 
 
 
-Downloading tissues:  90%|█████████ | 9/10 [00:09&lt;00:00,  1.05it/s]
+Downloading tissues:  90%|█████████ | 9/10 [00:09&lt;00:00,  1.09it/s]
 
 
 Downloading phantom_1.0mm_normal_mit: 0.00B [00:00, ?B/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 1.00kB [00:00, 8.24kB/s]
+Downloading phantom_1.0mm_normal_mit: 1.00kB [00:00, 9.09kB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 97.0kB [00:00, 471kB/s]
+Downloading phantom_1.0mm_normal_mit: 97.0kB [00:00, 473kB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 417kB [00:00, 1.47MB/s]
+Downloading phantom_1.0mm_normal_mit: 401kB [00:00, 1.37MB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 913kB [00:00, 2.67MB/s]
+Downloading phantom_1.0mm_normal_mit: 833kB [00:00, 2.38MB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 1.20MB [00:00, 2.83MB/s]
+Downloading phantom_1.0mm_normal_mit: 1.13MB [00:00, 2.64MB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 1.52MB [00:00, 2.97MB/s]
+Downloading phantom_1.0mm_normal_mit: 1.44MB [00:00, 2.81MB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 1.83MB [00:00, 3.06MB/s]
+Downloading phantom_1.0mm_normal_mit: 1.77MB [00:00, 2.99MB/s]
 
 
-Downloading phantom_1.0mm_normal_mit: 2.13MB [00:00, 3.06MB/s]
+Downloading phantom_1.0mm_normal_mit: 2.08MB [00:00, 3.06MB/s]
 
 
 
 
-Downloading tissues: 100%|██████████| 10/10 [00:11&lt;00:00,  1.07s/it]
+Downloading tissues: 100%|██████████| 10/10 [00:11&lt;00:00,  1.09s/it]
 
 
 Text(0.5, 0.9878790357573323, 'BrainWeb subject 0, slice 90')
@@ -896,7 +846,7 @@ arithmetic that searches it.</p>
 </span>    <span class="n">T1</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span> <span class="mf">833.0</span><span class="p">,</span> <span class="mf">2569.0</span><span class="p">]</span><span class="p">)</span><span class="p">,</span> <span class="n">T2</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">83.0</span><span class="p">,</span> <span class="mf">329.0</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_01-dictionary-matching_002.png" srcset="../../../_images/sphx_glr_01-dictionary-matching_002.png" alt="the schedule, fingerprints" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7f07b0db9430&gt;]
+<img src="../../../_images/sphx_glr_01-dictionary-matching_002.png" srcset="../../../_images/sphx_glr_01-dictionary-matching_002.png" alt="the schedule, fingerprints" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7fbfdc1897f0&gt;]
 </pre></div>
 </div>
 <p>The measurement, with noise at 2% of the peak fingerprint. The estimators are
@@ -945,7 +895,7 @@ projecting through the basis and back.</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">RANK</span></a> <span class="o">=</span> <span class="mi">4</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_01-dictionary-matching_003.png" srcset="../../../_images/sphx_glr_01-dictionary-matching_003.png" alt="what projecting through the basis loses" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7f07a9e92810&gt;]
+<img src="../../../_images/sphx_glr_01-dictionary-matching_003.png" srcset="../../../_images/sphx_glr_01-dictionary-matching_003.png" alt="what projecting through the basis loses" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7fbfd6ee3230&gt;]
 </pre></div>
 </div>
 <p>Four directions out of four hundred leave less outside the basis than the
@@ -1007,9 +957,9 @@ card, which decides whether a volume fits or has to be streamed, and a dash
 on a machine with no card.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>method                         train     map     model      peak      T1      T2      M0
 ----------------------------------------------------------------------------------------
-match, 400 contrasts           10.0s   9.46s 122.3 MiB        --    0.6%    1.6%    0.4%
-match, rank 4                   1.2s   1.86s   1.4 MiB        --    0.6%    1.6%    0.4%
-match, rank 4 + groups          1.2s   0.09s   1.4 MiB        --    0.6%    1.6%    0.4%
+match, 400 contrasts            6.1s   5.67s 122.3 MiB        --    0.6%    1.6%    0.4%
+match, rank 4                   0.9s   2.15s   1.4 MiB        --    0.6%    1.6%    0.4%
+match, rank 4 + groups          0.9s   0.09s   1.4 MiB        --    0.6%    1.6%    0.4%
 </pre></div>
 </div>
 </section>
@@ -1019,10 +969,10 @@ match, rank 4 + groups          1.2s   0.09s   1.4 MiB        --    0.6%    1.6%
 <li><img src="../../../_images/sphx_glr_01-dictionary-matching_004.png" srcset="../../../_images/sphx_glr_01-dictionary-matching_004.png" alt="truth, full, rank 4, + groups" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../../_images/sphx_glr_01-dictionary-matching_005.png" srcset="../../../_images/sphx_glr_01-dictionary-matching_005.png" alt="Δ full, Δ rank 4, Δ + groups" class = "sphx-glr-multi-img"/></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 5.713 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.119 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-02-parameter-inference-01-dictionary-matching-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/firmlab-pisa/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/01-dictionary-matching.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo1.svg" style="width: 150px;" />
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/01-dictionary-matching.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo1.svg" style="width: 150px;" />
 </a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
