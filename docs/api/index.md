@@ -1,4 +1,4 @@
-# API References
+# API
 
 TorchSim is organized around one idea: a **signal model** is the only thing a
 sequence has to supply, and everything else -- differentiation, execution
