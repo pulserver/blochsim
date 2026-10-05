@@ -48,7 +48,7 @@ def bssfp_sim(
         The default is ``180.0``
     B0 : float | npt.ArrayLike, optional
         Frequency offset map in Hz, default is ``0.0.``
-    chemshift : float | npt.ArrayLik, optional
+    chemshift : float | npt.ArrayLike, optional
         Chemical shift in Hz, default is ``0.0``.
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
