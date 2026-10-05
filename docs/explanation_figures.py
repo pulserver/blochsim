@@ -424,7 +424,9 @@ def mono_exponential():
         [fits[degrees][0] for degrees in trains],
         color=[MUTED, TRANSVERSE, LONGITUDINAL],
     )
-    axes[1].axhline(\n        T2_MS, color=FOREGROUND, ls="--", label=f"true $T_2$ = {T2_MS:g} ms"\n    )
+    axes[1].axhline(
+        T2_MS, color=FOREGROUND, ls="--", label=f"true $T_2$ = {T2_MS:g} ms"
+    )
     axes[1].set(
         xlabel="refocusing angle",
         ylabel="fitted $T_2$ [ms]",
