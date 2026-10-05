@@ -57,18 +57,11 @@ def fse_sim(
         The default is ``None`` (no differentation).
     B1 : float | npt.ArrayLike, optional
         Flip angle scaling map, default is ``1.0``.
-    inv_efficiency : float | npt.ArrayLike, optional
-        Inversion efficiency map, default is ``1.0``.
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
-    TI : float | npt.ArrayLike, optional
-        Inversion time in milliseconds.
-        The default is ``0.0``.
     states : int, optional
         Number of EPG states to be retained.
         The default is ``10``.
-    phases : float or array-like, optional
-        Sequence phase schedule in degrees. The default is ``0.0``.
     **values : optional
         Additional tissue, protocol or run settings accepted by the corresponding
         ``Simulator`` class. Explicit wrapper arguments remain available for
