@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
+from figure_style import FOREGROUND, STYLE
 from torchsim.model import Simulator
 from torchsim.sequence import Delay, EventAction, Excitation, SPGRReadout
 from torchsim.simulators import FSESimulator, MRFSimulator, SPGRSimulator
@@ -36,26 +37,11 @@ SEQ_FILE = Path(__file__).resolve().parent.parent / "examples/01-framework/fse.s
 #: way in and type is the same size on every page.
 PAGE_WIDTH = 8.6  # inches
 
-STYLE = {
-    "figure.dpi": 110,
-    "savefig.dpi": 110,
-    "font.size": 13,
-    "axes.titlesize": 14,
-    "axes.labelsize": 13,
-    "xtick.labelsize": 11,
-    "ytick.labelsize": 11,
-    "legend.fontsize": 11,
-    "figure.titlesize": 15,
-    "figure.constrained_layout.use": True,
-    "axes.spines.top": False,
-    "axes.spines.right": False,
-}
-
 TRANSVERSE = "#1f6f8b"  # F states
 LONGITUDINAL = "#c1553b"  # Z states
 ACCENT = "#2a9d8f"
 MUTED = "#8d99ae"
-INK = "#22223b"
+INK = FOREGROUND
 
 # White matter at 3 T, which every figure that needs a tissue is drawn on.
 T1_MS, T2_MS = 830.0, 80.0
@@ -417,7 +403,7 @@ def mono_exponential():
     axes[0].plot(
         times,
         np.exp(-times / T2_MS),
-        color="black",
+        color=FOREGROUND,
         ls="--",
         label=r"$e^{-t/T_2}$",
     )
@@ -439,7 +425,7 @@ def mono_exponential():
         [fits[degrees][0] for degrees in trains],
         color=[MUTED, TRANSVERSE, LONGITUDINAL],
     )
-    axes[1].axhline(T2_MS, color="black", ls="--", label=f"true $T_2$ = {T2_MS:g} ms")
+    axes[1].axhline(T2_MS, color=FOREGROUND, ls="--", label=f"true $T_2$ = {T2_MS:g} ms")
     axes[1].set(
         xlabel="refocusing angle",
         ylabel="fitted $T_2$ [ms]",
@@ -1406,7 +1392,7 @@ def render(directory: str | Path, only: str | None = None) -> list[Path]:
                 continue
             figure = draw()
             path = target / f"{stem}.png"
-            figure.savefig(path, facecolor="white")
+            figure.savefig(path)
             plt.close(figure)
             written.append(path)
     return written
