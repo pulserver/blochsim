@@ -145,7 +145,7 @@ highlight_language = "python"
 DOCS_VERSION = os.environ.get("TORCHSIM_DOCS_VERSION", "latest")
 
 #: Where the pages are served from.
-PAGES_URL = "https://firmlab-pisa.github.io/torchsim"
+PAGES_URL = "https://pulserver.github.io/torchsim"
 
 # -- Options for Sphinx Gallery ----------------------------------------------
 
@@ -220,8 +220,9 @@ sphinx_gallery_conf = {
     # The gallery header is written in Markdown and pulled into the
     # generated index.rst by an include; the file has to travel with it.
     "copyfile_regex": r".*\.md",
+    "reset_modules": ("figure_style.reset", "seaborn"),
     "binder": {
-        "org": "firmlab-pisa",
+        "org": "pulserver",
         "repo": "torchsim",
         "branch": "gh-pages",
         "binderhub_url": "https://mybinder.org",
@@ -254,9 +255,10 @@ html_theme = "sphinx_book_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_theme_options = {
-    "repository_url": "https://github.com/FiRMLAB-Pisa/torchsim",
+    "repository_url": "https://github.com/pulserver/torchsim",
     "use_repository_button": True,
     "use_issues_button": True,
     "use_edit_page_button": True,
@@ -270,6 +272,9 @@ html_theme_options = {
         "version_match": DOCS_VERSION,
     },
     "show_version_warning_banner": True,
+    "show_navbar_depth": 1,
+    "max_navbar_depth": 3,
+    "navbar_persistent": [],
 }
 
 #: The theme's own sidebar, with the version switcher under the title.
