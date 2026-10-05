@@ -21,7 +21,6 @@ def mp2rage_sim(
     diff: str | tuple[str, ...] | None = None,
     inv_efficiency: float | npt.ArrayLike = 1.0,
     M0: float | npt.ArrayLike = 1.0,
-    phases: float | npt.ArrayLike = 0.0,
     device: str | torch.device | None = None,
     **values: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
@@ -53,11 +52,6 @@ def mp2rage_sim(
         Inversion efficiency map, default is ``1.0``.
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
-    TI : float | npt.ArrayLike, optional
-        Inversion time in milliseconds.
-        The default is ``0.0``.
-    phases : float or array-like, optional
-        Sequence phase schedule in degrees. The default is ``0.0``.
     **values : optional
         Additional call-time tissue, protocol or run settings accepted by
         ``Simulator.simulate``. Settings fixed only at simulator construction
@@ -88,6 +82,5 @@ def mp2rage_sim(
         TRspgr=TRspgr,
         TRmp2rage=TRmp2rage,
         nshots=nshots,
-        phases=phases,
         **values,
     )
