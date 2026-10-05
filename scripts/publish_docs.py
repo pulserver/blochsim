@@ -130,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("site", type=Path, help="a checkout of the site branch")
     parser.add_argument(
         "--url",
-        default="https://firmlab-pisa.github.io/torchsim",
+        default="https://pulserver.github.io/torchsim",
         help="where the site is served from",
     )
     arguments = parser.parse_args(argv)

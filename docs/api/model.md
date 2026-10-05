@@ -4,19 +4,27 @@
 .. currentmodule:: torchsim.model
 ```
 
-**There is one base class, and it is written in one of two ways.**
+**There is one user-facing base class: {class}`Simulator`.**
 
-{class}`Simulator` is the interface, and the only thing anything downstream
-ever sees: the estimators, the model-based operator and the sequence optimizer
-all take one and never ask how it arrives at its signal.
+{class}`Simulator` is the sequence abstraction and the only model interface
+anything downstream consumes. Parameter estimators, model-based
+reconstruction and sequence design take a simulator and do not need to know
+whether its sequence was built offline or arrived from a running scanner.
 
-Implement {meth}`~Simulator.layout` when the signal has to be *played* -- a
-train of pulses whose magnetization state carries from one event to the next,
-which is almost every quantitative sequence. Two things are said. Which
-operator plays each kind of event, by naming it in the class body, and what
-order they come in. The extended phase-graph engine, the derivative, the
-device placement and the memory policy all follow from that and none of them
-is yours to write.
+For a state-machine sequence, a subclass supplies two complementary pieces:
+
+1. **Command handlers.** The class attributes `excitation`, `refocusing`,
+   `inversion`, `saturation`, `readout` and `delay` say how the RF and
+   ADC commands of an incoming sequence description are interpreted. This is
+   the scanner-facing path: {meth}`~Simulator.from_description` re-emits an
+   MRD/Pulseq-derived event stream through those handlers.
+2. **An offline layout.** {meth}`~Simulator.layout` returns the same
+   operators in the order one repetition plays them. This is the
+   design/offline path, when no scanner description already exists.
+
+Both routes produce the same sequence description before the state machine
+runs. The EPG engine, derivatives, device placement and memory policy are
+therefore shared and are not part of a sequence implementation.
 
 ```python
 class SSFPMRF(Simulator):
@@ -47,11 +55,14 @@ operators.
 Nothing is declared about the tissue. Every property a voxel can have may be
 given to any simulator, and giving one is what turns its term on.
 
-A sequence that came from somewhere else is read the same way:
-{meth}`~Simulator.from_description` takes the stream an MRD client decodes, and
-{meth}`~Simulator.from_pulseq` takes a Pulseq `.seq` file, or the sequence
-object a design built, directly. Neither
-walks a layout -- naming the simulator is what says how the events are played.
+A sequence that came from somewhere else is read through those same handlers.
+{func}`~torchsim.sequence.read_mrd_description` decodes the description
+carried ahead of the acquisitions on an MRD stream, and
+{meth}`~Simulator.from_description` turns one of those descriptions into the
+chosen simulator. {meth}`~Simulator.from_pulseq` does the same from a Pulseq
+`.seq` file, or from a sequence object held in memory. None of these routes
+walks `layout()`: the incoming description already supplies the layout, while
+the simulator class supplies its interpretation.
 
 Implement {meth}`~Simulator.evaluate` instead when the signal has a closed
 form -- a mono-exponential decay, an inversion-recovery curve, an Ernst
