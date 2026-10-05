@@ -52,13 +52,9 @@ def test_current_simulator_physics_passes_through(flip):
         T1=1000.0,
         T2=100.0,
         B0=17.0,
-        crusher_dephasing_rad=2 * np.pi,
-        voxel_size_m=1e-3,
     )
     expected = FSESimulator(
         flip=flip,
         ESP=5.0,
-        crusher_dephasing_rad=2 * np.pi,
-        voxel_size_m=1e-3,
     ).simulate(T1=1000.0, T2=100.0, B0=17.0)
     np.testing.assert_allclose(got, expected)
