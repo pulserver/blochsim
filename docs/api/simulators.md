@@ -1,7 +1,7 @@
 # Simulators
 
-The sequences that ship with TorchSim. A constructor takes the keywords
-{meth}`~torchsim.model.Simulator.simulate` takes and fixes them, so a
+The sequences that ship with BlochSim. A constructor takes the keywords
+{meth}`~blochsim.model.Simulator.simulate` takes and fixes them, so a
 sequence and the tissue it is being asked about are written down together and
 what is left to give at the call is whatever is actually varying.
 
@@ -14,22 +14,22 @@ Signals that have an analytic expression, evaluated in one pass.
    :toctree: ../generated
    :nosignatures:
 
-   torchsim.simulators.bSSFPSimulator
-   torchsim.simulators.SPGRSimulator
-   torchsim.simulators.MP2RAGESimulator
-   torchsim.simulators.InversionRecoverySimulator
-   torchsim.simulators.MultiEchoSimulator
-   torchsim.simulators.DoubleAngleSimulator
-   torchsim.simulators.SpinEchoSimulator
-   torchsim.simulators.LookLockerSimulator
-   torchsim.simulators.MOLLISimulator
-   torchsim.simulators.IRbSSFPSimulator
-   torchsim.simulators.HSFPSimulator
-   torchsim.simulators.MultiGradientEchoSimulator
-   torchsim.simulators.IRMultiGradientEchoSimulator
-   torchsim.simulators.DiffusionSimulator
-   torchsim.simulators.LorentzianSimulator
-   torchsim.simulators.ASLSimulator
+   blochsim.simulators.bSSFPSimulator
+   blochsim.simulators.SPGRSimulator
+   blochsim.simulators.MP2RAGESimulator
+   blochsim.simulators.InversionRecoverySimulator
+   blochsim.simulators.MultiEchoSimulator
+   blochsim.simulators.DoubleAngleSimulator
+   blochsim.simulators.SpinEchoSimulator
+   blochsim.simulators.LookLockerSimulator
+   blochsim.simulators.MOLLISimulator
+   blochsim.simulators.IRbSSFPSimulator
+   blochsim.simulators.HSFPSimulator
+   blochsim.simulators.MultiGradientEchoSimulator
+   blochsim.simulators.IRMultiGradientEchoSimulator
+   blochsim.simulators.DiffusionSimulator
+   blochsim.simulators.LorentzianSimulator
+   blochsim.simulators.ASLSimulator
 ```
 
 ## State machine
@@ -41,16 +41,16 @@ Trains that have to be played out, run on the extended phase graph engine.
    :toctree: ../generated
    :nosignatures:
 
-   torchsim.simulators.FSESimulator
-   torchsim.simulators.HyperechoSimulator
-   torchsim.simulators.StimulatedEchoSimulator
-   torchsim.simulators.MPRAGESimulator
-   torchsim.simulators.MPnRAGESimulator
-   torchsim.simulators.MRFSimulator
-   torchsim.simulators.FLASHSimulator
-   torchsim.simulators.TrueFISPSimulator
-   torchsim.simulators.fmSSFPSimulator
-   torchsim.simulators.CESTSimulator
+   blochsim.simulators.FSESimulator
+   blochsim.simulators.HyperechoSimulator
+   blochsim.simulators.StimulatedEchoSimulator
+   blochsim.simulators.MPRAGESimulator
+   blochsim.simulators.MPnRAGESimulator
+   blochsim.simulators.MRFSimulator
+   blochsim.simulators.FLASHSimulator
+   blochsim.simulators.TrueFISPSimulator
+   blochsim.simulators.fmSSFPSimulator
+   blochsim.simulators.CESTSimulator
 ```
 
 ## Functional wrappers
@@ -58,8 +58,8 @@ Trains that have to be played out, run on the extended phase graph engine.
 The `*_sim` functions are convenience calls for a subset of the shipped
 simulators: protocol and tissue go into one function call, with an optional
 Jacobian. They are not a second extension API. New sequence families are
-implemented as {class}`~torchsim.model.Simulator` subclasses, so they can use
-both an offline {meth}`~torchsim.model.Simulator.layout` and the same handlers
+implemented as {class}`~blochsim.model.Simulator` subclasses, so they can use
+both an offline {meth}`~blochsim.model.Simulator.layout` and the same handlers
 when a Pulseq/MRD description arrives from a scanner.
 
 Prefer the simulator classes whenever the same sequence is reused, bound to a
@@ -73,8 +73,8 @@ from a description. The wrappers remain useful for compact one-off calls.
    :toctree: ../generated
    :nosignatures:
 
-   torchsim.bssfp_sim
-   torchsim.spgr_sim
+   blochsim.bssfp_sim
+   blochsim.spgr_sim
 ```
 
 ### Iterative
@@ -84,9 +84,9 @@ from a description. The wrappers remain useful for compact one-off calls.
    :toctree: ../generated
    :nosignatures:
 
-   torchsim.fse_sim
-   torchsim.mprage_sim
-   torchsim.mp2rage_sim
-   torchsim.mpnrage_sim
-   torchsim.mrf_sim
+   blochsim.fse_sim
+   blochsim.mprage_sim
+   blochsim.mp2rage_sim
+   blochsim.mpnrage_sim
+   blochsim.mrf_sim
 ```

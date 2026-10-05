@@ -1,8 +1,8 @@
 """The same sequences, run by another EPG library.
 
-Every other test in this suite is TorchSim measured against a closed form, a
+Every other test in this suite is BlochSim measured against a closed form, a
 published figure, or an integration written out beside it. This one is
-TorchSim measured against a second implementation of the whole formalism:
+BlochSim measured against a second implementation of the whole formalism:
 `epgpy <https://github.com/py-baudin/epgpy>`_, which shares no code, no author
 and no array library with this one.
 
@@ -22,7 +22,7 @@ import math
 import numpy as np
 import pytest
 
-from torchsim import (
+from blochsim import (
     Delay,
     Dephase,
     Excitation,
@@ -30,7 +30,7 @@ from torchsim import (
     Refocusing,
     SequenceDescription,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
 )
@@ -41,7 +41,7 @@ T1_MS, T2_MS = 1645.0, 50.0
 ORDERS = 40
 
 
-def _torchsim(parts, nstates=ORDERS):
+def _blochsim(parts, nstates=ORDERS):
     signal = (
         EpgEngine()
         .simulate(
@@ -92,7 +92,7 @@ def test_a_refocused_train_agrees_echo_for_echo(flip_deg: float) -> None:
             Readout(0.0),
         ]
 
-    theirs, ours = _epgpy(theirs), _torchsim(ours)
+    theirs, ours = _epgpy(theirs), _blochsim(ours)
     assert ours.shape == theirs.shape
     assert np.abs(ours - theirs).max() / theirs.max() < 1e-5
 
@@ -131,7 +131,7 @@ def test_a_spoiled_train_agrees_over_two_hundred_repetitions() -> None:
         )
     ]
 
-    theirs, ours = _epgpy(theirs, nstates=30), _torchsim(ours, nstates=30)
+    theirs, ours = _epgpy(theirs, nstates=30), _blochsim(ours, nstates=30)
     assert np.abs(ours - theirs).max() / theirs.max() < 1e-3
     # And it is a settled answer rather than two curves that never started.
     assert theirs[-1] > 0.01

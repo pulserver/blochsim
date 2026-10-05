@@ -23,6 +23,6 @@ pytest tests/
 - [ ] Comments and docstrings describe the code as it is now -- no
       "previously", no "this replaces", no naming of a bug that is fixed.
 - [ ] A change to what the kernels compute is in both of them, and arrives
-      with a test that pins it against something outside TorchSim.
+      with a test that pins it against something outside BlochSim.
 - [ ] The documentation is updated where the change is visible to a caller,
       and `bash scripts/build_docs.sh` still builds.

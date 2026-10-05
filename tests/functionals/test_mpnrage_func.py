@@ -1,6 +1,6 @@
 """MPnRAGE tests."""
 
-from torchsim import (
+from blochsim import (
     mpnrage_sim,
 )
 

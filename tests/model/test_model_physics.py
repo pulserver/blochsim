@@ -12,14 +12,14 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.model import UNBALANCED, Simulator, SpinPhysics
-from torchsim.sequence import (
+from blochsim.model import UNBALANCED, Simulator, SpinPhysics
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _accelerators,
     mrf_description,
 )
-from torchsim.sequence._parameters import FLOAT_NAMES, TISSUE_NAMES
+from blochsim.sequence._parameters import FLOAT_NAMES, TISSUE_NAMES
 
 FLIP = torch.linspace(5.0, 60.0, 24)
 T1 = torch.tensor([600.0, 1000.0, 1400.0])

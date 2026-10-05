@@ -8,8 +8,8 @@ from functools import partial
 import pytest
 import torch
 
-from torchsim.estimators import NonlinearLeastSquares
-from torchsim.recon import (
+from blochsim.estimators import NonlinearLeastSquares
+from blochsim.recon import (
     GaussNewton,
     LeastSquares,
     Linearization,
@@ -19,10 +19,10 @@ from torchsim.recon import (
     direct,
     iterative,
 )
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.simulators import MultiEchoSimulator
 
 #: ``iterative()`` with nothing named falls back to deepinv's ``least_squares``,
-#: which TorchSim does not depend on. What is asserted under this mark is the
+#: which BlochSim does not depend on. What is asserted under this mark is the
 #: fallback; the duck-typed route beside it is what holds without deepinv.
 needs_deepinv = pytest.mark.skipif(
     importlib.util.find_spec("deepinv") is None,
@@ -119,7 +119,7 @@ def test_the_two_policies_land_in_the_same_place(problem) -> None:
 def test_a_trust_region_is_the_fit_that_ships(problem) -> None:
     """The generalization is exact: the loop reproduces the estimator.
 
-    :class:`~torchsim.NonlinearLeastSquares` is this loop under a per-voxel
+    :class:`~blochsim.NonlinearLeastSquares` is this loop under a per-voxel
     trust region with the voxel-diagonal solve, and nothing else.
     """
     acquisition = MultiEchoSimulator(TE=TE_MS)
@@ -351,7 +351,7 @@ def test_one_of_deepinvs_solvers_is_that_function_with_its_argument_bound(
 ) -> None:
     """Which one suits is the caller's to measure, so all of them must run.
 
-    Binding the argument is the caller's own composition -- TorchSim takes an
+    Binding the argument is the caller's own composition -- BlochSim takes an
     object and never a name.
     """
     least_squares = pytest.importorskip("deepinv.optim.linear").least_squares

@@ -19,18 +19,18 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     SequenceDescription,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _builders,
     ideal_rf_definition,
     operator,
 )
-from torchsim.sequence._fixed_point import carries_one_order
-from torchsim.sequence._operators import compose
+from blochsim.sequence._fixed_point import carries_one_order
+from blochsim.sequence._operators import compose
 
 TR_S, TE_S, FLIP_DEG = 5e-3, 2.5e-3, 30.0
 

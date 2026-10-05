@@ -19,12 +19,12 @@ from dataclasses import replace
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     _across_the_table,
     _pack_events,
     _run_packed,
@@ -33,10 +33,10 @@ from torchsim.sequence._accelerators import (
     _run_packed_vjp_jvp,
     offload,
 )
-from torchsim.sequence._description import EventType, ShimDefinition
-from torchsim.sequence._parameters import TISSUE_COUNT
-from torchsim.sequence._simulation import _prepare_tissue, _resolve_transmit
-from torchsim.sequence._transmit import (
+from blochsim.sequence._description import EventType, ShimDefinition
+from blochsim.sequence._parameters import TISSUE_COUNT
+from blochsim.sequence._simulation import _prepare_tissue, _resolve_transmit
+from blochsim.sequence._transmit import (
     channel_count,
     shim_rows,
     transmit_field,
@@ -855,7 +855,7 @@ def _pooled_shim_packed(voxels: int = 3, **properties):
 @pytest.mark.parametrize("pool", sorted(POOLS))
 def test_the_shim_rows_reach_every_pool_the_kernels_carry(pool: str) -> None:
     """Against the oracle, which indexes the rows and the pools independently."""
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence._lineshape import lineshape_table
 
     tissue, events, output_count = _pooled_shim_packed(**POOLS[pool])
     carried = dict(
@@ -884,7 +884,7 @@ def test_a_pooled_pulse_still_reads_only_the_shim_it_names(pool: str) -> None:
     """A row no pulse drives is dead weight whatever pools are carried, so
     filling it must leave the signal alone to the bit.
     """
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence._lineshape import lineshape_table
 
     tissue, events, output_count = _pooled_shim_packed(**POOLS[pool])
     atoms = tissue[0].numel()
@@ -916,8 +916,8 @@ def test_a_shimmed_gradient_takes_the_first_order_kernel(state_count) -> None:
     state count before, and the shim adds a per-event load the others do not
     make.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     tissue, events, output_count = _two_shim_packed(voxels=64, device="cuda")
     seed = torch.randn(
@@ -961,7 +961,7 @@ def test_a_row_no_pulse_drives_gets_no_gradient() -> None:
     """The gradient lands in the shim the pulse named, so a row nobody drives
     comes back at zero -- which is what says the row index was read.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     tissue, events, output_count = _two_shim_packed(voxels=32, device="cuda")
     atoms = tissue[0].numel()

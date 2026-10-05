@@ -10,7 +10,7 @@ Older releases are not patched.
 Report privately, not as a public issue:
 
 - open a draft advisory through
-  [Security -> Report a vulnerability](https://github.com/pulserver/torchsim/security/advisories/new),
+  [Security -> Report a vulnerability](https://github.com/pulserver/blochsim/security/advisories/new),
   which is the preferred route; or
 - email **matteo.cencini@gmail.com** if you cannot use GitHub.
 
@@ -22,7 +22,7 @@ publicly.
 
 ## Scope
 
-TorchSim executes the code you give it: a sequence layout, a cost function and
+BlochSim executes the code you give it: a sequence layout, a cost function and
 a signal model are all Python that runs in your process, so a malicious
 *script* is out of scope in the same way it is for NumPy or PyTorch.
 
@@ -36,4 +36,4 @@ merely a bug.
 ## Not a vulnerability
 
 A simulation that returns wrong physics, diverges, or raises is a
-[bug report](https://github.com/pulserver/torchsim/issues/new/choose).
+[bug report](https://github.com/pulserver/blochsim/issues/new/choose).

@@ -3,7 +3,7 @@
 import numpy as np
 from pytest import fixture
 
-from torchsim import (
+from blochsim import (
     mrf_sim,
 )
 
@@ -45,7 +45,7 @@ def test_multiple_gradient(flip):
 
 def test_current_simulator_protocol_arguments_pass_through(flip):
     """The convenience call accepts protocol fields added to MRFSimulator."""
-    from torchsim.simulators import MRFSimulator
+    from blochsim.simulators import MRFSimulator
 
     phases = np.linspace(0.0, 117.0, flip.size, dtype=np.float32)
     got = mrf_sim(

@@ -13,8 +13,8 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.model import REFOCUSED, Simulator, SpinPhysics
-from torchsim.sequence import _simulation
+from blochsim.model import REFOCUSED, Simulator, SpinPhysics
+from blochsim.sequence import _simulation
 
 
 class Relaxation(Simulator):

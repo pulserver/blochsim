@@ -13,16 +13,16 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence._accelerators import _pack_events
-from torchsim.sequence._builders import (
+from blochsim.sequence._accelerators import _pack_events
+from blochsim.sequence._builders import (
     fse_description,
     mpnrage_description,
     mprage_description,
     mrf_description,
     spgr_description,
 )
-from torchsim.sequence._description import AdcRole, EventAction, EventType
-from torchsim.sequence._operators import (
+from blochsim.sequence._description import AdcRole, EventAction, EventType
+from blochsim.sequence._operators import (
     Delay,
     Excitation,
     Readout,

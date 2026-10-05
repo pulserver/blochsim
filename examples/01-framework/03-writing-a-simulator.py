@@ -3,7 +3,7 @@
 Writing a Signal Model
 ======================
 
-The scope of this notebook is to write a simulator TorchSim does not ship.
+The scope of this notebook is to write a simulator BlochSim does not ship.
 
 There are two things to say. **Which operator plays each kind of event** --
 what an excitation is, what a sample is -- and **what order they are played
@@ -16,7 +16,7 @@ device, and reads a sequence back from a description a scanner streamed.
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim
+#    !pip install blochsim
 
 # %%
 #
@@ -101,7 +101,7 @@ def key(axes, ncols=1):
 import numpy as np
 import torch
 
-from torchsim import (
+from blochsim import (
     Delay,
     Excitation,
     Inversion,
@@ -109,17 +109,17 @@ from torchsim import (
     SSFPFidReadout,
     Spoil,
 )
-from torchsim.model import Simulator
+from blochsim.model import Simulator
 
 # %%
 # Handlers
 # --------
 # A simulator says what plays each kind of event by naming it. The five
 # readouts are what distinguishes one steady-state family from another: an
-# :func:`~torchsim.SSFPFidReadout` winds one configuration order after every
-# sample, an :func:`~torchsim.SSFPEchoReadout` winds it before, an
-# :func:`~torchsim.SPGRReadout` spoils, a :func:`~torchsim.bSSFPReadout` leaves
-# the states where they were, and an :func:`~torchsim.FSEReadout` samples a
+# :func:`~blochsim.SSFPFidReadout` winds one configuration order after every
+# sample, an :func:`~blochsim.SSFPEchoReadout` winds it before, an
+# :func:`~blochsim.SPGRReadout` spoils, a :func:`~blochsim.bSSFPReadout` leaves
+# the states where they were, and an :func:`~blochsim.FSEReadout` samples a
 # spin echo the refocusing pulses have already crushed around.
 #
 # Naming one is the whole of choosing between them, and it is also what says
@@ -133,7 +133,7 @@ from torchsim.model import Simulator
 # %%
 # Layout
 # ------
-# An :class:`~torchsim.model.Simulator` is the protocol. You do not
+# An :class:`~blochsim.model.Simulator` is the protocol. You do not
 # write timestamps: ``layout`` returns the *operators* of one repetition in
 # order, and the simulator turns the span each one holds into the timestamps a
 # description carries.
@@ -205,7 +205,7 @@ plt.ylabel("signal magnitude [a.u.]")
 # derivative per property yields every voxel's derivative at once, and the cost
 # is one pass per property rather than per voxel.
 #
-# That is what :meth:`~torchsim.model.Simulator.jacobian` does. A single name
+# That is what :meth:`~blochsim.model.Simulator.jacobian` does. A single name
 # collapses the parameter axis; a sequence of names keeps it.
 #
 signal, jacobian = sequence.jacobian(("T1", "T2"), T1=1000.0, T2=100.0)
@@ -362,7 +362,7 @@ key(axis, ncols=3)
 # %%
 # Inspecting the event stream
 # ---------------------------
-# :meth:`~torchsim.model.Simulator.describe` returns the event stream, which is
+# :meth:`~blochsim.model.Simulator.describe` returns the event stream, which is
 # the same object a sequence arriving from a scanner is read into: a timestamp
 # and an action word on every event. It is worth looking at once, because a
 # sequence that plays the wrong thing is far easier to see here than in the
@@ -387,7 +387,7 @@ key(axis, ncols=2)
 # ---------------------------
 # A description that came from somewhere else -- an MRD file, a Pulseq export,
 # a scanner's own stream -- becomes a simulator through
-# :meth:`~torchsim.model.Simulator.from_description`. No layout is walked: the
+# :meth:`~blochsim.model.Simulator.from_description`. No layout is walked: the
 # events are re-emitted through this model's handlers, which is what puts the
 # gradients back that the transport does not carry.
 #

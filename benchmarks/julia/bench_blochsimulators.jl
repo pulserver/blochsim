@@ -12,7 +12,7 @@
 #   * `FISP2D` requires the number of configuration states to be a multiple of
 #     32, so the shared task carries 32 orders rather than 20.
 #   * A real `RF_train` keeps the configuration states real, which is the same
-#     specialization TorchSim applies when a sequence earns it. The train here
+#     specialization BlochSim applies when a sequence earns it. The train here
 #     has no phase, so both packages take their real path.
 #
 # Run as (from the repository root):
@@ -66,7 +66,7 @@ function main()
     baseline = peak_rss_mib()
 
     # Seconds and milliseconds: BlochSimulators takes times in seconds,
-    # TorchSim in milliseconds, and the task is stated in milliseconds.
+    # BlochSim in milliseconds, and the task is stated in milliseconds.
     TR = 0.010
     TE = 0.0
     TI = 0.0
@@ -83,7 +83,7 @@ function main()
         atoms = length(T1)
     end
     # A real RF train keeps the configuration states real, which is the same
-    # saving TorchSim's real-subspace kernels make. Asking for a complex train
+    # saving BlochSim's real-subspace kernels make. Asking for a complex train
     # is how the two halves of the difference are told apart: what the
     # specialization buys, and what is left over.
     train = options["rf"] == "complex" ? complex.(flip) : flip

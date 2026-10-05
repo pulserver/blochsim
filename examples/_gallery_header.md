@@ -11,16 +11,16 @@ and uses the same public interfaces documented in the API reference.
 Read the four **Framework** lessons in order. They are the shortest path from a
 shipped sequence to one of your own:
 
-1. **Getting started** — run a shipped {class}`torchsim.model.Simulator`,
+1. **Getting started** — run a shipped {class}`blochsim.model.Simulator`,
    inspect its sequence description, differentiate the signal, and see where
    execution happens.
 2. **Expanded physics** — turn on off-resonance, transmit variation,
    diffusion, flow, exchange and magnetization transfer without changing the
    sequence abstraction.
 3. **Writing a simulator** — the extension point of the framework:
-   subclass {class}`torchsim.model.Simulator`, choose the command handlers
+   subclass {class}`blochsim.model.Simulator`, choose the command handlers
    that interpret an incoming Pulseq/MRD event stream, and implement
-   {meth}`torchsim.model.Simulator.layout` for offline construction.
+   {meth}`blochsim.model.Simulator.layout` for offline construction.
 4. **Custom operator** — package a preparation or readout as an operator while
    leaving the state-machine kernels untouched.
 

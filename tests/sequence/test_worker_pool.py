@@ -15,7 +15,7 @@ on a shared machine: whatever slows one arm slows the other.
 Only a build that multiversions has a wide clone to leave a state behind. Where
 the kernels are compiled once -- clang, MSVC, musl, anything not x86 -- the two
 arms run the same code and the ratio measures how quiet the machine was, which
-is not a property of TorchSim.
+is not a property of BlochSim.
 """
 
 from __future__ import annotations
@@ -25,14 +25,14 @@ import time
 import pytest
 import torch
 
-import torchsim._epg_cpu as kernels
-from torchsim.sequence._accelerators import (
+import blochsim._epg_cpu as kernels
+from blochsim.sequence._accelerators import (
     _pack_events,
     _run_packed,
     _run_packed_jvp,
 )
-from torchsim.sequence._builders import mrf_description
-from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+from blochsim.sequence._builders import mrf_description
+from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
 ATOMS = 4000
 REPETITIONS = 120

@@ -19,7 +19,7 @@ shortens the unknown and ties the echoes together.
 # .. colab-link::
 #    :needs_gpu: 1
 #
-#    !pip install torchsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
+#    !pip install blochsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
 
 # %%
 #
@@ -122,14 +122,14 @@ from brainweb_dl import get_mri
 
 # %%
 #
-# The Fourier encoding is not TorchSim's and never will be. ``mri-nufft``
+# The Fourier encoding is not BlochSim's and never will be. ``mri-nufft``
 # supplies the radial trajectory and the non-uniform transform that plays it;
 # ``deepinv`` supplies the linear solver a Gauss-Newton step hands its
 # linearized problem to, and the :class:`~deepinv.physics.LinearPhysics` base
 # class the encoding operator below is written against.
 #
 # That base class is the whole of the adapter: anything exposing ``A`` and
-# ``A_adjoint`` composes with what TorchSim supplies, so the operator built a
+# ``A_adjoint`` composes with what BlochSim supplies, so the operator built a
 # few cells down is the only glue this integration needs.
 #
 import mrinufft
@@ -140,8 +140,8 @@ from mrinufft.trajectories import initialize_2D_radial
 
 # %%
 #
-# From TorchSim: the sequence, the estimator the contrast-then-fit routes
-# need, and :attr:`~torchsim.Subspace.modes`, which hands the temporal
+# From BlochSim: the sequence, the estimator the contrast-then-fit routes
+# need, and :attr:`~blochsim.Subspace.modes`, which hands the temporal
 # basis to mri-nufft in the layout its subspace operator reads.
 #
 import time
@@ -149,8 +149,8 @@ import time
 import numpy as np
 import torch
 
-from torchsim.estimators import DictionaryMatcher
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.estimators import DictionaryMatcher
+from blochsim.simulators import MultiEchoSimulator
 
 
 # %%
@@ -258,7 +258,7 @@ class RadialEncoding(LinearPhysics):
     """``(batch, echoes, x, y)`` images to k-space, one trajectory per echo.
 
     This is the whole of ``P F C`` for this experiment, and none of it is
-    TorchSim's: it wraps mri-nufft, which is what a real pipeline would do
+    BlochSim's: it wraps mri-nufft, which is what a real pipeline would do
     with its own trajectory, its own density compensation and its own coils.
     """
 
@@ -335,7 +335,7 @@ bar.ax.set_visible(False)
 # Estimator and subspace basis
 # ----------------------------
 #
-# One :class:`~torchsim.DictionaryMatcher` states the problem and serves every
+# One :class:`~blochsim.DictionaryMatcher` states the problem and serves every
 # route. Asking it for a rank fits a temporal basis to the training signals;
 # that basis is what the subspace reconstruction is given, and the coefficients
 # it returns come back to the same mapping. Three directions hold essentially
@@ -503,6 +503,6 @@ scalebar(error, axes[1, 1:], f"|error|, {label}")
 # because the basis must span the product of the ranges. Both cases put the
 # model inside the operator, which is the nonlinear route.
 #
-# The rank is not a guess: :attr:`~torchsim.Subspace.retained` says what a
+# The rank is not a guess: :attr:`~blochsim.Subspace.retained` says what a
 # basis keeps before anything is projected through it.
 #

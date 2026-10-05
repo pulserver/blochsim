@@ -67,7 +67,7 @@ jobs:
         shell: python
         run: |
           import importlib.util, pathlib
-          spec = importlib.util.find_spec("torchsim")
+          spec = importlib.util.find_spec("blochsim")
           root = pathlib.Path(next(iter(spec.submodule_search_locations)))
           for kernel in sorted(root.glob("_*_cpu*")):
               print(kernel.name, kernel.stat().st_size, "bytes")
@@ -84,6 +84,6 @@ jobs:
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: pulserver/torchsim
+          slug: pulserver/blochsim
           files: coverage.xml
           fail_ci_if_error: false

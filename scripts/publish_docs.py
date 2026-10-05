@@ -34,7 +34,7 @@ REDIRECT = """<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>TorchSim documentation</title>
+    <title>BlochSim documentation</title>
     <meta http-equiv="refresh" content="0; url={target}/">
     <link rel="canonical" href="{target}/">
   </head>
@@ -130,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("site", type=Path, help="a checkout of the site branch")
     parser.add_argument(
         "--url",
-        default="https://pulserver.github.io/torchsim",
+        default="https://pulserver.github.io/blochsim",
         help="where the site is served from",
     )
     arguments = parser.parse_args(argv)

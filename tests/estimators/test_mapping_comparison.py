@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import torch
 
-from torchsim.estimators import PERK, DictionaryMatcher
-from torchsim.simulators import FSESimulator
+from blochsim.estimators import PERK, DictionaryMatcher
+from blochsim.simulators import FSESimulator
 
 
 def test_perk_is_comparable_to_dictionary_matching_under_noise() -> None:

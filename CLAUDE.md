@@ -1,6 +1,6 @@
-# TorchSim, for an agent working on it
+# BlochSim, for an agent working on it
 
-TorchSim simulates MR signals in PyTorch, differentiably. A **signal model** is
+BlochSim simulates MR signals in PyTorch, differentiably. A **signal model** is
 the only thing a sequence has to supply; differentiation, device placement,
 parameter estimation, model-based reconstruction and sequence design are all
 written once against that interface.
@@ -13,15 +13,15 @@ broken checkout (Windows without `core.symlinks`), not two documents.
 
 | Path | What is in it |
 | --- | --- |
-| `src/torchsim/sequence/` | The description an acquisition is assembled from — events, operators, builders — and the dispatch that turns one into a kernel launch. |
-| `src/torchsim/model/` | What a signal model *is*: the physics, the simulator that orders its events, and the binding that resolves a protocol's structure once and rebinds its values per call. |
-| `src/torchsim/_epg_cpu.cpp`, `_perk_cpu.cpp` | The CPU kernels. Every path the GPU has exists here too, and the two agree to float32 round-off. |
-| `src/torchsim/sequence/_epg_triton.py`, `estimators/_perk_triton.py` | The GPU kernels. |
-| `src/torchsim/simulators/`, `estimators/`, `recon/`, `optim/` | The sequences that ship, and what is built on top of them. |
+| `src/blochsim/sequence/` | The description an acquisition is assembled from — events, operators, builders — and the dispatch that turns one into a kernel launch. |
+| `src/blochsim/model/` | What a signal model *is*: the physics, the simulator that orders its events, and the binding that resolves a protocol's structure once and rebinds its values per call. |
+| `src/blochsim/_epg_cpu.cpp`, `_perk_cpu.cpp` | The CPU kernels. Every path the GPU has exists here too, and the two agree to float32 round-off. |
+| `src/blochsim/sequence/_epg_triton.py`, `estimators/_perk_triton.py` | The GPU kernels. |
+| `src/blochsim/simulators/`, `estimators/`, `recon/`, `optim/` | The sequences that ship, and what is built on top of them. |
 | `tests/`, `examples/`, `docs/` | Mirrored by subpackage, executed by the gallery, built by Sphinx. |
 
 The shared parameter ABI — read by the Python dispatch, the C++ extension and
-the Triton kernels alike — is `src/torchsim/sequence/_parameters.py`. A
+the Triton kernels alike — is `src/blochsim/sequence/_parameters.py`. A
 parameter added there is added in all three places or in none.
 
 ## Commands
@@ -54,7 +54,7 @@ reading. Read the exit status of the install, not the last lines of its output:
 
 ```sh
 pip install -e ".[dev]" ; echo "exit: $?"
-python -c "import torchsim._epg_cpu as k; print(k.__file__)"
+python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 ```
 
 **Kernel compiles dominate a cold GPU run**, not the arithmetic. A suite that
@@ -123,10 +123,10 @@ what a human decides:
 ## Changing the physics
 
 A change to what the kernels compute arrives with a test that pins it against
-something **outside** TorchSim: a closed form, a published figure, or an
+something **outside** BlochSim: a closed form, a published figure, or an
 isochromat summation written out in the test itself. The `tests/epg` files are
 written that way and each states its invariant in its module docstring. A test
-that only compares TorchSim to TorchSim proves the two agree, which was never
+that only compares BlochSim to BlochSim proves the two agree, which was never
 in doubt.
 
 Whatever you change in one kernel, change in the other. The C++ and Triton

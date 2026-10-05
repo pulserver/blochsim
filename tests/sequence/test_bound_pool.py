@@ -17,20 +17,20 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     NO_GEOMETRY,
     _pack_events,
     _run_packed,
 )
-from torchsim.sequence._description import EventType, RfDefinition, RfShape
-from torchsim.sequence._lineshape import lineshape_table
-from torchsim.sequence._parameters import TISSUE_NAMES
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._description import EventType, RfDefinition, RfShape
+from blochsim.sequence._lineshape import lineshape_table
+from blochsim.sequence._parameters import TISSUE_NAMES
+from blochsim.sequence._simulation import _prepare_tissue
 from utils.packed_reference import simulate_packed
 
 ECHOES = 8
@@ -131,7 +131,7 @@ def _inversion_recovery(delays_s, **properties):
     90 degrees, which writes ``Z`` into the transverse plane, so the recorded
     signal is proportional to the free pool's longitudinal state.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _EXCITATION,
         _INVERSION,
         _RECORD,
@@ -336,7 +336,7 @@ def _saturation_events(saturation, offset_hz, delay_s=0.3):
     the reading proportional to ``Z_a``, unlike an echo train's magnitudes,
     which mix pathways and are not monotone in it.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _EXCITATION,
         _RECORD,
         _SPOIL_AFTER,
@@ -473,7 +473,7 @@ PULSE_OFFSET_HZ = 4.0e3
 
 def _live_readout(prepared, seed=None):
     """The saturate-then-read signal, or its directional derivative."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     events = _saturation_events(MILLISECOND_PULSE, PULSE_OFFSET_HZ, delay_s=0.4)
     table = lineshape_table()
@@ -640,7 +640,7 @@ def _live_events():
 
 def _live_adjoint(prepared, seed, profile=None):
     """Gradients of ``Re(<seed, y>)`` w.r.t. every differentiable input."""
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     return _run_packed_vjp(
         prepared,
@@ -678,7 +678,7 @@ def test_the_adjoint_is_the_transpose_of_the_forward_direction(
     reaches the answer through both the rotation and the power the pulse
     deposits, and the two arrive at its gradient by different routes.
     """
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     profile = _instantaneous_table() if tabulated else None
     prepared = _prepared(**LIVE)
@@ -774,7 +774,7 @@ def test_the_second_order_pass_carries_the_bound_pool():
     so an error in any entry of it shows up rather than only in the one the
     bound pool is most obviously responsible for.
     """
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     prepared = _prepared(**LIVE)
     events = _live_events()
@@ -975,7 +975,7 @@ def _tuned(offset_hz: float):
 
 
 def test_the_offset_a_sequence_drives_its_pulses_to_is_read_off_the_events():
-    from torchsim.sequence._accelerators import largest_pulse_offset
+    from blochsim.sequence._accelerators import largest_pulse_offset
 
     assert largest_pulse_offset(_description()) == 0.0
     assert largest_pulse_offset(_tuned(-6.0e3)) == 6.0e3
@@ -990,7 +990,7 @@ def test_a_table_stopping_short_cannot_tell_two_far_pulses_apart():
     a pulse at 60 kHz and one at 90 kHz the same answer; one sized to reach
     them does not.
     """
-    from torchsim.sequence._lineshape import lineshape_reaching
+    from blochsim.sequence._lineshape import lineshape_reaching
 
     near, far = torch.tensor(60.0e3), torch.tensor(90.0e3)
     stops_short = lineshape_table()
@@ -1003,7 +1003,7 @@ def test_a_table_stopping_short_cannot_tell_two_far_pulses_apart():
 
 def test_reaching_further_adds_knots_rather_than_spreading_them():
     """A sequence played further out gets a longer table, not a coarser one."""
-    from torchsim.sequence._lineshape import lineshape_reaching
+    from blochsim.sequence._lineshape import lineshape_reaching
 
     default = lineshape_table()
     stretched = lineshape_reaching(90.0e3)
@@ -1021,7 +1021,7 @@ def test_sequences_asking_for_similar_ranges_share_one_table():
     that happen for ranges that merely differ, rather than only for ones that
     match to the hertz.
     """
-    from torchsim.sequence._lineshape import OFFSET_MAX_HZ, lineshape_reaching
+    from blochsim.sequence._lineshape import OFFSET_MAX_HZ, lineshape_reaching
 
     assert lineshape_reaching(0.0) is lineshape_reaching(30.0e3)
     assert lineshape_reaching(0.0).offset_max_hz == OFFSET_MAX_HZ
@@ -1034,7 +1034,7 @@ def test_the_voxel_is_counted_beside_the_pulse():
     from the sequence alone still stops short of what an off-resonant voxel
     reads.
     """
-    from torchsim.sequence._simulation import _absorption_table
+    from blochsim.sequence._simulation import _absorption_table
 
     still = _absorption_table(_tuned(33.0e3), torch.zeros(1), None)
     spread = _absorption_table(_tuned(33.0e3), torch.tensor([-8.0e3, 8.0e3]), None)
@@ -1073,7 +1073,7 @@ def test_a_far_off_resonance_prep_reaches_the_public_api():
 
 def _instantaneous_table():
     """A pulse with no gradient across it: one rotation, every position."""
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._transition import transition_table
 
     flat = RfDefinition(
         id=0,
@@ -1113,7 +1113,7 @@ def test_a_tabulated_bound_pool_run_is_differentiable_both_ways():
     """The profiled and bound-pool kernels are one instantiation, so the two
     features have to be checked together rather than each beside a plain run.
     """
-    from torchsim.sequence._accelerators import _run_packed_jvp, _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_jvp, _run_packed_vjp
 
     prepared = _prepared(**LIVE)
     events = _live_events()
@@ -1177,7 +1177,7 @@ def test_a_tabulated_bound_pool_run_is_differentiable_both_ways():
 
 def _routes(leaves, events, profile=None):
     """The kernels and the oracle, fed from one place."""
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     table = lineshape_table()
     fused = _NativeEpg.apply(
@@ -1349,7 +1349,7 @@ def test_the_cuda_kernel_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_the_cuda_forward_mode_matches_the_cpu_kernel():
     """The tangent of the two-pool step, and of the saturation, on the card."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     voxels = 6
     spread = dict(
@@ -1385,7 +1385,7 @@ def test_the_cuda_forward_mode_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_a_streamed_volume_matches_the_whole_one():
     """Streaming cuts the voxel axis, which the bound pool's buffers follow."""
-    from torchsim.sequence._accelerators import offload
+    from blochsim.sequence._accelerators import offload
 
     voxels = 3000
     packed = _pack_events(
@@ -1416,7 +1416,7 @@ def test_a_streamed_volume_matches_the_whole_one():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_a_streamed_forward_mode_matches_the_whole_one():
     """Streaming cuts the voxel axis, which the bound pool's seeds follow."""
-    from torchsim.sequence._accelerators import _run_packed_jvp, offload
+    from blochsim.sequence._accelerators import _run_packed_jvp, offload
 
     voxels = 3000
     prepared = _prepared(
@@ -1484,7 +1484,7 @@ def test_the_cuda_adjoint_matches_the_cpu_kernel():
     the signal and disagrees on every gradient, including the ones that have
     nothing to do with the bound pool.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     voxels = 6
     events = _saturation_events(MILLISECOND_PULSE, PULSE_OFFSET_HZ, delay_s=0.4)
@@ -1507,7 +1507,7 @@ def test_the_cuda_adjoint_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_the_cuda_second_order_pass_matches_the_cpu_kernel():
     """Forward-over-reverse, where a direction rides through the adjoint."""
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     voxels = 6
     events = _saturation_events(MILLISECOND_PULSE, PULSE_OFFSET_HZ, delay_s=0.4)
@@ -1546,7 +1546,7 @@ def test_a_streamed_adjoint_matches_the_whole_one():
     its own is that pass given no direction to follow -- so it is the one the
     chunked buffers have to carry the second pool through.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp, offload
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp, offload
 
     voxels = 3000
     prepared = _prepared(**_spread(voxels))
@@ -1593,7 +1593,7 @@ def test_a_streamed_public_simulation_matches_the_whole_one():
     """The path a user takes: a volume simulated through the public API with
     the devices given less memory than it needs, so it arrives in chunks.
     """
-    from torchsim.sequence._accelerators import offload
+    from blochsim.sequence._accelerators import offload
 
     voxels = 3000
     tissue = _volume(
@@ -1622,7 +1622,7 @@ def test_a_gradient_taken_after_a_streamed_forward_matches_the_whole_one():
     replays the trajectory from the inputs rather than from anything the
     forward left, so the two halves have to agree across that boundary.
     """
-    from torchsim.sequence._accelerators import offload
+    from blochsim.sequence._accelerators import offload
 
     voxels = 3000
 
@@ -1659,8 +1659,8 @@ def test_a_pool_takes_the_first_order_kernel_on_the_card(state_count) -> None:
     forward-over-reverse pass on the same card: two arms of one wrong kernel
     agree with each other, and the backends share no code.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     voxels = 64
     tissue = TissueProperties(

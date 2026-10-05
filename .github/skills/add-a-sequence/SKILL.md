@@ -1,9 +1,9 @@
 ---
 name: add-a-sequence
-description: Write a new simulator, signal model, or sequence operator in TorchSim. Use when asked to add a sequence, a readout module, a physical effect, or a tissue property.
+description: Write a new simulator, signal model, or sequence operator in BlochSim. Use when asked to add a sequence, a readout module, a physical effect, or a tissue property.
 ---
 
-# Add a sequence to TorchSim
+# Add a sequence to BlochSim
 
 **There is one base class, `Simulator`, written in one of two ways.** Nothing
 downstream ever asks which way.
@@ -62,15 +62,15 @@ and a run reads which properties were passed to decide which terms the kernel
 evaluates. Adding an effect is one line in a model's property declaration, plus
 the term itself in **both** kernels.
 
-The shared parameter ABI is `src/torchsim/sequence/_parameters.py`, read by the
+The shared parameter ABI is `src/blochsim/sequence/_parameters.py`, read by the
 Python dispatch, the C++ extension and the Triton kernels. A parameter added
 there is added in all three or in none.
 
 ## What the change has to arrive with
 
-A test that pins the new physics against something **outside** TorchSim: a
+A test that pins the new physics against something **outside** BlochSim: a
 closed form, a published figure, or an isochromat summation written out in the
-test itself. Comparing TorchSim to TorchSim proves the two agree, which was
+test itself. Comparing BlochSim to BlochSim proves the two agree, which was
 never in doubt. Put it in `tests/epg/` and state the invariant in the module
 docstring.
 

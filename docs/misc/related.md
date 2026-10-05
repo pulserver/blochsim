@@ -17,10 +17,10 @@ of events and the answer is a curve per tissue. That is what a dictionary, a
 fit, a Cramer-Rao bound and a model-based reconstruction are built from, and
 it is what an extended phase graph computes in a fraction of the states an
 isochromat ensemble needs. sycomore [^6], epgpy [^7], EpyG [^8],
-mri-sim-py [^9], snapMRF [^10] and TorchSim answer this one.
+mri-sim-py [^9], snapMRF [^10] and BlochSim answer this one.
 BlochSimulators.jl [^11] answers both, from the same sequence description.
 
-**TorchSim is the second kind.** It has no gradient waveforms, no phantom
+**BlochSim is the second kind.** It has no gradient waveforms, no phantom
 coordinates and no encoding operator of its own -- {doc}`../explanations/implementation`
 lists what that rules out. What it adds instead is the derivative: the same
 kernels that produce a signal produce its Jacobian with respect to tissue, and
@@ -46,23 +46,23 @@ and a signal-model simulator has no reason to carry a coil.
 | [EpyG](https://github.com/brennerd11/EpyG) | EPG | Python | CPU | -- | Python |
 | [mri-sim-py](https://github.com/utcsilab/mri-sim-py.epg) | EPG | Python, PyTorch | CPU, CUDA | Automatic, reverse mode | Python |
 | [snapMRF](https://github.com/dongwang881107/snapMRF) | EPG, with matching | CUDA C | CUDA | -- | Command line |
-| **TorchSim** | EPG, and closed forms | Python, PyTorch, C++ and Triton kernels | CPU threads, CUDA, several cards | Automatic: forward, reverse, and forward over reverse | Python, or a description |
+| **BlochSim** | EPG, and closed forms | Python, PyTorch, C++ and Triton kernels | CPU threads, CUDA, several cards | Automatic: forward, reverse, and forward over reverse | Python, or a description |
 
 ## Where each one is the better tool
 
 **A sequence you are developing, and the image it makes.** KomaMRI, JEMRIS,
 CMRsim or MRzero-Core. They read the waveforms you will play, carry the spins
-through them at their coordinates, and hand back k-space. TorchSim reads a
+through them at their coordinates, and hand back k-space. BlochSim reads a
 sequence as events rather than waveforms, and stops at the signal.
 
 **One curve, read interactively, with the model in front of you.** sycomore or
 epgpy. Both are a few milliseconds for one tissue with nothing to warm up, and
-sycomore's units make an expression read like the paper it came from. TorchSim
+sycomore's units make an expression read like the paper it came from. BlochSim
 resolves the structure of a sequence before it runs one, which is seconds it
 does not repay until there is a dictionary to sweep or a loop to run.
 
 **A dictionary, a fit, a design loop, or a map solved from k-space.**
-TorchSim. The batching across tissues, the derivative, and the estimators and
+BlochSim. The batching across tissues, the derivative, and the estimators and
 reconstruction that consume it are the point of the package; `benchmarks/` in
 the repository measures the first two against the alternatives above and
 states the agreement between them.

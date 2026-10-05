@@ -17,8 +17,8 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence._accelerators import _run_packed, real_subspace_axis
-from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+from blochsim.sequence._accelerators import _run_packed, real_subspace_axis
+from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
 VOXELS = 32
 STATES = 8
@@ -111,7 +111,7 @@ def _pair(backend: str, tissue, events, recorded):
     if backend == "host":
         shape = (tissue, events, STATES, recorded)
         return _run_packed(*shape, 1), _run_packed(*shape, 1, real_axis=1)
-    from torchsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_triton
 
     shape = dict(state_count=STATES, output_count=recorded)
     return (

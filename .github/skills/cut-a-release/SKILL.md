@@ -1,9 +1,9 @@
 ---
 name: cut-a-release
-description: Publish a TorchSim release to PyPI, and diagnose a wheel build. Use when asked about releasing, versioning, cibuildwheel, abi3 wheels, or the packaging setup.
+description: Publish a BlochSim release to PyPI, and diagnose a wheel build. Use when asked about releasing, versioning, cibuildwheel, abi3 wheels, or the packaging setup.
 ---
 
-# Cut a TorchSim release
+# Cut a BlochSim release
 
 The version comes from the git tag through setuptools-scm; nothing in the tree
 states it. To release:

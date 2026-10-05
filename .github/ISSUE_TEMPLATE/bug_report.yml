@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Questions about how to use TorchSim, and results you are unsure about,
-        belong in [Discussions](https://github.com/pulserver/torchsim/discussions).
+        Questions about how to use BlochSim, and results you are unsure about,
+        belong in [Discussions](https://github.com/pulserver/blochsim/discussions).
         This form is for behaviour you can pin down.
 
   - type: textarea
@@ -47,7 +47,7 @@ body:
         Paste the output of
 
         ```sh
-        python -c "from importlib.metadata import version; print('torchsim', version('torchsim'))"
+        python -c "from importlib.metadata import version; print('blochsim', version('blochsim'))"
         python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.get_device_name() if torch.cuda.is_available() else 'cpu')"
         python -VV
         ```

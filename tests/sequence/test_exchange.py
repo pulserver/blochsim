@@ -16,18 +16,18 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     NO_GEOMETRY,
     _pack_events,
     _run_packed,
 )
-from torchsim.sequence._parameters import TISSUE_NAMES
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._parameters import TISSUE_NAMES
+from blochsim.sequence._simulation import _prepare_tissue
 from utils.packed_reference import simulate_packed
 
 ECHOES = 8
@@ -112,7 +112,7 @@ def _free_induction(times_s, **properties):
     ``times_s`` are measured from the excitation; the events carry the
     intervals between them, which is what the state machine steps through.
     """
-    from torchsim.sequence._accelerators import _EXCITATION, _RECORD
+    from blochsim.sequence._accelerators import _EXCITATION, _RECORD
 
     intervals = [
         after - before for before, after in zip((0.0, *times_s), times_s, strict=False)
@@ -288,7 +288,7 @@ def _prepared(device="cpu", **properties):
 
 
 def _live_events():
-    from torchsim.sequence._accelerators import _EXCITATION, _RECORD
+    from blochsim.sequence._accelerators import _EXCITATION, _RECORD
 
     times = READ_TIMES_S
     intervals = [
@@ -309,7 +309,7 @@ def _live_events():
 
 def _live_readout(prepared, seed=None):
     """The free-induction reading, or its directional derivative."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     events = _live_events()
     if seed is None:
@@ -457,7 +457,7 @@ def test_forward_mode_reaches_an_exchanging_pool_through_the_public_api():
 
 def _live_adjoint(prepared, seed):
     """The gradients a cotangent on the free-induction reading leaves."""
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     return _run_packed_vjp(
         prepared,
@@ -755,8 +755,8 @@ def _instantaneous_table(device="cpu"):
     """A pulse with no gradient across it: one rotation, every position."""
     import numpy as np
 
-    from torchsim.sequence._description import RfDefinition, RfShape
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._description import RfDefinition, RfShape
+    from blochsim.sequence._transition import transition_table
 
     flat = RfDefinition(
         id=0,
@@ -774,7 +774,7 @@ def _instantaneous_table(device="cpu"):
 
 def _routes(leaves, events, profile=None):
     """The kernels and the oracle, fed from one place."""
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     fused = _NativeEpg.apply(
         *leaves,
@@ -831,7 +831,7 @@ def _inverted_events():
     sweep saturates a bound pool and turns free water over, so the two must
     start at ``-(1 - f), -f`` rather than at ``-(1 - f), f``.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _EXCITATION,
         _INVERSION,
         _RECORD,
@@ -856,7 +856,7 @@ def test_an_inversion_turns_both_pools_over():
     """
     leaves = _oracle_leaves()
     events = _inverted_events()
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     fused = _NativeEpg.apply(
         *leaves, *events, STATES, 1, 1, NO_GEOMETRY, None, None, None, None, True, None
@@ -879,7 +879,7 @@ def test_the_inversion_efficiency_carries_a_gradient_from_both_pools():
     """
     leaves = _oracle_leaves()
     events = _inverted_events()
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     seed = torch.full((1, 1), 1.0 + 1.0j, dtype=torch.complex64)
     fused = torch.autograd.grad(
@@ -1029,7 +1029,7 @@ def test_the_cuda_forward_mode_matches_the_cpu_kernel():
     transverse pool's derivative honest there: a shift dropped from the
     tangent alone still produces a plausible direction.
     """
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     voxels = 6
     spread = dict(
@@ -1067,7 +1067,7 @@ def test_the_cuda_forward_mode_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_a_streamed_forward_mode_matches_the_whole_one():
     """Streaming cuts the voxel axis, which the second pool's seeds follow."""
-    from torchsim.sequence._accelerators import _run_packed_jvp, offload
+    from blochsim.sequence._accelerators import _run_packed_jvp, offload
 
     voxels = 3000
     prepared = _prepared(
@@ -1140,7 +1140,7 @@ def test_the_cuda_kernel_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_a_streamed_volume_matches_the_whole_one():
     """Streaming cuts the voxel axis, which the second pool's buffers follow."""
-    from torchsim.sequence._accelerators import offload
+    from blochsim.sequence._accelerators import offload
 
     voxels = 3000
     packed = _pack_events(
@@ -1174,7 +1174,7 @@ def test_the_cuda_adjoint_matches_the_cpu_kernel():
     """The two backends share no code, so agreement is what keeps the second
     transverse pool's cotangent honest there.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     voxels = 6
     spread = dict(
@@ -1224,7 +1224,7 @@ def test_a_streamed_adjoint_matches_the_whole_one():
     The forward-over-reverse pass is the one that streams, and it is also what
     a first-order adjoint on the card runs with no direction to follow.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp, offload
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp, offload
 
     voxels = 3000
     prepared = _prepared(
@@ -1278,8 +1278,8 @@ def test_an_exchanging_pool_takes_the_first_order_kernel_on_the_card(
     forward-over-reverse pass on the same card: two arms of one wrong kernel
     agree with each other, and the backends share no code.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     voxels = 64
     tissue = TissueProperties(
@@ -1353,8 +1353,8 @@ def test_a_tabulated_rotation_beside_a_pool_takes_the_first_order_kernel() -> No
     contributes to the flip and the phase through the table's slopes rather
     than through the instant rotation's derivative. Held against the host.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     voxels = 64
     tissue = TissueProperties(

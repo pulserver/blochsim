@@ -3,7 +3,7 @@
 Writing a New Operator
 ======================
 
-The scope of this notebook is to show how to add a sequence module TorchSim
+The scope of this notebook is to show how to add a sequence module BlochSim
 does not ship -- a preparation, or a readout -- without touching a kernel.
 
 An operator is a Python function that returns events and says how long it
@@ -16,7 +16,7 @@ can carry.
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim
+#    !pip install blochsim
 
 # %%
 #
@@ -100,7 +100,7 @@ def key(axes, ncols=1):
 # sphinx_gallery_end_ignore
 import torch
 
-from torchsim import (
+from blochsim import (
     Delay,
     Dephase,
     Excitation,
@@ -110,7 +110,7 @@ from torchsim import (
     SSFPFidReadout,
     Spoil,
 )
-from torchsim.model import Simulator
+from blochsim.model import Simulator
 
 # %%
 # Composing existing operators
@@ -124,7 +124,7 @@ from torchsim.model import Simulator
 # that is what an operator is.
 #
 # The Refocusing pulse is asked for uncrushed: a T2 preparation refocuses
-# rather than dephases, and the crusher pair :func:`~torchsim.Refocusing` adds
+# rather than dephases, and the crusher pair :func:`~blochsim.Refocusing` adds
 # by default would spoil the echo it exists to form.
 
 
@@ -247,7 +247,7 @@ print(
 # and a sample taken *after* it sits where the next pulse will refocus the
 # previous excitation -- an echo, and far more strongly T2-weighted.
 #
-# TorchSim ships each of those separately. Taking both in one repetition is a
+# BlochSim ships each of those separately. Taking both in one repetition is a
 # double-echo steady state, and writing it is putting the winding between two
 # samples rather than on one side of them.
 

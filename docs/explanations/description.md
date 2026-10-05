@@ -3,15 +3,15 @@
 ```{admonition} TL;DR
 :class: tldr
 
-- TorchSim consumes a compact sequence description made of RF, ADC and wait
+- BlochSim consumes a compact sequence description made of RF, ADC and wait
   events plus reusable RF definitions.
 - Pulseq files and scanner MRD streams are both decoded into this same
   description.
-- The description states what was played; a {class}`~torchsim.model.Simulator`
+- The description states what was played; a {class}`~blochsim.model.Simulator`
   supplies the handlers that decide how those commands affect the EPG state.
 ```
 
-A sequence reaches TorchSim as an **event stream**: one repetition's worth of
+A sequence reaches BlochSim as an **event stream**: one repetition's worth of
 events, each with a timestamp and the few numbers its kind carries. This page
 is what that stream holds, how it is read out of a Pulseq file, and how a
 scanner carries it. The physics the events drive is {doc}`epg`; how the kernels
@@ -80,7 +80,7 @@ simulation would otherwise silently stand for whichever came first. Such a file
 says which with a `TRRef` definition, or the caller passes `tr_index`.
 
 ```python
-from torchsim.simulators import FSESimulator
+from blochsim.simulators import FSESimulator
 
 # The tissue is given; the echo spacing, the train length, the refocusing
 # angle and the pulse shapes are read.
@@ -89,7 +89,7 @@ signal = train.simulate(T1=830.0, T2=80.0)
 ```
 
 Reading a file needs `pypulseq`, which parses the format and computes the
-gradient trajectory: `pip install torchsim[pulseq]`.
+gradient trajectory: `pip install blochsim[pulseq]`.
 
 ## Pulse shapes
 
@@ -157,8 +157,8 @@ A scanner does not send a file. Pulserver's reconstruction proxy reads the
 sequence file a series was played from and sends its description on the MRD
 stream, after the XML header and before the first acquisition, as one `TEXT`
 message holding a description per file of the sequence chain.
-{func}`~torchsim.sequence.read_mrd_description` decodes it into the same object
-{meth}`~torchsim.SequenceDescription.from_pulseq` builds, so a simulation driven
+{func}`~blochsim.sequence.read_mrd_description` decodes it into the same object
+{meth}`~blochsim.SequenceDescription.from_pulseq` builds, so a simulation driven
 from a design script and one driven from a running scan read one derivation,
 not two. Which model the rows drive is chosen by the reader.
 
@@ -187,7 +187,7 @@ they are. Naming the simulator is what says which of those the arriving events
 are to be read as, and it is the only thing a caller chooses:
 
 ```python
-from torchsim.simulators import FSESimulator, MRFSimulator
+from blochsim.simulators import FSESimulator, MRFSimulator
 
 # The same file, read as a refocused train and as an unbalanced one.
 refocused = FSESimulator.from_pulseq("scan.seq")

@@ -5,7 +5,7 @@ free induction decay of the pulse that just played, and the echo the next pulse
 would refocus, which is the same state read after the gradient rather than
 before it. :func:`SSFPFidReadout` takes the first and :func:`SSFPEchoReadout`
 the second, and this pins both against an extended phase graph written out here
-from the operators in the literature rather than from anything TorchSim does.
+from the operators in the literature rather than from anything BlochSim does.
 
 The reference is held honest by being asked for both: it has to reproduce the
 FID sample, which is what the rest of the suite and the published comparisons
@@ -17,17 +17,17 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from torchsim import (
+from blochsim import (
     SequenceDescription,
     SSFPEchoReadout,
     SSFPFidReadout,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     ideal_rf_definition,
 )
-from torchsim.sequence._operators import Excitation, compose
+from blochsim.sequence._operators import Excitation, compose
 
 # More orders than the train can reach, so neither side truncates and the
 # comparison is of the physics rather than of two truncation policies.
@@ -128,7 +128,7 @@ def test_the_first_repetition_has_no_echo_to_read():
 
 
 def test_it_is_reachable_by_name():
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         operator,
         operator_names,
     )

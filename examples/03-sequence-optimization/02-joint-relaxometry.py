@@ -18,12 +18,12 @@ every parameter estimated.
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim brainweb-dl cmap
+#    !pip install blochsim brainweb-dl cmap
 
 # %%
 #
 # The two closed-form sequences being designed, the three pieces a design is
-# stated in, and :func:`~torchsim.crlb`, which is the cost.
+# stated in, and :func:`~blochsim.crlb`, which is the cost.
 #
 
 # sphinx_gallery_start_ignore
@@ -159,9 +159,9 @@ import time
 
 import torch
 
-import torchsim
-from torchsim.optim import Bounded, SequenceDesign
-from torchsim.simulators import SPGRSimulator, bSSFPSimulator
+import blochsim
+from blochsim.optim import Bounded, SequenceDesign
+from blochsim.simulators import SPGRSimulator, bSSFPSimulator
 
 # %%
 #
@@ -213,7 +213,7 @@ def bounds(spgr_flip, ssfp_flip):
     together = torch.cat(
         (rows(spgr, flip=spgr_flip), rows(ssfp, flip=ssfp_flip)), dim=-1
     )
-    return torchsim.crlb(together, noise_variance=NOISE**2)
+    return blochsim.crlb(together, noise_variance=NOISE**2)
 
 
 # %%
@@ -415,13 +415,13 @@ figure.suptitle("BrainWeb subject 0, slice 90")
 # %%
 #
 # The two blocks are one experiment and are fitted as one: a
-# :class:`~torchsim.model.Simulator` that plays each and concatenates what
+# :class:`~blochsim.model.Simulator` that plays each and concatenates what
 # they record. The fit is the one thing held fixed between the protocols --
 # the same nonlinear least squares over the same four unknowns, from the same
 # guess.
 #
-from torchsim.estimators import NonlinearLeastSquares
-from torchsim.model import Simulator
+from blochsim.estimators import NonlinearLeastSquares
+from blochsim.model import Simulator
 
 
 class JointRelaxometry(Simulator):
@@ -521,7 +521,7 @@ def predicted_sigma(spgr_flip, ssfp_flip):
     together = torch.cat(
         (rows(at_voxel[0], flip=spgr_flip), rows(at_voxel[1], flip=ssfp_flip)), dim=-1
     )
-    bound = torchsim.crlb(together, noise_variance=NOISE**2)
+    bound = blochsim.crlb(together, noise_variance=NOISE**2)
     return {
         "T1": bound[..., 0].sqrt() / truth["T1"],
         "T2": bound[..., 1].sqrt() / truth["T2"],

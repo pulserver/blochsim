@@ -19,9 +19,9 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import compose_spinor
-from torchsim.sequence._description import RfDefinition, RfShape
-from torchsim.sequence._transition import transition_table
+from blochsim import compose_spinor
+from blochsim.sequence._description import RfDefinition, RfShape
+from blochsim.sequence._transition import transition_table
 
 SAMPLES = 256
 RASTER = 1e-5
@@ -368,7 +368,7 @@ def test_a_dynamic_pair_reads_the_same_sample_times() -> None:
     """The per-voxel integrator and the table are the same integration, so a
     declared duration has to reach both.
     """
-    from torchsim.sequence._transition import dynamic_pair
+    from blochsim.sequence._transition import dynamic_pair
 
     stretch = 2.0
     coarse = stretch * np.arange(SAMPLES, dtype=np.float64)

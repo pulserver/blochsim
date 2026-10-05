@@ -5,8 +5,8 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.estimators import LookupTable
-from torchsim.simulators import MP2RAGESimulator
+from blochsim.estimators import LookupTable
+from blochsim.simulators import MP2RAGESimulator
 
 PROTOCOL = dict(
     TI=(800.0, 2700.0),

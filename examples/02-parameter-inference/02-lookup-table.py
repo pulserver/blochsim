@@ -10,19 +10,19 @@ number of points to show which of the two is limited by it.
 With a single unknown a dictionary degenerates: the atoms lie on a curve rather
 than filling a space. Interpolating between the two nearest then costs nothing
 and takes the grid spacing out of the answer, which is what
-:class:`~torchsim.LookupTable` does.
+:class:`~blochsim.LookupTable` does.
 """
 
 # %%
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim brainweb-dl cmap
+#    !pip install blochsim brainweb-dl cmap
 
 # %%
 #
 # The problem is stated over a simulator carrying the sequence and filled in
-# by an estimator. :func:`~torchsim.execution` decides where that work runs,
+# by an estimator. :func:`~blochsim.execution` decides where that work runs,
 # and the timings below are taken inside it.
 #
 
@@ -164,9 +164,9 @@ import time
 import numpy as np
 import torch
 
-import torchsim
-from torchsim.estimators import DictionaryMatcher, LookupTable
-from torchsim.simulators import MP2RAGESimulator
+import blochsim
+from blochsim.estimators import DictionaryMatcher, LookupTable
+from blochsim.simulators import MP2RAGESimulator
 
 # %%
 #
@@ -312,7 +312,7 @@ def footprint(problem):
 def mapped(problem, passes=3):
     """Map the slice a few times: the quickest pass, and what it held."""
     on_device = torch.cuda.is_available()
-    with torchsim.execution():
+    with blochsim.execution():
         problem(measured[:64])
         if on_device:
             torch.cuda.reset_peak_memory_stats()

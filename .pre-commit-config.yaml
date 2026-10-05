@@ -4,7 +4,7 @@
 ci:
   autoupdate_schedule: monthly
 
-exclude: ^src/torchsim/_version\.py$
+exclude: ^src/blochsim/_version\.py$
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

@@ -21,7 +21,7 @@ CMakeFiles/
 cmake_install.cmake
 
 # Generated at build time
-src/torchsim/_version.py
+src/blochsim/_version.py
 
 # Test and coverage output
 .coverage*

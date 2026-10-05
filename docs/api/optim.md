@@ -1,7 +1,7 @@
 # Sequence design
 
 ```{eval-rst}
-.. currentmodule:: torchsim
+.. currentmodule:: blochsim
 ```
 
 Choosing a sequence's parameters by minimizing a cost you write. The

@@ -42,7 +42,7 @@ FIGURES = HERE / "figures"
 # Categorical slots in a fixed order: a backend keeps its colour whether or
 # not the others are present.
 COLORS = {
-    "torchsim": "#2a78d6",
+    "blochsim": "#2a78d6",
     "sycomore": "#eb6834",
     "epgpy": "#1baf7a",
     "BlochSimulators.jl": "#eda100",
@@ -177,7 +177,7 @@ def draw(axes: plt.Axes, name: str, points: list[tuple[int, float]]) -> None:
 def throughput(records: list[dict], suffix: str) -> None:
     """Tissues a second against dictionary size, one line per backend."""
     threaded = [
-        r for r in records if not (r["backend"] == "torchsim" and r["threads"] == 1)
+        r for r in records if not (r["backend"] == "blochsim" and r["threads"] == 1)
     ]
     series = curves(threaded, "forward", lambda r: r["atoms"] / r["best"])
     figure, axes = plt.subplots(figsize=(7.2, 4.2), dpi=200)
@@ -276,7 +276,7 @@ def memory(records: list[dict], suffix: str) -> None:
         r
         for r in records
         if r.get("device", "cpu") == "cpu"
-        and not (r["backend"] == "torchsim" and r["threads"] == 1)
+        and not (r["backend"] == "blochsim" and r["threads"] == 1)
     ]
     series = curves(
         threaded, "forward", lambda r: r["peak_rss_mib"] - r["baseline_rss_mib"]

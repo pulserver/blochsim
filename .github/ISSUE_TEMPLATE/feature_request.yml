@@ -1,5 +1,5 @@
 name: Feature request
-description: A sequence, a physical effect, an estimator or an interface TorchSim should carry.
+description: A sequence, a physical effect, an estimator or an interface BlochSim should carry.
 labels: ["enhancement"]
 body:
   - type: textarea
@@ -16,7 +16,7 @@ body:
   - type: textarea
     id: proposal
     attributes:
-      label: What you would like TorchSim to do
+      label: What you would like BlochSim to do
       description: |
         If you already know the shape of it -- an operator, a tissue property,
         a keyword on an existing simulator -- sketch the call you would like

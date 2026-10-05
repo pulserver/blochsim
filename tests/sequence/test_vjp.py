@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _accelerators,
@@ -14,14 +14,14 @@ from torchsim.sequence import (
     mrf_description,
     spgr_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     NO_GEOMETRY,
     _NativeEpg,
     _pack_events,
     _run_packed_vjp,
 )
-from torchsim.sequence._parameters import FLOAT_NAMES, TISSUE_COUNT
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._parameters import FLOAT_NAMES, TISSUE_COUNT
+from blochsim.sequence._simulation import _prepare_tissue
 from utils.packed_reference import simulate_packed
 
 # Gradient tuples arrive in the packing order, so name them from the same place.
@@ -231,17 +231,17 @@ def test_fused_vjp_is_bitwise_deterministic(monkeypatch) -> None:
         for expected, actual in zip(first, _gradients(), strict=True):
             assert torch.equal(expected, actual)
 
-    monkeypatch.setenv("TORCHSIM_NUM_THREADS", "1")
+    monkeypatch.setenv("BLOCHSIM_NUM_THREADS", "1")
     single = _gradients()
-    monkeypatch.setenv("TORCHSIM_NUM_THREADS", "8")
+    monkeypatch.setenv("BLOCHSIM_NUM_THREADS", "8")
     for expected, actual in zip(single, _gradients(), strict=True):
         assert torch.equal(expected, actual)
 
 
 def _objective_gradient():
     """A precision cost, which is a directional derivative differentiated back."""
-    from torchsim.optim import crlb
-    from torchsim.simulators import FSESimulator
+    from blochsim.optim import crlb
+    from blochsim.simulators import FSESimulator
 
     sequence = FSESimulator(ESP=5.0, TR=3000.0, states=10)
     flip = torch.linspace(150.0, 90.0, 12).requires_grad_(True)

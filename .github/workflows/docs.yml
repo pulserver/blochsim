@@ -46,7 +46,7 @@ jobs:
             --extra-index-url https://pypi.org/simple
 
       # The ``doc`` extra alone: every page is written and the examples
-      # needing nothing but TorchSim are executed, which is what a branch
+      # needing nothing but BlochSim are executed, which is what a branch
       # wants to know within a few minutes. The Site job below runs the rest.
       - name: Build the extensions and install
         run: python -m pip install ".[doc]"
@@ -86,7 +86,7 @@ jobs:
       # A tag is published under its own name; anything else is the
       # development version. It names the directory of the site, the entry
       # the switcher marks, and the prefix the notebook links reach through.
-      TORCHSIM_DOCS_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+      BLOCHSIM_DOCS_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
 
     steps:
       - uses: actions/checkout@v7
@@ -125,7 +125,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: html-${{ env.TORCHSIM_DOCS_VERSION }}
+          name: html-${{ env.BLOCHSIM_DOCS_VERSION }}
           path: docs/build/html
           retention-days: 7
 
@@ -141,8 +141,8 @@ jobs:
           else
             git worktree add --orphan ../pages
           fi
-          python scripts/publish_docs.py docs/build/html "$TORCHSIM_DOCS_VERSION" ../pages
+          python scripts/publish_docs.py docs/build/html "$BLOCHSIM_DOCS_VERSION" ../pages
           git -C ../pages add --all
           git -C ../pages commit --quiet \
-            -m "Publish $TORCHSIM_DOCS_VERSION from ${{ github.sha }}" || exit 0
+            -m "Publish $BLOCHSIM_DOCS_VERSION from ${{ github.sha }}" || exit 0
           git -C ../pages push origin HEAD:gh-pages

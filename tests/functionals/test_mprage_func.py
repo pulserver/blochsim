@@ -1,6 +1,6 @@
 """MPRAGE tests."""
 
-from torchsim import (
+from blochsim import (
     mprage_sim,
 )
 

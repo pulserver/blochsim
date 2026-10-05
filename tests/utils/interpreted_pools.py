@@ -21,6 +21,10 @@ import sys
 
 import torch
 
+from blochsim.sequence import _accelerators, _pools, _pools_triton
+from blochsim.sequence._lineshape import lineshape_table
+from blochsim.sequence._parameters import NO_GEOMETRY
+from blochsim.sequence._transition import DynamicPairs
 from sequence.test_many_pools import (
     _PAIR_ROW,
     GEOMETRY,
@@ -32,10 +36,6 @@ from sequence.test_many_pools import (
     _instantaneous_table,
     _tissue,
 )
-from torchsim.sequence import _accelerators, _pools, _pools_triton
-from torchsim.sequence._lineshape import lineshape_table
-from torchsim.sequence._parameters import NO_GEOMETRY
-from torchsim.sequence._transition import DynamicPairs
 
 # What one kernel is held to against the other, relative to the largest entry
 # of each result. Both accumulate in float32, in different orders.

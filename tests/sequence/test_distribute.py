@@ -19,9 +19,9 @@ from test_cuda_parity import (  # noqa: E402
     _worst_disagreement,
 )
 
-import torchsim.sequence._accelerators as accelerators
-from torchsim.sequence import distribute
-from torchsim.sequence._accelerators import (
+import blochsim.sequence._accelerators as accelerators
+from blochsim.sequence import distribute
+from blochsim.sequence._accelerators import (
     _run_packed,
     _run_packed_jvp,
     _run_packed_vjp_jvp,
@@ -191,7 +191,7 @@ def test_a_sharded_first_order_adjoint_matches_the_whole_one(count):
     """Shards of a gradient are partial sums, and each takes the kernel the
     whole one would have.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     events, prepared, outputs = _real_case(TRAINS, "cuda", atoms=ATOMS)
     seed = torch.ones((TRAINS, ATOMS, outputs), dtype=torch.complex64, device="cuda")
@@ -214,8 +214,8 @@ def test_a_shard_reaches_the_first_order_kernel(monkeypatch):
     to the forward-over-reverse pass, which costs twice the time and twice the
     trajectory for a derivative nobody asked for.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     events, prepared, outputs = _real_case(TRAINS, "cuda", atoms=ATOMS)
     seed = torch.ones((TRAINS, ATOMS, outputs), dtype=torch.complex64, device="cuda")

@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence._lineshape import BOUND_T2_S, lineshape_table
+from blochsim.sequence._lineshape import BOUND_T2_S, lineshape_table
 
 
 def _integral(offset_hz, bound_t2_s: float = BOUND_T2_S, quadrature: int = 20000):

@@ -15,16 +15,16 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     rf_definition,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     exact_slice_profile,
     fse_description,
 )
-from torchsim.sequence._description import RfDefinition
-from torchsim.sequence._simulation import TissueProperties
+from blochsim.sequence._description import RfDefinition
+from blochsim.sequence._simulation import TissueProperties
 
 ECHOES = 6
 STATES = 10
@@ -120,7 +120,7 @@ def _two_shapes(second: RfDefinition):
     """An FSE whose excitation and refocusing are shaped differently."""
     from dataclasses import replace
 
-    from torchsim.sequence._description import RfUse
+    from blochsim.sequence._description import RfUse
 
     description = _describe(definition=_sinc(4.0e3))
     events = []
@@ -215,7 +215,7 @@ def test_a_shaped_pulse_is_integrated_without_being_asked() -> None:
     """A definition carrying a waveform worth integrating is tabulated on its
     own, so the caller never names a mode -- only where to sample it.
     """
-    from torchsim.sequence._accelerators import _wants_a_table
+    from blochsim.sequence._accelerators import _wants_a_table
 
     shaped = _describe(definition=_sinc(4.0e3))
     hard = _describe()
@@ -231,13 +231,13 @@ def test_a_builder_pulse_stays_the_hard_pulse_to_the_bit() -> None:
     reading it at a flip between knots would not, so it must not happen by
     itself.
     """
-    from torchsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._accelerators import _run_packed
 
     description = _describe()
     seen = {}
     signal = None
 
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     original = _accelerators._run_packed
 
@@ -272,7 +272,7 @@ def test_the_table_lays_its_copies_out_voxel_major() -> None:
     """The mean at the end folds the last axis, so the copies have to be there
     and each voxel's have to be adjacent.
     """
-    from torchsim.sequence._accelerators import _across_the_table
+    from blochsim.sequence._accelerators import _across_the_table
 
     tissue = tuple(torch.tensor([800.0, 1400.0], dtype=torch.float32) for _ in range(7))
     spread = _across_the_table(tissue, 3)
@@ -290,7 +290,7 @@ def test_the_positions_are_counted_by_the_memory_policy() -> None:
     """
     from test_offload import _peak_over_baseline
 
-    from torchsim.sequence import offload
+    from blochsim.sequence import offload
 
     voxels, points = 40_000, 5
     budget = 8 << 20
@@ -322,14 +322,14 @@ def test_a_table_takes_the_first_order_kernel_on_the_card(state_count) -> None:
     The flip gradient comes off the table's own slope here rather than off a
     differentiated rotation, which is the part a single width would not check.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import (
         _pack_events,
         _run_packed_vjp,
         geometry_of,
     )
-    from torchsim.sequence._simulation import _prepare_tissue
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._simulation import _prepare_tissue
+    from blochsim.sequence._transition import transition_table
 
     description = _describe(definition=_sinc(4.0e3))
     packed = _pack_events(

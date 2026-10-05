@@ -13,11 +13,11 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     Geometry,
     _pack_events,
     _run_packed,
@@ -28,8 +28,8 @@ from torchsim.sequence._accelerators import (
     geometry_of,
     real_subspace_axis,
 )
-from torchsim.sequence._parameters import FLOAT_NAMES, TISSUE_NAMES
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._parameters import FLOAT_NAMES, TISSUE_NAMES
+from blochsim.sequence._simulation import _prepare_tissue
 from utils.epg import flow_op
 from utils.packed_reference import simulate_packed
 

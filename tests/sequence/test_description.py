@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     AdcRole,
     EventType,
     RfDefinition,

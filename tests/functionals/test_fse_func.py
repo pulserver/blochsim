@@ -3,7 +3,7 @@
 import numpy as np
 from pytest import fixture
 
-from torchsim import (
+from blochsim import (
     fse_sim,
 )
 
@@ -45,7 +45,7 @@ def test_multiple_gradient(flip):
 
 def test_current_simulator_physics_passes_through(flip):
     """The convenience call does not hide physics the Simulator accepts."""
-    from torchsim.simulators import FSESimulator
+    from blochsim.simulators import FSESimulator
 
     got = fse_sim(
         flip,

@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.26)
 
-project(torchsim LANGUAGES CXX)
+project(blochsim LANGUAGES CXX)
 
 # Both kernels are plain CPython extensions against the stable ABI: they call
 # no PyTorch API and link no PyTorch library, which is why one wheel per
 # platform serves every supported interpreter and why that wheel is a couple of
 # megabytes rather than the size of libtorch.
-set(TORCHSIM_ABI3_VERSION 3.10)
+set(BLOCHSIM_ABI3_VERSION 3.10)
 
 find_package(Python 3.10 REQUIRED
     COMPONENTS Interpreter Development.Module Development.SABIModule
@@ -19,14 +19,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-function(torchsim_add_kernel name source)
+function(blochsim_add_kernel name source)
     python_add_library(${name} MODULE
-        USE_SABI ${TORCHSIM_ABI3_VERSION}
+        USE_SABI ${BLOCHSIM_ABI3_VERSION}
         WITH_SOABI
         "${source}"
     )
     # The shared headers sit beside the sources they are shared by.
-    target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/torchsim")
+    target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/blochsim")
     target_link_libraries(${name} PRIVATE Threads::Threads)
 
     # Nothing the C++ runtime owns crosses the module boundary: the kernel
@@ -51,8 +51,8 @@ function(torchsim_add_kernel name source)
         target_compile_options(${name} PRIVATE -O3 -ffp-contract=off)
     endif()
 
-    install(TARGETS ${name} DESTINATION torchsim)
+    install(TARGETS ${name} DESTINATION blochsim)
 endfunction()
 
-torchsim_add_kernel(_epg_cpu  src/torchsim/_epg_cpu.cpp)
-torchsim_add_kernel(_perk_cpu src/torchsim/_perk_cpu.cpp)
+blochsim_add_kernel(_epg_cpu  src/blochsim/_epg_cpu.cpp)
+blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)

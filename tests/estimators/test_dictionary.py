@@ -5,8 +5,8 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.estimators import DictionaryMatcher
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.estimators import DictionaryMatcher
+from blochsim.simulators import MultiEchoSimulator
 
 
 @pytest.mark.parametrize(

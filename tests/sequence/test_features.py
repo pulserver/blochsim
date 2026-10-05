@@ -12,7 +12,7 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence._parameters import (
+from blochsim.sequence._parameters import (
     TISSUE_NAMES,
     TISSUE_PARAMETERS,
     at_identity,
@@ -20,7 +20,7 @@ from torchsim.sequence._parameters import (
     wants_bound_pool,
     wants_exchange_pool,
 )
-from torchsim.sequence._simulation import TissueProperties
+from blochsim.sequence._simulation import TissueProperties
 
 
 def _parameter(name: str):

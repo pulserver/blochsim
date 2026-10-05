@@ -14,8 +14,8 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence._description import RfDefinition, RfShape
-from torchsim.sequence._transition import (
+from blochsim.sequence._description import RfDefinition, RfShape
+from blochsim.sequence._transition import (
     dynamic_pair,
     transition_table,
 )
@@ -294,10 +294,10 @@ def _train():
     the tabulated route and the per-voxel one describe -- so it is the case
     that can hold them against each other.
     """
-    from torchsim.sequence._accelerators import _pack_events, _shim_count
-    from torchsim.sequence._builders import fse_description
-    from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _pack_events, _shim_count
+    from blochsim.sequence._builders import fse_description
+    from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
+    from blochsim.sequence._transition import DynamicPairs
 
     definition = _pulse(samples=96)
     flips = torch.deg2rad(torch.linspace(100.0, 170.0, ECHOES))
@@ -363,7 +363,7 @@ def test_the_reference_reads_a_dynamic_pair_where_it_reads_a_table():
     The pair is integrated at each pulse's own flip, so a row per pulse is what
     the table's flip axis stands in for.
     """
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._transition import transition_table
 
     definition, prepared, events, pairs = _train()
     table = transition_table(
@@ -389,7 +389,7 @@ def test_the_host_kernel_reads_the_pair_the_reference_does():
     The two share no code: the reference turns a pulse in torch and the kernel
     reads four floats per voxel out of a packed buffer.
     """
-    from torchsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._accelerators import _run_packed
 
     _, prepared, events, pairs = _train()
 
@@ -407,8 +407,8 @@ def test_the_host_kernel_still_reads_a_table_where_one_is_given():
     """The mode is picked from which buffer the caller filled, so a sequence
     with a table has to be untouched by the pair's arrival.
     """
-    from torchsim.sequence._accelerators import _run_packed
-    from torchsim.sequence._transition import SliceTables, transition_table
+    from blochsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._transition import SliceTables, transition_table
 
     definition, prepared, events, _ = _train()
     table = SliceTables.alone(
@@ -445,8 +445,8 @@ def test_the_host_forward_mode_follows_a_direction_along_the_pair():
     stored in ``complex64``, so the difference stops improving below a step of
     about 1e-2; this one sits at that floor rather than under it.
     """
-    from torchsim.sequence._accelerators import _run_packed, _run_packed_jvp
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed, _run_packed_jvp
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     generator = torch.Generator().manual_seed(13)
@@ -495,7 +495,7 @@ def test_a_direction_along_nothing_moves_nothing():
     """Seeding no direction at all has to leave the forward-mode result at
     zero, which is what catches a buffer read where none was given.
     """
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     _, prepared, events, pairs = _train()
     still = tuple(torch.zeros_like(value) for value in prepared)
@@ -529,8 +529,8 @@ def test_the_host_adjoint_returns_the_cotangent_on_the_pair():
     entry has exactly one writer and the reverse pass accumulates nothing
     across threads.
     """
-    from torchsim.sequence._accelerators import _run_packed, _run_packed_vjp
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed, _run_packed_vjp
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     generator = torch.Generator().manual_seed(21)
@@ -580,7 +580,7 @@ def test_a_sequence_with_no_pair_still_gets_the_gradients_it_did():
     """The pair's arrival adds a buffer to every entry point's tail, so a run
     that fills none of it has to come back exactly as it was.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     _, prepared, events, _ = _train()
     generator = torch.Generator().manual_seed(23)
@@ -602,7 +602,7 @@ def test_the_second_order_pass_returns_the_adjoint_given_no_direction():
     what the first-order one does -- including on the pair, which the two reach
     by different code.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _run_packed_vjp,
         _run_packed_vjp_jvp,
     )
@@ -658,11 +658,11 @@ def test_the_second_order_pass_differentiates_the_pair_gradient():
     """Given a direction along the pair, the curvature is what the first-order
     gradient's own derivative is.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _run_packed_vjp,
         _run_packed_vjp_jvp,
     )
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     generator = torch.Generator().manual_seed(21)
@@ -724,9 +724,9 @@ def test_the_cuda_forward_reads_the_pair_the_host_does():
     read honest on the card: a row taken from the wrong train would still
     produce a plausible train.
     """
-    from torchsim.sequence._accelerators import _run_packed
-    from torchsim.sequence._epg_triton import simulate
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._epg_triton import simulate
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     host = _run_packed(prepared, events, 16, ECHOES, 1, dynamic=pairs)
@@ -753,8 +753,8 @@ def test_the_cuda_reverse_agrees_at_every_width(state_count: int) -> None:
     the card: each one is a kernel of its own, and a rotation read per voxel
     rather than built from a flip angle is the largest of them.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     generator = torch.Generator().manual_seed(21)
@@ -787,8 +787,8 @@ def test_the_cuda_reverse_agrees_at_every_width(state_count: int) -> None:
 @pytest.mark.parametrize("state_count", [15, 16, 17])
 def test_the_cuda_second_order_agrees_at_every_width(state_count: int) -> None:
     """The curvature along a direction on the pair, against the host."""
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     generator = torch.Generator().manual_seed(21)
@@ -841,8 +841,8 @@ def test_the_cuda_second_order_agrees_at_every_width(state_count: int) -> None:
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_the_cuda_forward_mode_follows_the_direction_the_host_does():
     """Forward mode along a direction on the pair, against the host."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     generator = torch.Generator().manual_seed(29)
@@ -898,10 +898,10 @@ def _real_subspace_train(trains: int = 1):
     pair argument, so a verdict of 1 does not slow this train down, it plays a
     different pulse.
     """
-    from torchsim.sequence._accelerators import _pack_events
-    from torchsim.sequence._builders import fse_description
-    from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _pack_events
+    from blochsim.sequence._builders import fse_description
+    from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
+    from blochsim.sequence._transition import DynamicPairs
 
     definition = _pulse(samples=96)
     flips = torch.deg2rad(torch.linspace(100.0, 170.0, ECHOES))
@@ -965,7 +965,7 @@ def test_the_subspace_verdict_refuses_a_per_voxel_pair():
     """The predicate itself, held to the reason: this train is inside the real
     subspace, and a pair still has to rule the reduced kernels out.
     """
-    from torchsim.sequence._accelerators import real_subspace_axis
+    from blochsim.sequence._accelerators import real_subspace_axis
 
     prepared, events, pairs, _ = _real_subspace_train()
     assert real_subspace_axis(events, prepared) == 1
@@ -979,7 +979,7 @@ def test_a_pair_survives_a_train_the_real_kernel_would_have_taken(monkeypatch):
     test that hopes to clear it by carrying enough voxels is testing the
     threshold. Forcing it to zero asks the question directly.
     """
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     monkeypatch.setattr(_accelerators, "detection", lambda kind, device: 0.0)
     prepared, events, pairs, output_count = _real_subspace_train()
@@ -996,14 +996,14 @@ def test_the_lane_forward_leaves_a_pair_to_the_scalar_kernel(monkeypatch):
     """The lane kernel carries no rotation to read a pair into, so a run that
     would otherwise vectorize has to fall back rather than play a hard pulse.
     """
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
-    monkeypatch.setenv("TORCHSIM_LANES", "1")
+    monkeypatch.setenv("BLOCHSIM_LANES", "1")
     prepared, events, pairs, output_count = _real_subspace_train(trains=4)
     lanes = _accelerators._run_packed(
         prepared, events, 16, output_count, 1, dynamic=pairs
     )
-    monkeypatch.delenv("TORCHSIM_LANES")
+    monkeypatch.delenv("BLOCHSIM_LANES")
     scalar = _accelerators._run_packed(
         prepared, events, 16, output_count, 1, dynamic=pairs
     )
@@ -1175,8 +1175,8 @@ def test_a_pulse_reaches_its_rotation_one_way_or_the_other():
     """Handed both, the kernels read the pair and the table says nothing, so a
     caller who built one is owed the news rather than a silent choice.
     """
-    from torchsim.sequence._accelerators import _run_packed
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._transition import transition_table
 
     definition, prepared, events, pairs = _train()
     table = transition_table(
@@ -1202,7 +1202,7 @@ def _split_across_two_channels(flips: torch.Tensor):
     """
     from dataclasses import replace
 
-    from torchsim.sequence._builders import fse_description
+    from blochsim.sequence._builders import fse_description
 
     base = fse_description(
         flips,
@@ -1227,7 +1227,7 @@ def test_a_split_pulse_records_the_train_its_sum_records():
     the per-voxel rotation, and the answer is the one the flip-and-phase route
     gives for the field the channels sum to.
     """
-    from torchsim.sequence import EpgEngine, TissueProperties
+    from blochsim.sequence import EpgEngine, TissueProperties
 
     flips = torch.deg2rad(torch.linspace(100.0, 170.0, ECHOES))
     split, plain = _split_across_two_channels(flips)
@@ -1272,7 +1272,7 @@ def test_a_split_pulse_leaves_the_transmit_phase_to_the_rotation():
     is already in it. Left on the tissue as well it would be turned by twice,
     and the run would not answer the summed field.
     """
-    from torchsim.sequence._simulation import _dynamic_transmit
+    from blochsim.sequence._simulation import _dynamic_transmit
 
     split, _ = _split_across_two_channels(torch.deg2rad(torch.full((ECHOES,), 140.0)))
     magnitude, phase = _sensitivities()
@@ -1291,7 +1291,7 @@ def test_a_split_pulse_leaves_the_transmit_phase_to_the_rotation():
 
 
 def _tissue_properties(magnitude, phase):
-    from torchsim.sequence import TissueProperties
+    from blochsim.sequence import TissueProperties
 
     return TissueProperties(
         t1_ms=torch.linspace(700.0, 1300.0, VOXELS),
@@ -1303,8 +1303,8 @@ def _tissue_properties(magnitude, phase):
 
 def test_a_single_channel_train_never_reaches_the_pair():
     """Nothing a builder emits is to be diverted onto the integrated route."""
-    from torchsim.sequence._builders import fse_description
-    from torchsim.sequence._simulation import _dynamic_transmit
+    from blochsim.sequence._builders import fse_description
+    from blochsim.sequence._simulation import _dynamic_transmit
 
     plain = fse_description(torch.deg2rad(torch.full((ECHOES,), 140.0)), 5e-3)
     magnitude, phase = _sensitivities()
@@ -1319,8 +1319,8 @@ def test_a_single_channel_train_never_reaches_the_pair():
 def test_a_static_shim_beside_a_dynamic_pulse_is_refused():
     from dataclasses import replace
 
-    from torchsim.sequence import ShimDefinition
-    from torchsim.sequence._simulation import _dynamic_transmit
+    from blochsim.sequence import ShimDefinition
+    from blochsim.sequence._simulation import _dynamic_transmit
 
     split, _ = _split_across_two_channels(torch.deg2rad(torch.full((ECHOES,), 140.0)))
     shimmed = replace(
@@ -1334,7 +1334,7 @@ def test_a_static_shim_beside_a_dynamic_pulse_is_refused():
 
 
 def test_a_transmit_map_short_of_the_channels_is_refused():
-    from torchsim.sequence._simulation import _dynamic_transmit
+    from blochsim.sequence._simulation import _dynamic_transmit
 
     split, _ = _split_across_two_channels(torch.deg2rad(torch.full((ECHOES,), 140.0)))
     magnitude, phase = _sensitivities()
@@ -1347,7 +1347,7 @@ def test_the_dispatch_hands_the_kernels_a_pair_and_no_table(monkeypatch):
     """Agreement with the flip-and-phase route is only evidence about the pair
     if the pair is what ran.
     """
-    from torchsim.sequence import EpgEngine, _accelerators
+    from blochsim.sequence import EpgEngine, _accelerators
 
     split, _ = _split_across_two_channels(torch.deg2rad(torch.full((ECHOES,), 140.0)))
     magnitude, phase = _sensitivities()
@@ -1375,7 +1375,7 @@ def test_a_dynamic_pulse_is_integrated_across_the_slice():
     """Asking for positions spreads each voxel over them and averages the
     recorded signal, so a selective pulse records less than an ideal one.
     """
-    from torchsim.sequence import EpgEngine, exact_slice_profile
+    from blochsim.sequence import EpgEngine, exact_slice_profile
 
     flips = torch.deg2rad(torch.full((ECHOES,), 150.0))
     split, _ = _split_across_two_channels(flips)
@@ -1407,7 +1407,7 @@ def test_a_relaxation_gradient_reaches_through_the_pair():
     around it, so a relaxation gradient is the one the flip-and-phase route
     returns for the same field.
     """
-    from torchsim.sequence import EpgEngine, TissueProperties
+    from blochsim.sequence import EpgEngine, TissueProperties
 
     flips = torch.deg2rad(torch.linspace(100.0, 170.0, ECHOES))
     split, plain = _split_across_two_channels(flips)
@@ -1442,7 +1442,7 @@ def test_the_flip_gradient_comes_back_through_the_pulse_integral():
     it has to be the gradient the flip-and-phase route gives for the field the
     channels sum to.
     """
-    from torchsim.sequence import EpgEngine, TissueProperties
+    from blochsim.sequence import EpgEngine, TissueProperties
 
     magnitude, phase = _sensitivities()
     combined = torch.polar(magnitude, phase).mean(dim=0)
@@ -1479,7 +1479,7 @@ def test_a_transmit_gradient_comes_back_through_the_pulse_integral(name: str):
     """Against central differences, because there is no second route to the
     per-channel maps: the pair is the only thing that reads them.
     """
-    from torchsim.sequence import EpgEngine, TissueProperties
+    from blochsim.sequence import EpgEngine, TissueProperties
 
     magnitude, phase = _sensitivities()
     split, _ = _split_across_two_channels(
@@ -1526,7 +1526,7 @@ def test_a_forward_direction_follows_the_pair():
     brings a cotangent back from it, so a directional derivative through the
     per-channel maps is the one differencing the simulation gives.
     """
-    from torchsim.sequence import EpgEngine, TissueProperties
+    from blochsim.sequence import EpgEngine, TissueProperties
 
     magnitude, phase = _sensitivities()
     split, _ = _split_across_two_channels(
@@ -1568,7 +1568,7 @@ def test_a_hessian_vector_product_reaches_through_the_pair():
     """The second derivative is the first one differenced, and the pair carries
     both halves: a direction along it going in, a curvature coming back.
     """
-    from torchsim.sequence import EpgEngine, TissueProperties
+    from blochsim.sequence import EpgEngine, TissueProperties
 
     magnitude, phase = _sensitivities()
     nominal = torch.deg2rad(torch.linspace(100.0, 170.0, ECHOES))
@@ -1755,7 +1755,7 @@ def test_a_moving_gradient_has_to_last_the_pulse():
     gradient that runs out before the RF does is a caller's mistake, not a
     shorter pulse.
     """
-    from torchsim.sequence._transition import compose_spinor
+    from blochsim.sequence._transition import compose_spinor
 
     drive = [torch.tensor(0.1, dtype=torch.complex128) for _ in range(4)]
     turns = [torch.zeros(2, dtype=torch.float64) for _ in range(3)]
@@ -1798,7 +1798,7 @@ class _Elsewhere:
 
 
 def _streamed(monkeypatch):
-    from torchsim import (
+    from blochsim import (
         _execution,
     )
 
@@ -1812,7 +1812,7 @@ def test_the_streamed_route_refuses_a_per_voxel_pair(monkeypatch, pass_name):
     would have to cut it the same way -- and is told to say so rather than
     quietly reach for a hard pulse.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _run_packed,
         _run_packed_jvp,
         _run_packed_vjp,
@@ -1838,7 +1838,7 @@ def test_the_streamed_route_still_takes_a_train_with_no_pair(monkeypatch):
     """The guard has to be about the pair and not about the route, or a plain
     sequence would lose streaming with it.
     """
-    from torchsim.sequence._accelerators import _carries_the_pair
+    from blochsim.sequence._accelerators import _carries_the_pair
 
     assert _carries_the_pair(None, "streamed") is None
 
@@ -1848,8 +1848,8 @@ def test_the_sharded_route_refuses_a_per_voxel_pair():
     """Shards cut the trains rather than the voxels, but each device gets its
     own launch and the pair would have to travel with it.
     """
-    from torchsim.sequence._accelerators import _run_packed, distribute
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _run_packed, distribute
+    from blochsim.sequence._transition import DynamicPairs
 
     prepared, events, pairs, echoes = _real_subspace_train(trains=4)
     prepared = tuple(value.cuda() for value in prepared)
@@ -1871,10 +1871,10 @@ def _pooled_train(**properties):
     so a pair beside a pool is an instantiation of its own -- and one nothing
     reached until now.
     """
-    from torchsim.sequence._accelerators import _pack_events
-    from torchsim.sequence._builders import fse_description
-    from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence._accelerators import _pack_events
+    from blochsim.sequence._builders import fse_description
+    from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
+    from blochsim.sequence._transition import DynamicPairs
 
     definition = _pulse(samples=96)
     flips = torch.deg2rad(torch.linspace(100.0, 170.0, ECHOES))
@@ -1960,8 +1960,8 @@ def test_a_pair_reaches_every_pool_the_kernels_carry(pool: str):
     """One instantiation of the kernel template per (rotation, pools), against
     the oracle reading the same buffers.
     """
-    from torchsim.sequence._accelerators import _run_packed
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._lineshape import lineshape_table
 
     prepared, events, pairs, echoes = _pooled_train(**POOLS[pool])
     carried = dict(
@@ -1991,8 +1991,8 @@ def test_a_pool_moves_the_answer_a_pair_gives(pool: str):
     """The agreement above is only worth having if the pool is doing something,
     so the same train without one must record a different signal.
     """
-    from torchsim.sequence._accelerators import _run_packed
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._lineshape import lineshape_table
 
     prepared, events, pairs, echoes = _pooled_train(**POOLS[pool])
     bare, _, _, _ = _pooled_train()
@@ -2022,9 +2022,9 @@ def test_a_pair_takes_the_first_order_kernel_on_the_card(state_count):
     state count before, and the pair adds a per-event load and an atomic the
     others do not make.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
-    from torchsim.sequence._transition import DynamicPairs
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()
     prepared = tuple(value.cuda() for value in prepared)

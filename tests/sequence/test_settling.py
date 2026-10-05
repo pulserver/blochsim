@@ -16,18 +16,18 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     SequenceDescription,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _builders,
     ideal_rf_definition,
     operator,
 )
-from torchsim.sequence._operators import Excitation, compose
-from torchsim.sequence._settling import settled
+from blochsim.sequence._operators import Excitation, compose
+from blochsim.sequence._settling import settled
 
 STATES = 32
 

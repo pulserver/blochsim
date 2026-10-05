@@ -1,4 +1,4 @@
-"""Figures for the explanation pages, drawn from the TorchSim in the tree.
+"""Figures for the explanation pages, drawn from the BlochSim in the tree.
 
 Every figure is a function returning a Matplotlib figure, registered in
 :data:`FIGURES` under the file stem the pages reference it by. The Sphinx
@@ -26,9 +26,9 @@ import numpy as np
 import torch
 from figure_style import FOREGROUND, STYLE
 
-from torchsim.model import Simulator
-from torchsim.sequence import Delay, EventAction, Excitation, SPGRReadout
-from torchsim.simulators import FSESimulator, MRFSimulator, SPGRSimulator
+from blochsim.model import Simulator
+from blochsim.sequence import Delay, EventAction, Excitation, SPGRReadout
+from blochsim.simulators import FSESimulator, MRFSimulator, SPGRSimulator
 
 #: The example sequence the description figures are read from.
 SEQ_FILE = Path(__file__).resolve().parent.parent / "examples/01-framework/fse.seq"
@@ -383,7 +383,7 @@ def phase_graph():
         xlabel="time [ms]",
         ylabel="|signal|",
         ylim=(0, 1.05 * signal.max()),
-        title="what TorchSim records there",
+        title="what BlochSim records there",
     )
     return figure
 
@@ -1227,7 +1227,7 @@ def _example_sequence():
 
 def description_blocks():
     """A Pulseq block table above the event stream it is read as."""
-    from torchsim.sequence import EventType, SequenceDescription
+    from blochsim.sequence import EventType, SequenceDescription
 
     sequence = _example_sequence()
     described = SequenceDescription.from_pulseq(SEQ_FILE)
@@ -1311,7 +1311,7 @@ def description_blocks():
 
 def description_echo():
     """Where each readout sits in k-space, and which one bears the echo."""
-    from torchsim.sequence import SequenceDescription
+    from blochsim.sequence import SequenceDescription
 
     sequence = _example_sequence()
     described = SequenceDescription.from_pulseq(SEQ_FILE)

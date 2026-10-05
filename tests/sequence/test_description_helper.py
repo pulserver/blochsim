@@ -1,7 +1,7 @@
 """Assembling a description out of operators in one call.
 
-The claim is only that :func:`~torchsim.description` is
-:func:`~torchsim.compose` with the surrounding fields filled in, so what is
+The claim is only that :func:`~blochsim.description` is
+:func:`~blochsim.compose` with the surrounding fields filled in, so what is
 checked is that a description built the short way simulates to the same signal
 as one built the long way -- and that the fields a caller does not name take
 values that mean "nothing here" rather than being quietly dropped.
@@ -14,7 +14,7 @@ import math
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     Delay,
     Excitation,
     Readout,
@@ -22,7 +22,7 @@ from torchsim import (
     SequenceDescription,
     ShimDefinition,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     compose,

@@ -10,19 +10,19 @@ from unittest import mock
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     fse_description,
 )
-from torchsim.sequence import _accelerators as accelerators
-from torchsim.sequence._accelerators import (
+from blochsim.sequence import _accelerators as accelerators
+from blochsim.sequence._accelerators import (
     _one_axis,
     _pack_events,
     _run_packed,
     real_subspace_axis,
 )
-from torchsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
-from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+from blochsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
+from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
 # The gradients a real adjoint does produce: every differentiable input the
 # subspace contains. Derived rather than listed, so a new parameter cannot
@@ -120,7 +120,7 @@ def _buffers(packed):
 @pytest.mark.parametrize("phase", [0.0, torch.pi / 4, torch.pi / 2])
 def test_real_kernel_reproduces_the_complex_one(phase):
     """The real kernel is an optimization, not an approximation."""
-    from torchsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._accelerators import _run_packed
 
     description = fse_description(
         _flip(),
@@ -147,7 +147,7 @@ def test_real_kernel_reproduces_the_complex_one(phase):
 
 def test_real_jvp_reproduces_the_complex_one():
     """Forward mode along T2 stays inside the subspace, so the kernels agree."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     description = fse_description(
         _flip(),
@@ -192,7 +192,7 @@ def test_real_adjoint_reproduces_the_complex_one(phase, always_worth_detecting):
     -- so the verdict is reached through ``wanted`` rather than handed over,
     which is the route the public adjoint takes.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     description = fse_description(
         _flip(),
@@ -243,7 +243,7 @@ def test_the_real_adjoint_reaches_the_inversion_gradient():
     the representation describes a sequence the builders produce, and a train
     assembled from scratch is not one.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _INVERSION,
         _run_packed_vjp,
     )
@@ -310,7 +310,7 @@ def test_the_real_adjoint_reaches_the_inversion_gradient():
 
 def test_real_second_order_kernel_reproduces_the_complex_one():
     """Forward-over-reverse agrees on every gradient the subspace contains."""
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     description = fse_description(
         _flip(),
@@ -385,7 +385,7 @@ def _packed(trains):
 # the block's first train. These counts straddle that boundary.
 @pytest.mark.parametrize("trains", [1, 7, 8, 9, 17])
 def test_partial_train_blocks_match_the_complex_kernel(trains):
-    from torchsim.sequence._accelerators import _run_packed_jvp, _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp, _run_packed_vjp_jvp
 
     packed = _packed(trains)
     events = _buffers(packed)
@@ -456,7 +456,7 @@ def _tissue_events(trains, echoes=20, atoms=64, b0_hz=0.0):
 
 def _trains_worth(share, echoes=20, atoms=64):
     """Enough trains to carry ``share`` of the work the test is worth at."""
-    from torchsim.sequence._calibration import detection
+    from blochsim.sequence._calibration import detection
 
     events, _tissue, _count = _tissue_events(1, echoes=echoes, atoms=atoms)
     per_train = atoms * int(events[1].numel())
@@ -466,7 +466,7 @@ def _trains_worth(share, echoes=20, atoms=64):
 
 def test_the_fast_path_is_chosen_without_being_asked():
     """A caller should not have to know the subspace rule to benefit from it."""
-    from torchsim.sequence._accelerators import _auto_real_axis, _run_packed
+    from blochsim.sequence._accelerators import _auto_real_axis, _run_packed
 
     events, tissue, count = _tissue_events(_trains_worth(8))
     assert _auto_real_axis("forward", events, tissue) == 1
@@ -477,7 +477,7 @@ def test_the_fast_path_is_chosen_without_being_asked():
 
 
 def test_off_resonance_is_not_chosen():
-    from torchsim.sequence._accelerators import _auto_real_axis
+    from blochsim.sequence._accelerators import _auto_real_axis
 
     events, tissue, _ = _tissue_events(_trains_worth(8), b0_hz=15.0)
     assert _auto_real_axis("forward", events, tissue) is None
@@ -492,8 +492,8 @@ def test_a_tiny_problem_skips_the_test_that_would_cost_more_than_it_saves(monkey
     machine could land either side of it. The rule is the same whatever the
     number: work under the threshold is not worth the test.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _auto_real_axis
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _auto_real_axis
 
     events, tissue, _ = _tissue_events(1, atoms=2)
     work = 2 * int(events[1].numel())
@@ -511,7 +511,7 @@ def test_a_seed_that_leaves_the_subspace_is_not_chosen(direction):
     verdict has to look at the seed as well; otherwise the fast path would
     silently return zero for exactly the direction that was asked for.
     """
-    from torchsim.sequence._accelerators import _auto_real_axis
+    from blochsim.sequence._accelerators import _auto_real_axis
 
     events, tissue, _ = _tissue_events(_trains_worth(8))
     seed = tuple(
@@ -525,7 +525,7 @@ def test_a_seed_that_leaves_the_subspace_is_not_chosen(direction):
 
 
 def test_an_rf_phase_seed_is_not_chosen():
-    from torchsim.sequence._accelerators import _auto_real_axis
+    from blochsim.sequence._accelerators import _auto_real_axis
 
     events, tissue, _ = _tissue_events(_trains_worth(8))
     zeros = tuple(torch.zeros_like(value) for value in tissue)
@@ -584,7 +584,7 @@ _FLIP = FLOAT_NAMES.index("flip")
 )
 def test_the_adjoint_verdict_follows_what_the_caller_will_read(wanted, expected):
     """A real adjoint is three gradients short, so it depends who is asking."""
-    from torchsim.sequence._accelerators import _auto_real_axis_adjoint
+    from blochsim.sequence._accelerators import _auto_real_axis_adjoint
 
     events, tissue, tangents, _cotangent, _count = _adjoint_case(_trains_worth(8))
 
@@ -596,11 +596,11 @@ def test_the_adjoint_verdict_follows_what_the_caller_will_read(wanted, expected)
 )
 def test_wanting_a_gradient_outside_the_subspace_keeps_the_complex_kernel(position):
     """Each is genuinely non-zero; returning zero would be wrong."""
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _auto_real_axis_adjoint,
         _run_packed_vjp_jvp,
     )
-    from torchsim.sequence._parameters import Geometry
+    from blochsim.sequence._parameters import Geometry
 
     events, tissue, tangents, cotangent, count = _adjoint_case(_trains_worth(8))
     wanted = _only(_FLIP, position)
@@ -626,7 +626,7 @@ def test_wanting_a_gradient_outside_the_subspace_keeps_the_complex_kernel(positi
 
 def test_an_adjoint_that_stays_in_the_subspace_reaches_the_real_kernel():
     """Bitwise, because only the same kernel gives the same bits."""
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     events, tissue, tangents, cotangent, count = _adjoint_case(_trains_worth(8))
     shared = (tissue, events, tangents, cotangent, 10, count, 1)
@@ -639,10 +639,10 @@ def test_an_adjoint_that_stays_in_the_subspace_reaches_the_real_kernel():
 
 def _forward_over_reverse(atoms):
     """A directional derivative, differentiated: what backward fuses."""
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         EpgEngine,
     )
-    from torchsim.sequence._simulation import TissueProperties
+    from blochsim.sequence._simulation import TissueProperties
 
     generator = torch.Generator().manual_seed(0)
     flip = torch.deg2rad(80.0 + 80.0 * torch.rand(20, generator=generator))
@@ -668,7 +668,7 @@ def test_autograd_asks_for_what_the_graph_needs(monkeypatch, always_worth_detect
     Differentiating T2 stays inside the subspace, so the fast adjoint is
     available -- and the answer must not depend on it being taken.
     """
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     chosen = []
     original = _accelerators._auto_real_axis_adjoint
@@ -706,8 +706,8 @@ def test_the_cuda_real_adjoint_agrees_with_the_second_order_kernel(
     Widths are swept because a reverse kernel has miscompiled silently at one
     state count before, and a single width would not have caught it.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     description = fse_description(
         _flip(),
@@ -786,8 +786,8 @@ def test_the_device_adjoint_stops_short_of_the_forward_over_reverse_pass(
     """The first-order kernel is the point of this route, so the test above has
     to be reaching it rather than agreeing with itself.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     description = fse_description(
         _flip(),
@@ -839,7 +839,7 @@ def test_the_device_adjoint_stops_short_of_the_forward_over_reverse_pass(
 
 def _spoiled_axis(phases_rad):
     """The verdict and the signal for an unbalanced train of the given phases."""
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         mrf_description,
     )
 
@@ -887,7 +887,7 @@ def test_rf_spoiling_breaks_the_subspace():
 
 def test_the_real_kernel_reproduces_the_complex_one_without_refocusing():
     """The widened verdict is an optimization, not an approximation."""
-    from torchsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._accelerators import _run_packed
 
     axis, _, packed, prepared = _spoiled_axis(0.0)
     assert axis == 1
@@ -905,7 +905,7 @@ def test_a_declared_tissue_settles_the_question_without_a_buffer():
     is the whole answer: the verdict is the same one the reduction gives, and
     it is reached without reading the buffer that reduction would read.
     """
-    from torchsim.sequence._parameters import features_of
+    from blochsim.sequence._parameters import features_of
 
     description = fse_description(
         _flip(), echo_spacing_s=ECHO_SPACING_S, phases_rad=0.0, excitation_phase_rad=0.0
@@ -942,7 +942,7 @@ def test_a_map_of_zeros_keeps_the_axis_it_declares_it_has_left():
     whatever the map holds, and a map of zeros is one a run should not lose the
     fast path to.
     """
-    from torchsim.sequence._parameters import features_of
+    from blochsim.sequence._parameters import features_of
 
     description = fse_description(
         _flip(), echo_spacing_s=ECHO_SPACING_S, phases_rad=0.0, excitation_phase_rad=0.0
@@ -1000,7 +1000,7 @@ def test_a_rewritten_phase_buffer_is_read_again():
 # block writes and every per-event gradient it sums has to ignore them.
 @pytest.mark.parametrize("atoms", [7, 8, 9, 17])
 def test_partial_atom_blocks_of_the_adjoint_match_the_complex_kernel(atoms):
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _auto_real_axis_adjoint,
         _run_packed_vjp,
     )

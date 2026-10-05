@@ -2,7 +2,7 @@
 
 Run by cibuildwheel against every wheel it builds, on the interpreter that
 wheel claims to support. It loads each extension by file path rather than by
-importing :mod:`torchsim`, so the check needs no PyTorch and says something
+importing :mod:`blochsim`, so the check needs no PyTorch and says something
 about the binary alone: that the stable-ABI module initialises on this
 interpreter, and that it carries no vendored library.
 
@@ -22,9 +22,9 @@ LARGEST_REASONABLE_BYTES = 16 * 1024 * 1024
 
 def kernel_directory() -> pathlib.Path:
     """Where the installed package lives, without executing it."""
-    spec = importlib.util.find_spec("torchsim")
+    spec = importlib.util.find_spec("blochsim")
     if spec is None or not spec.submodule_search_locations:
-        raise SystemExit("torchsim is not installed")
+        raise SystemExit("blochsim is not installed")
     return pathlib.Path(next(iter(spec.submodule_search_locations)))
 
 
@@ -38,7 +38,7 @@ def main() -> int:
 
     for path in kernels:
         name = path.name.split(".")[0]
-        spec = importlib.util.spec_from_file_location(f"torchsim.{name}", path)
+        spec = importlib.util.spec_from_file_location(f"blochsim.{name}", path)
         if spec is None or spec.loader is None:
             raise SystemExit(f"no loader for {path}")
         module = importlib.util.module_from_spec(spec)

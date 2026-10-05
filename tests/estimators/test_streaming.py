@@ -11,13 +11,13 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     PERK,
     DictionaryMatcher,
 )
-from torchsim.estimators import _perk
-from torchsim.sequence import execution
-from torchsim.simulators import MRFSimulator
+from blochsim.estimators import _perk
+from blochsim.sequence import execution
+from blochsim.simulators import MRFSimulator
 
 CUDA = pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 TWO_CARDS = pytest.mark.skipif(

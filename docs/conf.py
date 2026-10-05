@@ -51,9 +51,9 @@ torch.set_num_threads(min(torch.get_num_threads(), _cores_allowed()))
 
 # -- Project information -----------------------------------------------------
 
-project = "torchsim"
-copyright = "2024, TorchSim Contributors"
-author = "TorchSim Contributors"
+project = "blochsim"
+copyright = "2024, BlochSim Contributors"
+author = "BlochSim Contributors"
 
 # -- General configuration ---------------------------------------------------
 
@@ -142,10 +142,10 @@ highlight_language = "python"
 #: Which of the published versions this build is: ``latest`` for the
 #: development branch, the tag for a release. One directory of the site per
 #: version, and the switcher marks the one being read.
-DOCS_VERSION = os.environ.get("TORCHSIM_DOCS_VERSION", "latest")
+DOCS_VERSION = os.environ.get("BLOCHSIM_DOCS_VERSION", "latest")
 
 #: Where the pages are served from.
-PAGES_URL = "https://pulserver.github.io/torchsim"
+PAGES_URL = "https://pulserver.github.io/blochsim"
 
 # -- Options for Sphinx Gallery ----------------------------------------------
 
@@ -189,7 +189,7 @@ GALLERY_SCRIPTS = [
 #: example runs where everything it imports is installed, so an environment
 #: holding the ``examples`` extra executes the whole gallery -- which is what
 #: the published pages are built with -- and one holding ``doc`` alone
-#: executes what needs nothing but TorchSim, which is what a branch is
+#: executes what needs nothing but BlochSim, which is what a branch is
 #: checked with while it waits.
 UNRUNNABLE = {
     script: missing
@@ -207,9 +207,9 @@ EXECUTED_PATTERN = (
 )
 
 sphinx_gallery_conf = {
-    "doc_module": "torchsim",
+    "doc_module": "blochsim",
     "backreferences_dir": "generated/gallery_backreferences",
-    "reference_url": {"torchsim": None},
+    "reference_url": {"blochsim": None},
     "examples_dirs": ["../examples/"],
     "gallery_dirs": ["generated/autoexamples"],
     "filename_pattern": EXECUTED_PATTERN,
@@ -223,7 +223,7 @@ sphinx_gallery_conf = {
     "reset_modules": ("figure_style.reset", "seaborn"),
     "binder": {
         "org": "pulserver",
-        "repo": "torchsim",
+        "repo": "blochsim",
         "branch": "gh-pages",
         "binderhub_url": "https://mybinder.org",
         "dependencies": [
@@ -258,7 +258,7 @@ html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_theme_options = {
-    "repository_url": "https://github.com/pulserver/torchsim",
+    "repository_url": "https://github.com/pulserver/blochsim",
     "use_repository_button": True,
     "use_issues_button": True,
     "use_edit_page_button": True,
@@ -275,6 +275,11 @@ html_theme_options = {
     "show_navbar_depth": 1,
     "max_navbar_depth": 3,
     "navbar_persistent": [],
+    "logo": {
+        "image_light": "_static/blochsim-mark.svg",
+        "image_dark": "_static/blochsim-mark-dark.svg",
+        "alt_text": "blochsim",
+    },
 }
 
 #: The theme's own sidebar, with the version switcher under the title.
@@ -291,9 +296,8 @@ html_sidebars = {
 #: One canonical address per page, under the version it belongs to.
 html_baseurl = f"{PAGES_URL}/{DOCS_VERSION}/"
 
-# html_logo = "_static/logos/mri-nufft.png"
-# html_favicon = "_static/logos/mri-nufft-icon.png"
-html_title = "TorchSim Documentation"
+html_favicon = "_static/blochsim-mark.svg"
+html_title = "BlochSim Documentation"
 
 
 def _skip_undocumented_specials(app, what, name, obj, skip, options):
@@ -374,7 +378,7 @@ def _unflagged(content: str) -> str:
 
 
 def _draw_explanation_figures(app) -> None:
-    """Render the explanation pages' figures with the TorchSim being built.
+    """Render the explanation pages' figures with the BlochSim being built.
 
     They are simulated rather than drawn once and checked in, so a figure on
     those pages cannot outlive the behaviour it shows.

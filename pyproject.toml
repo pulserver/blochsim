@@ -4,7 +4,7 @@ requires = ["scikit-build-core>=0.10", "setuptools-scm>=8"]
 
 
 [project]
-name = "torchsim"
+name = "blochsim"
 description = "A feature-rich MR simulator supporting massive parallelization on GPU and automatic differentiation."
 readme = "README.md"
 
@@ -62,7 +62,7 @@ pulseq = [
 ]
 # What it takes to run the suite. Nothing here is imported by the package.
 test = [
-"torchsim[pulseq]",
+"blochsim[pulseq]",
 "pytest>=7.0",
 "pytest-cov",
 "pytest-sugar",
@@ -75,7 +75,7 @@ test = [
 doc = [
 # The explanation figures and the getting-started example read the shipped
 # ``.seq`` file, which pypulseq parses.
-"torchsim[pulseq]",
+"blochsim[pulseq]",
 "sphinx>=7.0",
 "sphinx_book_theme>=1.1",
 "sphinx-design>=0.6",
@@ -92,7 +92,7 @@ doc = [
 # phantoms, the segmentation, the coils, the Fourier encoding and the linear
 # solvers all come from elsewhere, which is the point several examples make.
 examples = [
-"torchsim[pulseq]",
+"blochsim[pulseq]",
 "brainweb-dl>=0.3",
 "deepinv>=0.2",
 "deepmriprep>=0.3",
@@ -102,7 +102,7 @@ examples = [
 ]
 # The whole toolchain in one command, which is what a contributor installs.
 dev = [
-"torchsim[test,doc,examples]",
+"blochsim[test,doc,examples]",
 "ruff>=0.14",
 "mypy",
 "pre-commit",
@@ -111,23 +111,23 @@ dev = [
 # List URLs that are relevant to your project
 # This field corresponds to the "Project-URL" and "Home-Page" metadata fields:
 [project.urls]  # Optional
-"Homepage" = "https://github.com/pulserver/torchsim"
-"Documentation" = "https://pulserver.github.io/torchsim/"
-"Bug Reports" = "https://github.com/pulserver/torchsim/issues"
-"Source" = "https://github.com/pulserver/torchsim"
+"Homepage" = "https://github.com/pulserver/blochsim"
+"Documentation" = "https://pulserver.github.io/blochsim/"
+"Bug Reports" = "https://github.com/pulserver/blochsim/issues"
+"Source" = "https://github.com/pulserver/blochsim"
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
 build-dir = "build/{wheel_tag}"
 cmake.version = ">=3.26"
-wheel.packages = ["src/torchsim"]
+wheel.packages = ["src/blochsim"]
 # One wheel per platform rather than one per interpreter: the kernels are built
 # against the CPython stable ABI from 3.10 on, so the tag is cp310-abi3.
 wheel.py-api = "cp310"
 # What ships is the compiled kernel, not the source it was compiled from.
 wheel.exclude = ["*.cpp", "*.hpp"]
 metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
-sdist.include = ["src/torchsim/_version.py"]
+sdist.include = ["src/blochsim/_version.py"]
 
 # One wheel per platform, built by cibuildwheel in .github/workflows/wheels.yml.
 [tool.cibuildwheel]
@@ -159,7 +159,7 @@ archs = ["arm64", "x86_64"]
 archs = ["AMD64"]
 
 [tool.setuptools_scm]
-write_to = "src/torchsim/_version.py"
+write_to = "src/blochsim/_version.py"
 version_scheme = "python-simplified-semver"
 local_scheme="no-local-version"
 fallback_version="v99-dev"
@@ -167,7 +167,7 @@ fallback_version="v99-dev"
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = [
-    "--cov=torchsim",
+    "--cov=blochsim",
     "--cov-report=term-missing",
     "--cov-report=xml",
     "-m", "not interpreted"
@@ -186,7 +186,7 @@ markers = [
 required-version = ">=0.14"
 src = ["src", "tests"]
 line-length = 88
-extend-exclude = ["docs/generated", "src/torchsim/_version.py"]
+extend-exclude = ["docs/generated", "src/blochsim/_version.py"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -206,7 +206,7 @@ ignore = [
     "D401",
     "D404", # Imperative mode is not necessary everywhere, trust me.
     "E501", # line length is the formatter's to decide, not the linter's
-    # Every collaborator TorchSim takes at a boundary is duck-typed on purpose:
+    # Every collaborator BlochSim takes at a boundary is duck-typed on purpose:
     # an acquisition is anything with ``simulate``, an encoding anything with
     # ``A`` and ``A_adjoint``, and naming a class there would close the door
     # this package exists to hold open. The docstring says what is expected.
@@ -227,10 +227,10 @@ ignore = [
 "scripts/**" = ["ANN", "D1"]
 # A Triton kernel's parameters are compile-time constants and tensors the
 # compiler types itself; an annotation on one says nothing Python will read.
-"src/torchsim/**/*_triton.py" = ["ANN"]
+"src/blochsim/**/*_triton.py" = ["ANN"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["torchsim"]
+known-first-party = ["blochsim"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
