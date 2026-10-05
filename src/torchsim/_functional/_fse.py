@@ -2,6 +2,8 @@
 
 __all__ = ["fse_sim"]
 
+from typing import Any
+
 import numpy.typing as npt
 import torch
 
@@ -18,11 +20,12 @@ def fse_sim(
     TR: float | npt.ArrayLike = 1e6,
     exc_flip: float = 90.0,
     exc_phase: float = 90.0,
-    diff: str | tuple[str] = None,
+    diff: str | tuple[str, ...] | None = None,
     B1: float | npt.ArrayLike = 1.0,
     M0: float | npt.ArrayLike = 1.0,
     states: int = 10,
-    device: str | torch.device = None,
+    device: str | torch.device | None = None,
+    **values: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     Fast Spin Echo simulator wrapper.
@@ -35,7 +38,7 @@ def fse_sim(
         Echo spacing in milliseconds.
     phases : float | npt.ArrayLike, optional
         Refocusing flip angle phases in degrees.
-        The default is ``90.0``.
+        The default is ``0.0``.
     TR : float | npt.ArrayLike, optional
         Repetition time in milliseconds.
         The default is ``1e6``.
@@ -44,7 +47,7 @@ def fse_sim(
         The default is ``90.0``.
     exc_phase : float, optional
         Excitation flip angle phase in degrees.
-        The default is ``0.0``.
+        The default is ``90.0``.
     T1 : float | npt.ArrayLike
         Longitudinal relaxation time in milliseconds.
     T2 : float | npt.ArrayLike
@@ -54,16 +57,15 @@ def fse_sim(
         The default is ``None`` (no differentation).
     B1 : float | npt.ArrayLike, optional
         Flip angle scaling map, default is ``1.0``.
-    inv_efficiency : float | npt.ArrayLike, optional
-        Inversion efficiency map, default is ``1.0``.
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
-    TI : float | npt.ArrayLike, optional
-        Inversion time in milliseconds.
-        The default is ``0.0``.
     states : int, optional
         Number of EPG states to be retained.
         The default is ``10``.
+    **values : optional
+        Additional call-time tissue, protocol or run settings accepted by
+        ``Simulator.simulate``. Settings fixed only at simulator construction
+        remain class-interface features.
     device : str | torch.device, optional
         Computational device for simulation.
         The default is ``None`` (infer from input).
@@ -93,4 +95,5 @@ def fse_sim(
         exc_flip=exc_flip,
         exc_phase=exc_phase,
         states=states,
+        **values,
     )

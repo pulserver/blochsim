@@ -2,6 +2,8 @@
 
 __all__ = ["spgr_sim"]
 
+from typing import Any
+
 import numpy.typing as npt
 import torch
 
@@ -15,11 +17,12 @@ def spgr_sim(
     TR: float,
     T1: float | npt.ArrayLike,
     T2star: float | npt.ArrayLike,
-    diff: str | tuple[str] = None,
+    diff: str | tuple[str, ...] | None = None,
     B0: float | npt.ArrayLike = 0.0,
     chemshift: float | npt.ArrayLike = 0.0,
     M0: float | npt.ArrayLike = 1.0,
-    device: str | torch.device = None,
+    device: str | torch.device | None = None,
+    **values: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     SPoiled Gradient Recalled echo simulator wrapper.
@@ -41,10 +44,14 @@ def spgr_sim(
         The default is ``None`` (no differentation).
     B0 : float | npt.ArrayLike, optional
         Frequency offset map in Hz, default is ``0.0.``
-    chemshift : float | npt.ArrayLik, optional
+    chemshift : float | npt.ArrayLike, optional
         Chemical shift in Hz, default is ``0.0``.
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
+    **values : optional
+        Additional call-time tissue, protocol or run settings accepted by
+        ``Simulator.simulate``. Settings fixed only at simulator construction
+        remain class-interface features.
     device : str | torch.device, optional
         Computational device for simulation.
         The default is ``None`` (infer from input).
@@ -71,4 +78,5 @@ def spgr_sim(
         flip=flip,
         TR=TR,
         TE=TE,
+        **values,
     )

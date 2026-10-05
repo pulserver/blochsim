@@ -2,6 +2,8 @@
 
 __all__ = ["mprage_sim"]
 
+from typing import Any
+
 import numpy.typing as npt
 import torch
 
@@ -15,10 +17,12 @@ def mprage_sim(
     TRspgr: float,
     nshots: int | npt.ArrayLike,
     T1: float | npt.ArrayLike,
-    diff: str | tuple[str] = None,
+    diff: str | tuple[str, ...] | None = None,
     inv_efficiency: float | npt.ArrayLike = 1.0,
     M0: float | npt.ArrayLike = 1.0,
-    device: str | torch.device = None,
+    phases: float | npt.ArrayLike = 0.0,
+    device: str | torch.device | None = None,
+    **values: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     MPRAGE simulator wrapper.
@@ -46,9 +50,12 @@ def mprage_sim(
         Inversion efficiency map, default is ``1.0``.
     M0 : float or array-like, optional
         Proton density scaling factor, default is ``1.0``.
-    TI : float | npt.ArrayLike, optional
-        Inversion time in milliseconds.
-        The default is ``0.0``.
+    phases : float or array-like, optional
+        Sequence phase schedule in degrees. The default is ``0.0``.
+    **values : optional
+        Additional call-time tissue, protocol or run settings accepted by
+        ``Simulator.simulate``. Settings fixed only at simulator construction
+        remain class-interface features.
     device : str | torch.device, optional
         Computational device for simulation.
         The default is ``None`` (infer from input).
@@ -74,4 +81,6 @@ def mprage_sim(
         flip=flip,
         TRspgr=TRspgr,
         nshots=nshots,
+        phases=phases,
+        **values,
     )
