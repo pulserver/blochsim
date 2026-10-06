@@ -214,7 +214,7 @@ def test_the_gpu_kernels_are_the_fused_line_and_its_adjoint() -> None:
     blocks the kernels walk them in, so every edge of the tiling is read.
     """
     gpu = pytest.importorskip("blochsim.estimators._perk_gpu")
-    pytest.importorskip("blochsim._gpu_host")
+    pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
     generator = torch.Generator().manual_seed(0)
     voxels, contrasts, features, parameters = 300, 37, 45, 17
     signals = torch.randn(voxels, contrasts, generator=generator)

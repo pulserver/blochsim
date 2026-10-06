@@ -251,8 +251,8 @@ diffusion, flow, spoiling, the two-pool and three-pool longitudinal steps --
 while `sequence/`, `model/`, `estimators/`, `recon/` and `optim/`
 cover the layers above.
 
-**The GPU kernels run without a card.** The install compiles them for the
-host as well, one program at a time over host tensors, and
+**The GPU kernels run without a card.** On Linux the install compiles them
+for the host as well, one program at a time over host tensors, and
 `tests/sequence/test_host_kernels.py` and `test_many_pools_host.py` hold that
 build to the C++ kernels. That is how the GPU kernels are verified on a
 machine with no card; the tests that need one skip themselves.

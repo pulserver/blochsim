@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import pytest
 
+pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
+
 from utils import host_kernels
 
 

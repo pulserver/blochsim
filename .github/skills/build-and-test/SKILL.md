@@ -44,7 +44,8 @@ spoiling, the two-pool and three-pool longitudinal steps — while `sequence/`,
 
 ## The GPU kernels, without a GPU
 
-The install compiles the GPU kernels for the host as `blochsim._gpu_host`, and
+On Linux the install compiles the GPU kernels for the host as
+`blochsim._gpu_host`, and
 for the card as `blochsim._gpu` wherever CMake finds `nvcc`
 (`--config-settings=cmake.define.BLOCHSIM_CUDA=ON` insists on it).
 `tests/sequence/test_host_kernels.py` and `test_many_pools_host.py` run the

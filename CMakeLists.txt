@@ -59,22 +59,23 @@ blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)
 
 # The GPU kernels compiled for the host, one program at a time. Nothing in the
 # package dispatches to them; they are how the suite checks the GPU kernels on
-# a machine with no card.
-option(BLOCHSIM_HOST_KERNELS "Compile the GPU kernels for the host, for the tests" ON)
+# a machine with no card. Linux only, like the card's build.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(_blochsim_host_default ON)
+else()
+    set(_blochsim_host_default OFF)
+endif()
+option(BLOCHSIM_HOST_KERNELS "Compile the GPU kernels for the host, for the tests"
+    ${_blochsim_host_default})
 if(BLOCHSIM_HOST_KERNELS)
     blochsim_add_kernel(_gpu_host src/blochsim/_gpu_host.cpp)
-    if(MSVC)
-        # Every kernel's tile instantiations in one object, and ``#pragma
-        # unroll``, which only nvcc reads.
-        target_compile_options(_gpu_host PRIVATE /bigobj /wd4068)
-    endif()
 endif()
 
 # The GPU kernels compiled ahead of time for the card, wherever a CUDA
 # compiler is found unless BLOCHSIM_CUDA says otherwise.
 include(CheckLanguage)
 check_language(CUDA)
-if(CMAKE_CUDA_COMPILER)
+if(CMAKE_CUDA_COMPILER AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(_blochsim_cuda_default ON)
 else()
     set(_blochsim_cuda_default OFF)

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import pytest
 
+pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
+
 from utils.host_pools import check
 
 PASSES = ("forward", "jvp", "vjp", "vjp_jvp")

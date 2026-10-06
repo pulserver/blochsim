@@ -1475,6 +1475,8 @@ def test_the_series_carries_the_answer_up_to_the_spread_it_is_trusted_to() -> No
     from blochsim.sequence._parameters import NARROW_SPREAD
 
     device = "cuda" if torch.cuda.is_available() and available() else "cpu"
+    if device == "cpu":
+        pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
     table_kernel = Kernel("_three_pool_table_kernel")
     voxels = 4096
     block = 1024

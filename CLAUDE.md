@@ -63,8 +63,8 @@ for `nvcc`, and `BLOCHSIM_CUDA=ON` or `OFF` (`--config-settings=cmake.define.BLO
 overrides what it finds; `CMAKE_CUDA_ARCHITECTURES` picks the cards. A kernel
 compiles in a file of its own, twice -- bounded to 256 threads and to 1024 --
 so a build is minutes of `nvcc` spread over as many cores as Ninja is given.
-The same kernels compiled for the host (`_gpu_host`) run one program at a
-time over host tensors; `tests/sequence/test_host_kernels.py` and
+On Linux the same kernels are also compiled for the host (`_gpu_host`), one
+program at a time over host tensors; `tests/sequence/test_host_kernels.py` and
 `test_many_pools_host.py` hold them to the C++ kernels, which is how the GPU
 path is verified on a machine with no card.
 
