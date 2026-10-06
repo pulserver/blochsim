@@ -88,6 +88,43 @@ def _first(values, state):
 
 
 @triton.jit
+def _sincos(x):
+    """The sine and cosine of ``x`` from one reduction by a quarter turn.
+
+    Cody and Waite's three-part quarter turn and the single-precision Cephes
+    polynomials on the eighth turn either side of zero, to about an ulp where
+    ``|x|`` is a flip angle; one reduction serves both where two library calls
+    would each make their own.
+    """
+    quarter = tl.extra.cuda.libdevice.rint(x * 0.6366197723675814)
+    r = x - quarter * 1.5703125
+    r = r - quarter * 4.837512969970703125e-4
+    r = r - quarter * 7.54978995489188216e-8
+    r2 = r * r
+    sine = r + r * r2 * (
+        -1.6666654611e-1 + r2 * (8.3321608736e-3 + r2 * -1.9515295891e-4)
+    )
+    cosine = (
+        1.0
+        - 0.5 * r2
+        + r2
+        * r2
+        * (
+            4.166664568298827e-2
+            + r2 * (-1.388731625493765e-3 + r2 * 2.443315711809948e-5)
+        )
+    )
+    q = quarter.to(tl.int32) & 3
+    s = tl.where(
+        q == 0, sine, tl.where(q == 1, cosine, tl.where(q == 2, -sine, -cosine))
+    )
+    c = tl.where(
+        q == 0, cosine, tl.where(q == 1, -sine, tl.where(q == 2, -cosine, sine))
+    )
+    return s, c
+
+
+@triton.jit
 def _event_value(values, event_base, event, active_atom, single_train: tl.constexpr):
     """One event's entry of a buffer carrying a row per train.
 
@@ -15207,8 +15244,7 @@ def _epg_kernel(
                         longitudinal_imag,
                     )
                 )
-            cosine = tl.cos(alpha)
-            sine = tl.sin(alpha)
+            sine, cosine = _sincos(alpha)
             cos_2phi = cos_phi * cos_phi - sin_phi * sin_phi
             sin_2phi = 2.0 * sin_phi * cos_phi
 
