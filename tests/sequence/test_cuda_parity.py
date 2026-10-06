@@ -559,3 +559,70 @@ def test_repeated_second_order_runs_agree_to_tolerance():
     second = _second_order("cuda", 17, 5)
 
     assert _worst_disagreement(first, second) < 1e-5
+
+
+@pytest.mark.parametrize(
+    "given",
+    [("b0_hz",), ("b0_hz", "b1"), ("b1_phase_rad",), ("b1_phase_rad", "b1")],
+)
+def test_one_half_of_the_off_axis_turn_matches_the_cpu_kernel(given):
+    """A tissue giving off-resonance or transmit phase alone, beside a map.
+
+    The two share one launch flag, so a kernel carrying either reads both per
+    voxel; a run that declares one is given room for the other. The spoiler
+    after each echo winds unlike the crushers, which keeps off-resonance in
+    the states rather than on the samples.
+    """
+    from torchsim.sequence import (
+        AdcRole,
+        EpgEngine,
+        EventAction,
+        EventType,
+        RfUse,
+        SequenceDescription,
+        SequenceEvent,
+        ideal_rf_definition,
+    )
+
+    events = []
+    for repetition in range(3):
+        start = 500_000.0 * repetition
+        events += [
+            SequenceEvent.rf(start + 1_000.0, 0, RfUse.EXCITATION, torch.pi / 2, 0.0),
+            SequenceEvent(EventType.WAIT, start + 3_000.0, (), EventAction.SHIFT_AFTER),
+            SequenceEvent.rf(
+                start + 7_000.0, 0, RfUse.REFOCUSING, torch.pi, torch.pi / 2
+            ),
+            SequenceEvent(EventType.WAIT, start + 9_000.0, (), EventAction.SHIFT_AFTER),
+            SequenceEvent.adc(start + 13_000.0, AdcRole.SINGLE, 0.0),
+            SequenceEvent(
+                EventType.WAIT, start + 20_000.0, (), EventAction.SHIFT_AFTER
+            ),
+        ]
+    description = SequenceDescription(
+        0, 1_500_000.0, tuple(events), {0: ideal_rf_definition()}
+    )
+    values = {
+        "b0_hz": [0.0, 1.0, 5.0, 13.0],
+        "b1": [1.0, 1.05, 0.9, 1.0],
+        "b1_phase_rad": [0.0, 0.1, 0.2, 0.3],
+    }
+    # Blocks the allocator hands out again, left holding something other than
+    # zero: a buffer read past its end then reads that, not a lucky zero.
+    dirty = [torch.full((64,), 7.0, device="cuda") for _ in range(256)]
+    del dirty
+    signals = []
+    for device in ("cpu", "cuda"):
+        tissue = TissueProperties(
+            t1_ms=torch.full((4,), 300.0, device=device),
+            t2_ms=torch.full((4,), 40.0, device=device),
+            **{name: torch.tensor(values[name], device=device) for name in given},
+        )
+        signals.append(
+            EpgEngine()
+            .simulate(description, tissue, record="all", device=device)
+            .signal
+        )
+    expected, actual = signals
+    scale = expected.abs().max()
+    assert ((expected - actual.cpu()).abs().max() / scale) < 1e-5

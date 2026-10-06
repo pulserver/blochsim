@@ -65,6 +65,11 @@ _TRANSMIT = frozenset((TISSUE_NAMES.index("b1"), TISSUE_NAMES.index("b1_phase_ra
 # relaxation times are the floor of the model rather than a term it switches on.
 _ALWAYS_PER_VOXEL = frozenset(("t1_ms", "t2_ms"))
 
+# Features one launch flag carries together, so that a kernel carrying either
+# reads every property of both: off-resonance and transmit phase are the one
+# ``off_axis`` turn (see ``feature_flags``).
+_READ_TOGETHER = (frozenset(("B0", "B1_PHASE")),)
+
 # Which fraction gates each exchanging pool, pool B's first.
 _POOL_FRACTIONS = (
     "pool_b_fraction",
@@ -686,6 +691,10 @@ def _prepare_tissue(
         if parameter.name not in _ALWAYS_PER_VOXEL
         and not (shims > 1 and index in _TRANSMIT)
     )
+    if features is not None:
+        for together in _READ_TOGETHER:
+            if together & features:
+                features = features | together
     unread = frozenset(
         index
         for index in spare

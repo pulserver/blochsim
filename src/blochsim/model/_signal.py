@@ -36,6 +36,7 @@ from __future__ import annotations
 
 __all__ = ["_SignalModel"]
 
+import numbers
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from copy import copy as shallow_copy
@@ -298,8 +299,22 @@ class _SignalModel(ABC):
 
 
 def _moved(values: Mapping[str, Any], device: torch.device) -> dict[str, Any]:
-    """The mapping with every tensor in it on ``device``, the rest untouched."""
-    return {
-        name: value.to(device) if torch.is_tensor(value) else value
-        for name, value in values.items()
-    }
+    """The mapping with every array in it on ``device``, the rest untouched.
+
+    Off the host, a list or tuple of numbers arrives as the tensor
+    :func:`as_torch` makes of it; on the host it stays as the caller wrote it.
+    """
+    return {name: _on(value, device) for name, value in values.items()}
+
+
+def _on(value: Any, device: torch.device) -> Any:
+    if torch.is_tensor(value):
+        return value.to(device)
+    numbers_given = (
+        isinstance(value, (list, tuple))
+        and len(value) > 0
+        and all(isinstance(entry, numbers.Real) for entry in value)
+    )
+    if numbers_given and device.type != "cpu":
+        return as_torch(value).to(device)
+    return value
