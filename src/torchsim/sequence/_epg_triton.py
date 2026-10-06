@@ -14698,6 +14698,8 @@ def _epg_kernel(
     kind,
     flip,
     phase,
+    phase_cos,
+    phase_sin,
     action,
     output_index,
     shim_index,
@@ -14839,6 +14841,8 @@ def _epg_kernel(
     if off_axis:
         atom_b1_phase = tl.load(b1_phase + scalar_atom, mask=active_atom, other=0.0)
         atom_b0 = tl.load(b0 + scalar_atom, mask=active_atom, other=0.0)
+    b1_cos = tl.cos(atom_b1_phase)
+    b1_sin = tl.sin(atom_b1_phase)
     atom_inversion = 1.0
     if inverting:
         atom_inversion = tl.load(
@@ -15145,15 +15149,23 @@ def _epg_kernel(
                 atom_b1_phase = tl.load(
                     b1_phase + row + atom, mask=active_atom, other=0.0
                 )
+                b1_cos = tl.cos(atom_b1_phase)
+                b1_sin = tl.sin(atom_b1_phase)
         if (event_kind == 1) & ((event_action & 4) == 0):
             alpha = (
                 _event_value(flip, event_base, event, active_atom, single_train)
                 * atom_b1
             )
-            phi = (
-                _event_value(phase, event_base, event, active_atom, single_train)
-                + atom_b1_phase
+            # The pulse's phase, read off the cosine and sine the launch took
+            # of it, turned by the transmit field's own.
+            cos_event = _event_value(
+                phase_cos, event_base, event, active_atom, single_train
             )
+            sin_event = _event_value(
+                phase_sin, event_base, event, active_atom, single_train
+            )
+            cos_phi = cos_event * b1_cos - sin_event * b1_sin
+            sin_phi = sin_event * b1_cos + cos_event * b1_sin
             if profiled or dynamic:
                 # Either pair is built at zero RF phase, which turns the rotation
                 # axis and so reaches ``b`` alone.
@@ -15177,8 +15189,8 @@ def _epg_kernel(
                         profile_bins,
                         profile_step,
                     )
-                turn_r = tl.cos(phi)
-                turn_i = -tl.sin(phi)
+                turn_r = cos_phi
+                turn_i = -sin_phi
                 spun_br = pair[2] * turn_r - pair[3] * turn_i
                 spun_bi = pair[2] * turn_i + pair[3] * turn_r
                 (shaped_pr, shaped_pi, shaped_mr, shaped_mi, shaped_zr, shaped_zi) = (
@@ -15197,10 +15209,8 @@ def _epg_kernel(
                 )
             cosine = tl.cos(alpha)
             sine = tl.sin(alpha)
-            cos_phi = tl.cos(phi)
-            sin_phi = tl.sin(phi)
-            cos_2phi = tl.cos(2.0 * phi)
-            sin_2phi = tl.sin(2.0 * phi)
+            cos_2phi = cos_phi * cos_phi - sin_phi * sin_phi
+            sin_2phi = 2.0 * sin_phi * cos_phi
 
             (
                 rotated_pr,
@@ -15308,11 +15318,12 @@ def _epg_kernel(
             longitudinal_imag = rotated_zi
 
         if ((event_action & 32) != 0) & (event_kind == 2):
-            adc_phase = _event_value(
-                phase, event_base, event, active_atom, single_train
+            adc_cos = _event_value(
+                phase_cos, event_base, event, active_atom, single_train
             )
-            adc_cos = tl.cos(adc_phase)
-            adc_sin = tl.sin(adc_phase)
+            adc_sin = _event_value(
+                phase_sin, event_base, event, active_atom, single_train
+            )
             # A coil sees the whole voxel, so what it records is the sum over
             # pools; each pool's share is already in its own state.
             read_real = fplus_real
@@ -17248,6 +17259,11 @@ def simulate_into(
         tissue, duration, pools=pools, narrow=narrow
     )
 
+    # Phases grow without bound under RF spoiling, so their cosines and sines
+    # are taken once here, in double precision, rather than in every program.
+    phase_cos = torch.cos(phase.double()).to(torch.float32)
+    phase_sin = torch.sin(phase.double()).to(torch.float32)
+
     if real_axis == 1:
         _epg_real_kernel[grid](
             t1,
@@ -17301,6 +17317,8 @@ def simulate_into(
         kind,
         flip,
         phase,
+        phase_cos,
+        phase_sin,
         action,
         output_index,
         shim_index,
