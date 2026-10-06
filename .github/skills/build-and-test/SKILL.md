@@ -1,6 +1,6 @@
 ---
 name: build-and-test
-description: Compile the C++ kernels and run the BlochSim suite, including the Triton paths on a machine with no GPU. Use when asked to build, install, test, or reproduce a failure in blochsim.
+description: Compile the C++ kernels and run the BlochSim suite, including the GPU kernels on a machine with no GPU. Use when asked to build, install, test, or reproduce a failure in blochsim.
 ---
 
 # Build and test BlochSim
@@ -16,7 +16,8 @@ run alone, `pip install -e ".[test]"` is enough and much smaller.
 
 An editable install puts the Python sources on the path, so an edit under
 `src/blochsim` takes effect on the next import. The two C++ extensions are
-compiled artifacts and do not: re-run the install after editing any `.cpp`.
+compiled artifacts and do not: re-run the install after editing any `.cpp`,
+`.hpp` or `.cu`.
 
 **Read the exit status, not the output.** A failed compile leaves the
 previously built `.so` importable, so the suite runs green against a kernel
@@ -41,32 +42,14 @@ against closed forms — the shift, the RF rotation, relaxation, diffusion, flow
 spoiling, the two-pool and three-pool longitudinal steps — while `sequence/`,
 `model/`, `estimators/`, `recon/` and `optim/` cover the layers above.
 
-## The Triton paths, without a GPU
+## The GPU kernels, without a GPU
 
-The tests carrying the `interpreted` marker are deselected by `addopts`. They
-run a Triton kernel through Triton's CPU interpreter — no card, no compile,
-about a minute each — and are how the GPU plumbing is verified anywhere:
-
-```sh
-pytest tests/ -m interpreted
-TRITON_INTERPRET=1 python your_script.py     # the same trick, by hand
-```
-
-Triton has no wheel for macOS or Windows. On those platforms the default
-deselection is not an optimisation, it is the only thing that runs.
-
-## Before you time anything
-
-Kernel compiles dominate a cold GPU run, not the arithmetic. A suite that takes
-minutes on a card is mostly Triton compiling one specialization per feature
-combination it meets; the second run of the same suite is a different number
-entirely. Run the whole suite at natural boundaries rather than after every
-edit.
-
-The cache keys on the *source* of `_epg_triton.py`, not on what it means, so a
-formatting pass or a deleted dead local costs the same full recompile as a new
-`tl.constexpr`. If the suite suddenly takes an hour where it took minutes,
-check whether that file changed before looking for a performance regression.
+The install compiles the GPU kernels for the host as `blochsim._gpu_host`, and
+for the card as `blochsim._gpu` wherever CMake finds `nvcc`
+(`--config-settings=cmake.define.BLOCHSIM_CUDA=ON` insists on it).
+`tests/sequence/test_host_kernels.py` and `test_many_pools_host.py` run the
+host build against the C++ kernels, which is how the GPU kernels are verified
+on any machine; the CUDA tests skip themselves without a card.
 
 ## Style
 

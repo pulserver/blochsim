@@ -99,7 +99,7 @@ class DictionaryMatcher(Estimator):
 
     The expensive operation is a matrix product. Torch therefore dispatches
     directly to the installed CPU BLAS or cuBLAS implementation; a separate
-    C++ or Triton matrix-multiplication kernel would duplicate a faster
+    C++ or CUDA matrix-multiplication kernel would duplicate a faster
     vendor implementation. Chunking bounds the temporary score matrix.
 
     References

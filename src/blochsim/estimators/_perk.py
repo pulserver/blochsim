@@ -10,6 +10,7 @@ from typing import Any, Literal
 
 import torch
 
+from .. import _gpu_launch
 from .._execution import PER_VOXEL_CROSSOVER, one_device, per_voxel
 from ._mapping import Estimator
 
@@ -726,13 +727,13 @@ def _loaded(name: str) -> Any:
         return None
 
 
-_TRITON = _loaded("_perk_triton")
+_GPU = _loaded("_perk_gpu") if _gpu_launch.available() else None
 _NATIVE = _loaded("_perk_native")
 
 
 def _kernels(device: torch.device) -> Any:
     """The fused backend for this device, or ``None``."""
-    return _TRITON if device.type == "cuda" else _NATIVE
+    return _GPU if device.type == "cuda" else _NATIVE
 
 
 class _FusedRegression(torch.autograd.Function):
@@ -751,7 +752,7 @@ class _FusedRegression(torch.autograd.Function):
     ) -> torch.Tensor:
         ctx.save_for_backward(signals, frequency, transposed, phase, weight)
         if signals.device.type == "cuda":
-            return _TRITON.regress(
+            return _GPU.regress(
                 signals, frequency, phase, feature_mean, weight, parameter_mean
             )
         return _NATIVE.regress(
@@ -770,7 +771,7 @@ class _FusedRegression(torch.autograd.Function):
         if not ctx.needs_input_grad[0]:
             return (None,) * 7
         gradient = (
-            _TRITON.regress_vjp(cotangent, signals, frequency, phase, weight)
+            _GPU.regress_vjp(cotangent, signals, frequency, phase, weight)
             if signals.device.type == "cuda"
             else _NATIVE.regress_vjp(
                 cotangent, signals, frequency, transposed, phase, weight

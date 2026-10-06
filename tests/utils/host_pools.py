@@ -1,15 +1,12 @@
-"""The Triton kernels for tabulated pools, held to the C++ ones in the interpreter.
+"""The GPU kernels for tabulated pools, run on the host against the C++ ones.
 
-``TRITON_INTERPRET=1`` runs a kernel in Python over host tensors, so the
-device kernels meet the host ones on the same buffers: the tables, the
+The device kernels meet the host ones on the same buffers: the tables, the
 trajectory the adjoint records and walks back, the per-problem cotangent slots
 and every rotation mode. The C++ kernels are held to the state machine written
-out in torch by ``tests/sequence/test_many_pools.py``; these hold the Triton
+out in torch by ``tests/sequence/test_many_pools.py``; these hold the GPU
 kernels to them, to float32 round-off.
 
-Run as ``python -m utils.interpreted_pools <pass> <pools> <rotation>
-[variant ...]`` with ``TRITON_INTERPRET=1`` set before the process starts.
-``<pools>`` is the exchanging pool count followed by ``s`` for a semisolid pool
+``pools`` is the exchanging pool count followed by ``s`` for a semisolid pool
 or ``f`` for none. ``trains`` packs two trains of different lengths and
 flips, ``chunked`` records one problem at a time, and ``undeclared`` turns
 off every optional term the tissue does not declare.
@@ -17,11 +14,9 @@ off every optional term the tissue does not declare.
 
 from __future__ import annotations
 
-import sys
-
 import torch
 
-from blochsim.sequence import _accelerators, _pools, _pools_triton
+from blochsim.sequence import _accelerators, _pools, _pools_gpu
 from blochsim.sequence._lineshape import lineshape_table
 from blochsim.sequence._parameters import NO_GEOMETRY
 from blochsim.sequence._transition import DynamicPairs
@@ -59,7 +54,7 @@ def _launch(pass_name: str, pools: str, rotation: str, variants: set[str]) -> fl
         )
     if "chunked" in variants:
         # Less than one problem's trajectory, so every problem is a wave.
-        _pools_triton._TRAJECTORY_BUDGET_BYTES = 1
+        _pools_gpu._TRAJECTORY_BUDGET_BYTES = 1
     features = frozenset() if "undeclared" in variants else None
     geometry = NO_GEOMETRY if "undeclared" in variants else GEOMETRY
 
@@ -127,7 +122,7 @@ def _launch(pass_name: str, pools: str, rotation: str, variants: set[str]) -> fl
             ),
         )
         device = (
-            _pools_triton.simulate(
+            _pools_gpu.simulate(
                 tissue, events, state_count=STATES, output_count=OUTPUTS, **shared
             ),
         )
@@ -147,7 +142,7 @@ def _launch(pass_name: str, pools: str, rotation: str, variants: set[str]) -> fl
             ),
         )
         device = (
-            _pools_triton.simulate_jvp(
+            _pools_gpu.simulate_jvp(
                 tissue,
                 events,
                 tissue_tangents,
@@ -162,7 +157,7 @@ def _launch(pass_name: str, pools: str, rotation: str, variants: set[str]) -> fl
         host = _accelerators._run_packed_vjp(
             tissue, events, seed, STATES, OUTPUTS, 1, exchanging=layout, **shared
         )
-        device = _pools_triton.simulate_vjp(
+        device = _pools_gpu.simulate_vjp(
             tissue, events, seed, state_count=STATES, output_count=OUTPUTS, **shared
         )
     else:
@@ -183,7 +178,7 @@ def _launch(pass_name: str, pools: str, rotation: str, variants: set[str]) -> fl
             (),
         )
         device = sum(
-            _pools_triton.simulate_vjp_jvp(
+            _pools_gpu.simulate_vjp_jvp(
                 tissue,
                 events,
                 tangents,
@@ -213,9 +208,11 @@ def _launch(pass_name: str, pools: str, rotation: str, variants: set[str]) -> fl
     return worst
 
 
-if __name__ == "__main__":
-    pass_name, pools, rotation, *rest = sys.argv[1:]
-    worst = _launch(pass_name, pools, rotation, set(rest))
-    print(f"{pass_name} {pools} {rotation} {' '.join(rest)}: {worst:.2e}")
+def check(pass_name: str, pools: str, rotation: str, *variants: str) -> None:
+    """One pass of both backends, held to each other."""
+    budget = _pools_gpu._TRAJECTORY_BUDGET_BYTES
+    try:
+        worst = _launch(pass_name, pools, rotation, set(variants))
+    finally:
+        _pools_gpu._TRAJECTORY_BUDGET_BYTES = budget
     assert worst <= TOLERANCE, f"{worst:.2e} past {TOLERANCE:.0e}"
-    print("checked")

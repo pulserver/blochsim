@@ -125,7 +125,7 @@ wheel.packages = ["src/blochsim"]
 # against the CPython stable ABI from 3.10 on, so the tag is cp310-abi3.
 wheel.py-api = "cp310"
 # What ships is the compiled kernel, not the source it was compiled from.
-wheel.exclude = ["*.cpp", "*.hpp"]
+wheel.exclude = ["*.cpp", "*.hpp", "*.cu", "*.cu.in"]
 metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
 sdist.include = ["src/blochsim/_version.py"]
 
@@ -143,11 +143,26 @@ test-command = "python {project}/scripts/check_wheel.py"
 # publishes no musllinux wheel for that install to resolve. The workflow loads
 # the musl kernels in an Alpine container instead, where nothing resolves.
 test-skip = "*musllinux*"
+# The GPU kernels compiled for the host are for the suite, not for a user.
+config-settings = {"cmake.define.BLOCHSIM_HOST_KERNELS" = "OFF"}
 
 [tool.cibuildwheel.linux]
 # scikit-build-core installs cmake and ninja as build-time wheels inside the
 # manylinux container; the image's compiler is what builds the kernels.
 archs = ["auto64"]
+
+# The GPU kernels, on the one platform PyTorch publishes CUDA builds for that
+# a manylinux image can compile: the toolkit's compiler and its static
+# runtime, nothing the wheel carries beyond the module itself.
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux_x86_64"
+before-all = [
+    "dnf install -y dnf-plugins-core",
+    "dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo",
+    "dnf install -y cuda-nvcc-12-8 cuda-cudart-devel-12-8",
+]
+environment = {PATH = "/usr/local/cuda-12.8/bin:$PATH", CUDACXX = "/usr/local/cuda-12.8/bin/nvcc"}
+config-settings = {"cmake.define.BLOCHSIM_HOST_KERNELS" = "OFF", "cmake.define.BLOCHSIM_CUDA" = "ON"}
 
 [tool.cibuildwheel.macos]
 # An Apple silicon runner builds its own wheel and cross-compiles the Intel
@@ -170,10 +185,6 @@ addopts = [
     "--cov=blochsim",
     "--cov-report=term-missing",
     "--cov-report=xml",
-    "-m", "not interpreted"
-]
-markers = [
-    "interpreted: runs a kernel in Triton's CPU interpreter; a minute each"
 ]
 
 # Formatting and linting are both ruff: ``ruff format`` is the formatter and the
@@ -225,9 +236,6 @@ ignore = [
 "examples/**" = ["ANN", "D", "E402", "I001", "B018"]
 "docs/**" = ["ANN", "D1"]
 "scripts/**" = ["ANN", "D1"]
-# A Triton kernel's parameters are compile-time constants and tensors the
-# compiler types itself; an annotation on one says nothing Python will read.
-"src/blochsim/**/*_triton.py" = ["ANN"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["blochsim"]

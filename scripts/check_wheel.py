@@ -18,6 +18,9 @@ import sys
 #: A kernel calls no PyTorch API and links no PyTorch library, so anything
 #: approaching this size means something was bundled that should not have been.
 LARGEST_REASONABLE_BYTES = 16 * 1024 * 1024
+#: The GPU kernels carry machine code for each architecture they were compiled
+#: for, and the CUDA runtime linked in.
+LARGEST_REASONABLE_GPU_BYTES = 96 * 1024 * 1024
 
 
 def kernel_directory() -> pathlib.Path:
@@ -35,6 +38,13 @@ def main() -> int:
     kernels = [path for path in kernels if path.suffix in {".so", ".pyd", ".dylib"}]
     if len(kernels) != 2:
         raise SystemExit(f"expected two kernels in {root}, found {kernels}")
+    # Present where the wheel was built with a CUDA compiler. Loading it needs
+    # no card: nothing reaches the driver until a launch.
+    kernels += [
+        path
+        for path in sorted(root.glob("_gpu.*"))
+        if path.suffix in {".so", ".pyd", ".dylib"}
+    ]
 
     for path in kernels:
         name = path.name.split(".")[0]
@@ -46,7 +56,10 @@ def main() -> int:
 
         size = path.stat().st_size
         print(f"{path.name}: {size} bytes, {len(dir(module))} attributes")
-        if size > LARGEST_REASONABLE_BYTES:
+        largest = (
+            LARGEST_REASONABLE_GPU_BYTES if name == "_gpu" else LARGEST_REASONABLE_BYTES
+        )
+        if size > largest:
             raise SystemExit(f"{path.name} is {size} bytes; something was bundled")
 
     print(f"ok on {sys.implementation.name} {'.'.join(map(str, sys.version_info[:3]))}")

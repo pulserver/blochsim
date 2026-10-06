@@ -2,7 +2,7 @@
 
 The kernels take a flat list of buffers: the tissue properties, then the packed
 per-event buffers. Their order is an ABI shared by the Python dispatch, the
-CPU extension and the Triton kernels, and the counts derived from it -- how
+CPU extension and the GPU kernels, and the counts derived from it -- how
 many buffers are saved for backward, which of them carry gradients, how wide
 the raw pointer array is -- appear in all three. This module is where that
 order is written down, so those counts are read from one place instead of
@@ -361,9 +361,8 @@ def feature_flags(features: Any, geometry: Geometry) -> dict[str, bool]:
     reads off the tissue; ``None`` is a caller who did not declare, and every
     term stays.
 
-    Fewer switches than properties, because each Triton flag multiplies how
-    many kernels the cache holds and these groups are what the arithmetic
-    actually splits into. ``off_axis`` is the static phase a tissue puts on the
+    Fewer switches than properties, because these groups are what the
+    arithmetic actually splits into. ``off_axis`` is the static phase a tissue puts on the
     states -- off-resonance and transmit phase reach the interval and the pulse
     through the same turn. ``moving`` is what a voxel's velocity drives, which
     it does only through the sequence geometry: flow winding and washout are
@@ -411,9 +410,9 @@ FEATURE_BITS: tuple[str, ...] = (
 def feature_mask(features: Any, geometry: Geometry) -> int:
     """The same answer as :func:`feature_flags`, as the host kernels read it.
 
-    Triton takes a flag per term because each one compiles a kernel of its own;
-    the host kernels take one integer and branch on it at run time, which is
-    the same choice the pool count already makes on each side.
+    The GPU kernels take a flag per term; the host kernels take one integer
+    and branch on it at run time, which is the same choice the pool count
+    already makes on each side.
     """
     flags = feature_flags(features, geometry)
     return sum(1 << bit for bit, name in enumerate(FEATURE_BITS) if flags[name])

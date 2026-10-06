@@ -1,0 +1,20 @@
+// One kernel, compiled for the card. CMake writes one of these per kernel,
+// so the kernels compile in parallel; @NAME@ is the kernel's name.
+//
+// Each comes twice, bounded to 256 threads and to 1024. The register file is
+// divided among a block's threads, so the bound decides how many registers a
+// thread may keep before it spills; _gpu.cu launches the narrower variant
+// whenever a block fits it.
+#define BLOCHSIM_SIMT 1
+
+#include "_kernels.hpp"
+
+__global__ void __launch_bounds__(256) kernel@NAME@_256(bsk::Arguments arguments, int z) {
+    bsk::enter(z);
+    bsk::call@NAME@(arguments.a);
+}
+
+__global__ void __launch_bounds__(1024) kernel@NAME@_1024(bsk::Arguments arguments, int z) {
+    bsk::enter(z);
+    bsk::call@NAME@(arguments.a);
+}

@@ -725,7 +725,7 @@ def test_the_cuda_forward_reads_the_pair_the_host_does():
     produce a plausible train.
     """
     from blochsim.sequence._accelerators import _run_packed
-    from blochsim.sequence._epg_triton import simulate
+    from blochsim.sequence._epg_gpu import simulate
     from blochsim.sequence._transition import DynamicPairs
 
     _, prepared, events, pairs = _train()

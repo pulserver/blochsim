@@ -7,7 +7,7 @@
   Offline it builds a description from `layout()`; scanner-driven use starts
   from an incoming description and applies the simulator's handlers.
 - The resulting event stream is packed once and executed by fused CPU or
-  Triton kernels, one program per voxel.
+  CUDA kernels, one program per voxel.
 - Tissue Jacobians use forward mode; sequence optimization uses reverse mode;
   execution/offload policy is shared by every simulator.
 ```
@@ -117,10 +117,9 @@ is the sequence; what it is parallel in is the voxels.
 
 There are two implementations of that program and they compute the same thing.
 The CPU one is a threaded C++ extension, with a lane-vectorized path that runs
-eight trains at once where the arithmetic allows it. The GPU one is written in
-Triton and compiles a specialization per feature combination it meets -- which
-is why the *first* call on a card can take tens of seconds while the second
-takes milliseconds. Every mode exists on both sides: forward, forward-mode,
+eight trains at once where the arithmetic allows it. The GPU one is CUDA,
+compiled ahead of time, with a block of threads per program. Every mode exists
+on both sides: forward, forward-mode,
 adjoint, forward-over-reverse, the real-subspace specialization, and the pool
 models.
 

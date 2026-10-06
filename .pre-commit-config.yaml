@@ -12,6 +12,8 @@ repos:
     hooks:
       - id: check-added-large-files
         args: [--maxkb=512]
+        # The EPG kernels for the card, in every mode.
+        exclude: ^src/blochsim/_epg_kernels\.hpp$
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-symlinks

@@ -63,7 +63,7 @@ body:
       multiple: true
       options:
         - CPU
-        - CUDA (Triton kernels)
+        - CUDA
         - Both
     validations:
       required: true

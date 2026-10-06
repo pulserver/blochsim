@@ -1,25 +1,20 @@
-"""The three-pool operator table, checked in Triton's CPU interpreter.
+"""The GPU kernels run on the host, held to what they specialize.
 
-`TRITON_INTERPRET=1` runs a kernel in Python over host tensors, which reaches
-the plumbing a compiled launch hides: a launcher whose positional list has
-drifted from the kernel it calls, a trajectory plane without its buffer, a
-replay disagreeing with the reverse sweep. Those are structural and show at
-three voxels.
+The same kernel source the CUDA build compiles, run one program at a time over
+host tensors, reaches the plumbing a card hides: a launcher whose positional
+list has drifted from the kernel it calls, a trajectory plane without its
+buffer, a replay disagreeing with the reverse sweep. Those are structural and
+show at three voxels.
 
-Run as ``python -m utils.interpreted <case>`` with ``TRITON_INTERPRET=1`` set
-before the process starts -- Triton reads it at import. Each case exits
-non-zero when a comparison drifts, so the pytest wrapper only has to run it.
+Each case raises when a comparison drifts.
 """
 
 from __future__ import annotations
 
 import math
-import sys
 from typing import Any
 
 import torch
-import triton
-import triton.language as tl
 
 # What a narrow row and a roots row are each held to against the arm that
 # forms its operator per event. The roots row is looser because the table
@@ -32,50 +27,6 @@ WIDE_TOLERANCE = 1e-5
 # double where the kernel carries float32. That is a different comparison from
 # holding one arm of a launch to another, and a looser one.
 ORACLE_TOLERANCE = 5e-5
-
-
-@triton.jit
-def _acos(x: Any) -> Any:
-    """``acos`` for the interpreter, which has no inverse trigonometry.
-
-    ``libdevice`` is a CUDA extern and ``tl.math`` carries no acos, asin or
-    atan2, so a kernel forming the three roots cannot run on the host at all.
-    Newton on ``cos(theta) - x`` reaches 1.8e-6 over the range the callers
-    clamp to, which is ample when both arms of a comparison use it.
-    """
-    theta = 1.5707963267948966 - x * (1.0 + 0.16666667 * x * x)
-    for _ in tl.static_range(0, 12):
-        sine = tl.sin(theta)
-        theta = theta + (tl.cos(theta) - x) / tl.where(
-            tl.abs(sine) > 1e-12, sine, 1e-12
-        )
-    return theta
-
-
-@triton.jit
-def _poisoned_acos(x: Any) -> Any:
-    """An ``acos`` whose result cannot be used without showing.
-
-    A narrow launch is supposed to reach only the series. Nothing that passes
-    through this can stay finite, so a finite answer is proof the roots were
-    never read.
-    """
-    return x * float("nan")
-
-
-class _Interpretable:
-    acos = _acos
-
-
-class _Poisoned:
-    acos = _poisoned_acos
-
-
-def install(poison: bool = False) -> None:
-    """Point the kernels at an ``acos`` the interpreter can evaluate."""
-    from blochsim.sequence import _epg_triton
-
-    _epg_triton.libdevice = _Poisoned if poison else _Interpretable
 
 
 def _tissue(voxels: int) -> tuple[torch.Tensor, ...]:
@@ -131,9 +82,9 @@ def _both(run: Any, force_narrow: bool) -> tuple[Any, Any]:
     narrow, so every row takes the series and the two arms should agree to the
     bit.
     """
-    from blochsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_gpu
 
-    original = _epg_triton._tabulate_three_pool
+    original = _epg_gpu._tabulate_three_pool
     built: list[bool] = []
 
     def patched(
@@ -159,7 +110,7 @@ def _both(run: Any, force_narrow: bool) -> tuple[Any, Any]:
         return rows, table, lengths
 
     built_wanted = [False]
-    _epg_triton._tabulate_three_pool = patched
+    _epg_gpu._tabulate_three_pool = patched
     try:
         without = run()
         built_wanted[0] = True
@@ -169,7 +120,7 @@ def _both(run: Any, force_narrow: bool) -> tuple[Any, Any]:
         # nothing at all.
         assert built and all(built), "the operator table was never built"
     finally:
-        _epg_triton._tabulate_three_pool = original
+        _epg_gpu._tabulate_three_pool = original
     return without, with_table
 
 
@@ -188,7 +139,7 @@ def _chunked(voxels: int) -> Any:
     The cotangent table is sized and indexed per chunk, so a single-chunk run
     cannot tell a chunk-local index from a global one.
     """
-    from blochsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_gpu
 
     cut: list[int] = []
 
@@ -197,56 +148,8 @@ def _chunked(voxels: int) -> Any:
         cut.append(wave)
         return wave
 
-    _epg_triton._trajectory_wave = narrow_wave
+    _epg_gpu._trajectory_wave = narrow_wave
     return cut
-
-
-def _unread(voxels: int, states: int) -> None:
-    """Check that a narrow launch does not read the three roots.
-
-    The `close` select sits in the consumers of `_three_pool_pieces_jvp`, and
-    each of them takes the series outright when the caller has bounded the
-    spread -- so the roots the pieces still form are unread. Poisoning `acos`
-    is what says so rather than reading the branches and believing it.
-    """
-    install(poison=True)
-    from blochsim.sequence import _builders, _epg_triton
-    from blochsim.sequence._lineshape import lineshape_table
-    from blochsim.sequence._parameters import narrow_three_pool
-
-    echoes = 6
-    tissue = _tissue(voxels)
-    events, outputs = _events(
-        _builders.fse_description(torch.full((echoes,), math.radians(150.0)), 8e-3)
-    )
-    assert narrow_three_pool(tissue, events[0].reshape(-1), pools=3), (
-        "this train has to be narrow for the check to mean anything"
-    )
-    options: dict[str, Any] = dict(lineshape=lineshape_table(), exchanging=True)
-    signal = _epg_triton.simulate(
-        tissue, events, state_count=states, output_count=outputs, **options
-    )
-    assert bool(torch.isfinite(torch.view_as_real(signal)).all()), (
-        "the forward read the roots"
-    )
-    seed = (
-        torch.rand(voxels, outputs, generator=torch.Generator().manual_seed(7)) * 2.0
-        - 1.0
-    ).to(torch.complex64)
-    for index, gradient in enumerate(
-        _epg_triton.simulate_vjp(
-            tissue,
-            events,
-            seed,
-            state_count=states,
-            output_count=outputs,
-            **options,
-        )
-    ):
-        assert not gradient.numel() or bool(torch.isfinite(gradient).all()), (
-            f"gradient {index} read the roots"
-        )
-    print("  the roots are unread")
 
 
 def _streamed(voxels: int, states: int) -> None:
@@ -256,8 +159,7 @@ def _streamed(voxels: int, states: int) -> None:
     takes, so it is the launcher a grown kernel signature misaligns first --
     and nothing else here reaches it.
     """
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
 
     echoes = 6
     tissue = _tissue(voxels)
@@ -268,13 +170,13 @@ def _streamed(voxels: int, states: int) -> None:
         torch.rand(voxels, outputs, generator=torch.Generator().manual_seed(3)) * 2.0
         - 1.0
     ).to(torch.complex64)
-    whole = _epg_triton.simulate_vjp(
+    whole = _epg_gpu.simulate_vjp(
         tissue, events, seed, state_count=states, output_count=outputs
     )
-    buffers = _epg_triton.GradientBuffers(
+    buffers = _epg_gpu.GradientBuffers(
         events, voxels, state_count=states, output_count=outputs
     )
-    chunked = _epg_triton.simulate_vjp_into(
+    chunked = _epg_gpu.simulate_vjp_into(
         tissue,
         events,
         seed,
@@ -300,8 +202,7 @@ def _washed(voxels: int, states: int) -> None:
     ``1 - rate dt`` -- but the row has to be given that attenuation rather
     than one, because the gradients it pools are scaled by it.
     """
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._lineshape import lineshape_table
     from blochsim.sequence._parameters import TISSUE_NAMES, Geometry
 
@@ -327,7 +228,7 @@ def _washed(voxels: int, states: int) -> None:
         - 1.0
     ).to(torch.complex64)
     without, with_table = _both(
-        lambda: _epg_triton.simulate_vjp(
+        lambda: _epg_gpu.simulate_vjp(
             tissue,
             events,
             seed,
@@ -352,8 +253,7 @@ def _real(voxels: int, states: int, shims: int = 1) -> None:
     every plane count, trajectory stride and gradient row differs -- and none
     of it is reached by the other cases here, which are all complex.
     """
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._accelerators import real_subspace_axis
     from blochsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
     from utils.packed_reference import simulate_packed
@@ -392,16 +292,14 @@ def _real(voxels: int, states: int, shims: int = 1) -> None:
             torch.arange(events[6].numel(), dtype=torch.int32) % driven
         ).contiguous()
         events = tuple(events)
-    assert _epg_triton._shim_count(tissue) == shims, (
-        "the array did not reach the kernel"
-    )
+    assert _epg_gpu._shim_count(tissue) == shims, "the array did not reach the kernel"
     # Forcing the verdict rather than earning it would compare the real kernel
     # against a train it was never contracted for.
     assert real_subspace_axis(events, tissue) == 1, "this train is not in the subspace"
     shape = dict(state_count=states, output_count=outputs)
 
     expected = simulate_packed(tissue, events, **shape)
-    signal = _epg_triton.simulate(tissue, events, real_axis=1, **shape)
+    signal = _epg_gpu.simulate(tissue, events, real_axis=1, **shape)
     forward = float((signal - expected).abs().max() / expected.abs().max())
     print(f"  real forward        {forward:.2e}")
     assert forward <= ORACLE_TOLERANCE, f"real forward drifted: {forward:.2e}"
@@ -415,8 +313,8 @@ def _real(voxels: int, states: int, shims: int = 1) -> None:
         torch.rand(voxels, outputs, generator=generator) * 2.0 - 1.0,
         torch.rand(voxels, outputs, generator=generator) * 2.0 - 1.0,
     )
-    real = _epg_triton.simulate_real_vjp(tissue, events, seed, **shape)
-    complex_side = _epg_triton.simulate_vjp(tissue, events, seed, **shape)
+    real = _epg_gpu.simulate_real_vjp(tissue, events, seed, **shape)
+    complex_side = _epg_gpu.simulate_vjp(tissue, events, seed, **shape)
     # Drawn from the gradients actually compared: a scale taken from one the
     # loop skips would let two nothings agree perfectly against a large number
     # that neither of them carries.
@@ -464,8 +362,7 @@ def _spoiled(voxels: int, states: int) -> None:
     forced, and the forward pass, the forward-mode pass and the adjoint are
     each held to the complex kernels that carry the same train.
     """
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._accelerators import real_subspace_axis
     from blochsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
     from utils.packed_reference import simulate_packed
@@ -483,7 +380,7 @@ def _spoiled(voxels: int, states: int) -> None:
     shape = dict(state_count=states, output_count=outputs)
 
     expected = simulate_packed(tissue, events, **shape)
-    signal = _epg_triton.simulate(tissue, events, real_axis=1, **shape)
+    signal = _epg_gpu.simulate(tissue, events, real_axis=1, **shape)
     forward = float((signal - expected).abs().max() / expected.abs().max())
     print(f"  spoiled forward     {forward:.2e}")
     assert forward <= ORACLE_TOLERANCE, f"spoiled forward drifted: {forward:.2e}"
@@ -498,12 +395,10 @@ def _spoiled(voxels: int, states: int) -> None:
         torch.zeros_like(events[2]),
         torch.zeros_like(events[3]),
     )
-    real_jvp = _epg_triton.simulate_jvp(
+    real_jvp = _epg_gpu.simulate_jvp(
         tissue, events, tuple(tangents), zeros, real_axis=1, **shape
     )
-    complex_jvp = _epg_triton.simulate_jvp(
-        tissue, events, tuple(tangents), zeros, **shape
-    )
+    complex_jvp = _epg_gpu.simulate_jvp(tissue, events, tuple(tangents), zeros, **shape)
     scale = float(complex_jvp[1].abs().max())
     assert scale > 1e-6, "the forward-mode pass returned nothing"
     drift = float((complex_jvp[1] - real_jvp[1]).abs().max()) / scale
@@ -515,8 +410,8 @@ def _spoiled(voxels: int, states: int) -> None:
         torch.rand(voxels, outputs, generator=generator) * 2.0 - 1.0,
         torch.rand(voxels, outputs, generator=generator) * 2.0 - 1.0,
     )
-    real = _epg_triton.simulate_real_vjp(tissue, events, seed, **shape)
-    complex_side = _epg_triton.simulate_vjp(tissue, events, seed, **shape)
+    real = _epg_gpu.simulate_real_vjp(tissue, events, seed, **shape)
+    complex_side = _epg_gpu.simulate_vjp(tissue, events, seed, **shape)
     scale = max(
         float(value.abs().max())
         for index, value in enumerate(complex_side)
@@ -543,11 +438,10 @@ def _pooled(voxels: int, states: int, pools: int) -> None:
 
     The table cases reach ``pools == 3`` only. What a second pool costs
     structurally is its own trajectory planes and its own place in every
-    launcher's positional list -- the two things this interpreter is for --
+    launcher's positional list -- the two things the host build is for --
     and neither is exercised at one or two pools without a card.
     """
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._lineshape import lineshape_table
     from utils.packed_reference import simulate_packed
 
@@ -560,10 +454,10 @@ def _pooled(voxels: int, states: int, pools: int) -> None:
         lineshape=lineshape_table() if pools in (1, 3) else None,
         exchanging=pools in (2, 3),
     )
-    assert _epg_triton._pool_flag(**options) == pools, "not the pool model asked for"
+    assert _epg_gpu._pool_flag(**options) == pools, "not the pool model asked for"
 
     shape = dict(state_count=states, output_count=outputs)
-    signal = _epg_triton.simulate(tissue, events, **shape, **options)
+    signal = _epg_gpu.simulate(tissue, events, **shape, **options)
     expected = simulate_packed(tissue, events, **shape, **options)
     forward = float((signal - expected).abs().max() / expected.abs().max())
     print(f"  {pools}-pool forward     {forward:.2e}")
@@ -571,7 +465,7 @@ def _pooled(voxels: int, states: int, pools: int) -> None:
 
     # Agreement between two ways of carrying nothing would say nothing, so the
     # pool has to be shown to move the answer it is being checked against.
-    bare = _epg_triton.simulate(tissue, events, **shape)
+    bare = _epg_gpu.simulate(tissue, events, **shape)
     moved = float((signal - bare).abs().max() / bare.abs().max())
     print(f"  {pools}-pool moves it    {moved:.2e}")
     assert moved > 1e-3, f"the {pools}-pool model changed nothing: {moved:.2e}"
@@ -580,13 +474,13 @@ def _pooled(voxels: int, states: int, pools: int) -> None:
         torch.rand(voxels, outputs, generator=torch.Generator().manual_seed(13)) * 2.0
         - 1.0
     ).to(torch.complex64)
-    first = _epg_triton.simulate_vjp(tissue, events, seed, **shape, **options)
+    first = _epg_gpu.simulate_vjp(tissue, events, seed, **shape, **options)
     # The pass the first-order kernel specializes: zero directions in, the
     # adjoint out as the gradient with respect to the tangent inputs.
     still = tuple(
         torch.zeros_like(value) for value in (*tissue, events[0], events[2], events[3])
     )
-    _curve, adjoint = _epg_triton.simulate_vjp_jvp(
+    _curve, adjoint = _epg_gpu.simulate_vjp_jvp(
         tissue, events, still, seed, **shape, **options
     )
     scale = max(float(value.abs().max()) for value in first if value.numel())
@@ -610,8 +504,7 @@ def _shimmed(voxels: int, states: int) -> None:
     pooling. Nothing else here drives a transmit array, so this is the only
     case that would show one standing in for the other.
     """
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._lineshape import lineshape_table
 
     shims, echoes = 2, 6
@@ -644,7 +537,7 @@ def _shimmed(voxels: int, states: int) -> None:
         torch.arange(events[6].numel(), dtype=torch.int32) % shims
     ).contiguous()
     events = tuple(events)
-    assert _epg_triton._shim_count(tissue) == shims, (
+    assert _epg_gpu._shim_count(tissue) == shims, (
         "the transmit array did not reach the kernel"
     )
 
@@ -654,7 +547,7 @@ def _shimmed(voxels: int, states: int) -> None:
         - 1.0
     ).to(torch.complex64)
     without, with_table = _both(
-        lambda: _epg_triton.simulate_vjp(
+        lambda: _epg_gpu.simulate_vjp(
             tissue,
             events,
             seed,
@@ -669,7 +562,7 @@ def _shimmed(voxels: int, states: int) -> None:
     assert worst <= WIDE_TOLERANCE, f"shimmed adjoint drifted: {worst:.2e}"
 
     without, with_table = _both(
-        lambda: _epg_triton.simulate_vjp_jvp(
+        lambda: _epg_gpu.simulate_vjp_jvp(
             tissue,
             events,
             (
@@ -707,13 +600,12 @@ def _profiled(voxels: int, states: int) -> None:
     across the slice positions the table samples, which is a layout only this
     case exercises.
     """
-    install()
     import math
 
     import numpy as np
 
     from blochsim import rf_definition
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._accelerators import _across_the_table
     from blochsim.sequence._transition import (
         SliceTables,
@@ -744,7 +636,7 @@ def _profiled(voxels: int, states: int) -> None:
     tissue = _across_the_table(_tissue(voxels), profile.points)
     shape = dict(state_count=states, output_count=outputs)
 
-    signal = _epg_triton.simulate(tissue, events, profile=profile, **shape)
+    signal = _epg_gpu.simulate(tissue, events, profile=profile, **shape)
     expected = simulate_packed(
         tissue, events, profile=table, locations=profile.points, **shape
     )
@@ -754,7 +646,7 @@ def _profiled(voxels: int, states: int) -> None:
 
     # A table that moved nothing would agree with the oracle and prove neither
     # of them read it.
-    plain = _epg_triton.simulate(tissue, events, **shape)
+    plain = _epg_gpu.simulate(tissue, events, **shape)
     moved = float((signal - plain).abs().max() / plain.abs().max())
     print(f"  profiled moves it   {moved:.2e}")
     assert moved > 1e-3, f"the profile changed nothing: {moved:.2e}"
@@ -770,13 +662,12 @@ def _narrowed(voxels: int, states: int) -> None:
     the end of a buffer, which is silent -- so the two launches are held to each
     other bit for bit rather than to a tolerance.
     """
-    install()
     import math
 
     from blochsim.sequence import (
         TissueProperties,
         _builders,
-        _epg_triton,
+        _epg_gpu,
     )
     from blochsim.sequence._accelerators import real_subspace_axis
     from blochsim.sequence._parameters import TISSUE_NAMES, features_of
@@ -815,10 +706,10 @@ def _narrowed(voxels: int, states: int) -> None:
 
     shape = dict(state_count=states, output_count=outputs)
     for label, axis in (("real", 1), ("complex", -1)):
-        whole = _epg_triton.simulate(
+        whole = _epg_gpu.simulate(
             full, events, real_axis=axis, features=features, **shape
         )
-        narrow = _epg_triton.simulate(
+        narrow = _epg_gpu.simulate(
             thin, events, real_axis=axis, features=features, **shape
         )
         drift = float((whole - narrow).abs().max())
@@ -826,7 +717,7 @@ def _narrowed(voxels: int, states: int) -> None:
         assert drift == 0.0, f"the {label} kernel read a term it was told to drop"
 
 
-def _case(name: str) -> None:
+def _run(name: str) -> None:
     if name == "narrowed":
         _narrowed(3, 4)
         return
@@ -857,11 +748,7 @@ def _case(name: str) -> None:
     if name == "streamed":
         _streamed(3, 4)
         return
-    if name == "unread":
-        _unread(3, 4)
-        return
-    install()
-    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_gpu
     from blochsim.sequence._lineshape import lineshape_table
 
     voxels, states = 3, 4
@@ -890,7 +777,7 @@ def _case(name: str) -> None:
     print(f"{name}: {events[0].numel()} events over {lengths} lengths")
 
     without, with_table = _both(
-        lambda: _epg_triton.simulate(
+        lambda: _epg_gpu.simulate(
             tissue, events, state_count=states, output_count=outputs, **options
         ),
         force_narrow,
@@ -904,7 +791,7 @@ def _case(name: str) -> None:
         - 1.0
     ).to(torch.complex64)
     without, with_table = _both(
-        lambda: _epg_triton.simulate_vjp(
+        lambda: _epg_gpu.simulate_vjp(
             tissue,
             events,
             seed,
@@ -933,7 +820,7 @@ def _case(name: str) -> None:
         torch.zeros_like(events[3]),
     )
     without, with_table = _both(
-        lambda: _epg_triton.simulate_jvp(
+        lambda: _epg_gpu.simulate_jvp(
             tissue,
             events,
             directions,
@@ -952,7 +839,7 @@ def _case(name: str) -> None:
     seeded = (*directions, *event_directions)
     for half, label in ((0, "curvature"), (1, "gradient")):
         without, with_table = _both(
-            lambda h=half: _epg_triton.simulate_vjp_jvp(
+            lambda h=half: _epg_gpu.simulate_vjp_jvp(
                 tissue,
                 events,
                 seeded,
@@ -973,7 +860,12 @@ def _case(name: str) -> None:
         print(f"  chunks              {-(-voxels // max(cut))}")
 
 
-if __name__ == "__main__":
-    _case(sys.argv[1] if len(sys.argv) > 1 else "narrow")
-    # The wrapper reads this: a case that fell out early prints no such line.
-    print("checked")
+def run(name: str) -> None:
+    """One case, with whatever it patched into the launcher put back."""
+    from blochsim.sequence import _epg_gpu
+
+    wave = _epg_gpu._trajectory_wave
+    try:
+        _run(name)
+    finally:
+        _epg_gpu._trajectory_wave = wave

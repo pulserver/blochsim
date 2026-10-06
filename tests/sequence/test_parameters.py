@@ -1,7 +1,7 @@
 """The parameter table has to describe the buffers the kernels actually take.
 
 Its whole purpose is that a count appears once rather than in the Python
-dispatch, the CPU extension and the Triton kernels separately. That only holds
+dispatch, the CPU extension and the GPU kernels separately. That only holds
 while the table and the things it describes agree, which is what these check --
 a new parameter added to the table but not to the dataclass, or to the kernels'
 pointer list, fails here rather than by reading past the end of a buffer.

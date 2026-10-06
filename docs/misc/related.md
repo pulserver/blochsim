@@ -46,7 +46,7 @@ and a signal-model simulator has no reason to carry a coil.
 | [EpyG](https://github.com/brennerd11/EpyG) | EPG | Python | CPU | -- | Python |
 | [mri-sim-py](https://github.com/utcsilab/mri-sim-py.epg) | EPG | Python, PyTorch | CPU, CUDA | Automatic, reverse mode | Python |
 | [snapMRF](https://github.com/dongwang881107/snapMRF) | EPG, with matching | CUDA C | CUDA | -- | Command line |
-| **BlochSim** | EPG, and closed forms | Python, PyTorch, C++ and Triton kernels | CPU threads, CUDA, several cards | Automatic: forward, reverse, and forward over reverse | Python, or a description |
+| **BlochSim** | EPG, and closed forms | Python, PyTorch, C++ and CUDA kernels | CPU threads, CUDA, several cards | Automatic: forward, reverse, and forward over reverse | Python, or a description |
 
 ## Where each one is the better tool
 

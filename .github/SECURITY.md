@@ -29,7 +29,7 @@ a signal model are all Python that runs in your process, so a malicious
 In scope is anything that turns *data* into execution or into memory
 corruption -- a sequence description, a pulse waveform, a phantom or a
 dictionary read from a file, or values passed to the simulator, reaching the
-C++ and Triton kernels. Those kernels index raw pointers, so an out-of-bounds
+C++ and CUDA kernels. Those kernels index raw pointers, so an out-of-bounds
 read or write reachable from ordinary arguments is a vulnerability and not
 merely a bug.
 

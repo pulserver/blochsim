@@ -12,6 +12,8 @@ on:
       - setup.py
       - "src/blochsim/*.cpp"
       - "src/blochsim/*.hpp"
+      - "src/blochsim/*.cu"
+      - "src/blochsim/*.cu.in"
       - scripts/check_wheel.py
       - .github/workflows/wheels.yml
   workflow_dispatch:
@@ -52,7 +54,9 @@ jobs:
   wheels:
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    # The x86-64 manylinux wheel compiles the GPU kernels for every listed
+    # architecture.
+    timeout-minutes: 150
     strategy:
       fail-fast: false
       matrix:

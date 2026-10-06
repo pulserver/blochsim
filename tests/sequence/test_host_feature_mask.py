@@ -1,7 +1,6 @@
 """The mask the host kernels read, against the same launch carrying everything.
 
-The Triton backend takes a flag per term because each one compiles a kernel of
-its own; the host kernels take one integer and branch on it at run time. These
+The GPU kernels take a flag per term; the host kernels take one integer and branch on it at run time. These
 pin the two ends together -- that the mask says what
 :func:`blochsim.sequence._parameters.feature_flags` says, and that a host
 kernel told to drop a term gives the answer it gives when told to keep it.

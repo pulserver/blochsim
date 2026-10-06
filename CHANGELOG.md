@@ -7,6 +7,15 @@
 - **The package is `blochsim`.** The distribution, the import name and the
   repository are `blochsim`; `import torchsim` becomes `import blochsim`, with
   the same modules and names beneath it.
+- **The GPU kernels are CUDA compiled ahead of time, and Triton is not used.**
+  The EPG, pooled and PERK kernels are C++ (`_epg_kernels.hpp`,
+  `_pools_kernels.hpp`, `_perk_kernels.hpp`) compiled by `nvcc` into
+  `blochsim._gpu`, which links the CUDA runtime statically; the x86-64
+  manylinux wheel carries it, and a source build compiles it wherever CMake
+  finds `nvcc`. No kernel is compiled at the first call. The same kernels are
+  compiled for the host as `blochsim._gpu_host`, which the suite holds to the
+  C++ kernels; the `interpreted` marker is gone. A launch is at most 1024
+  threads, so an EPG run of more than 1024 state orders on a card is refused.
 
 ### Added
 

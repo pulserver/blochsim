@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 
 project(blochsim LANGUAGES CXX)
 
-# Both kernels are plain CPython extensions against the stable ABI: they call
+# The kernels are plain CPython extensions against the stable ABI: they call
 # no PyTorch API and link no PyTorch library, which is why one wheel per
 # platform serves every supported interpreter and why that wheel is a couple of
 # megabytes rather than the size of libtorch.
@@ -56,3 +56,63 @@ endfunction()
 
 blochsim_add_kernel(_epg_cpu  src/blochsim/_epg_cpu.cpp)
 blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)
+
+# The GPU kernels compiled for the host, one program at a time. Nothing in the
+# package dispatches to them; they are how the suite checks the GPU kernels on
+# a machine with no card.
+option(BLOCHSIM_HOST_KERNELS "Compile the GPU kernels for the host, for the tests" ON)
+if(BLOCHSIM_HOST_KERNELS)
+    blochsim_add_kernel(_gpu_host src/blochsim/_gpu_host.cpp)
+endif()
+
+# The GPU kernels compiled ahead of time for the card, wherever a CUDA
+# compiler is found unless BLOCHSIM_CUDA says otherwise.
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    set(_blochsim_cuda_default ON)
+else()
+    set(_blochsim_cuda_default OFF)
+endif()
+option(BLOCHSIM_CUDA "Compile the GPU kernels for the card" ${_blochsim_cuda_default})
+
+if(BLOCHSIM_CUDA)
+    # Real code for each generation and PTX for the newest, which the driver
+    # compiles for a card newer than any listed.
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90)
+    endif()
+    enable_language(CUDA)
+    find_package(CUDAToolkit REQUIRED)
+    set(CMAKE_CUDA_STANDARD 17)
+    set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+    # One file per kernel, so they compile in parallel.
+    set(_blochsim_kernels
+        _three_pool_table_jvp_kernel _three_pool_table_kernel
+        _epg_vjp_kernel _epg_vjp_jvp_kernel _epg_real_vjp_jvp_kernel
+        _epg_real_vjp_kernel _epg_real_kernel _epg_real_jvp_kernel
+        _epg_kernel _epg_jvp_kernel
+        _pooled_kernel _pooled_adjoint_kernel
+        _regress_kernel _regress_vjp_kernel
+    )
+    set(_blochsim_gpu_sources src/blochsim/_gpu.cu)
+    foreach(NAME IN LISTS _blochsim_kernels)
+        set(_source "${CMAKE_CURRENT_BINARY_DIR}/kernels/${NAME}.cu")
+        configure_file(src/blochsim/_gpu_kernel.cu.in "${_source}" @ONLY)
+        list(APPEND _blochsim_gpu_sources "${_source}")
+    endforeach()
+
+    python_add_library(_gpu MODULE
+        USE_SABI ${BLOCHSIM_ABI3_VERSION}
+        WITH_SOABI
+        ${_blochsim_gpu_sources}
+    )
+    target_include_directories(_gpu PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/blochsim")
+    # The runtime is linked in, so a machine needs the driver and nothing else.
+    target_link_libraries(_gpu PRIVATE CUDA::cudart_static)
+    # Warning 221 is a double constant that rounds to zero in float, which the
+    # kernels write deliberately as the floor of a clamp.
+    target_compile_options(_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=221>)
+    install(TARGETS _gpu DESTINATION blochsim)
+endif()
