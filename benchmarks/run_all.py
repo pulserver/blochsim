@@ -39,7 +39,7 @@ JULIA_PROJECT = HERE / "julia"
 # thousand atoms in seconds; KomaMRI carries `spins` isochromats per tissue and
 # is stopped a decade earlier because of it.
 SIZES = {
-    "torchsim": (1, 10, 100, 1_000, 10_000, 100_000),
+    "blochsim": (1, 10, 100, 1_000, 10_000, 100_000),
     "sycomore": (1, 10, 100, 1_000, 10_000),
     "epgpy": (1, 10, 100, 1_000, 10_000),
     "blochsimulators": (1, 10, 100, 1_000, 10_000, 100_000),
@@ -52,7 +52,7 @@ BACKENDS = tuple(SIZES)
 # fit in the memory of a modest card, and past that what is measured is
 # whatever the run spills into rather than the kernel.
 DEVICE_SIZES = {
-    "torchsim": (1, 10, 100, 1_000, 10_000, 100_000),
+    "blochsim": (1, 10, 100, 1_000, 10_000, 100_000),
     "blochsimulators": (1, 10, 100, 1_000, 10_000, 100_000),
     "koma": (1, 10, 100, 1_000),
 }
@@ -65,7 +65,7 @@ def available(backend: str, device: str) -> bool:
         return False
     if backend in ("blochsimulators", "koma"):
         return bool(julia())
-    module = {"torchsim": "torchsim", "sycomore": "sycomore", "epgpy": "epgpy"}[backend]
+    module = {"blochsim": "blochsim", "sycomore": "sycomore", "epgpy": "epgpy"}[backend]
     from importlib.util import find_spec
 
     try:
@@ -189,14 +189,14 @@ def main() -> None:
             default = DEVICE_SIZES[backend] if device != "cpu" else SIZES[backend]
             sizes = [n for n in (chosen or default) if n <= limit]
 
-            if backend == "torchsim":
+            if backend == "blochsim":
                 for atoms in sizes:
                     for mode in (
                         ("forward",) if args.forward_only else ("forward", "jacobian")
                     ):
                         python_run(
-                            "bench_torchsim.py",
-                            f"torchsim-{mode}-{atoms}{suffix}",
+                            "bench_blochsim.py",
+                            f"blochsim-{mode}-{atoms}{suffix}",
                             atoms=atoms,
                             mode=mode,
                             device=device,
@@ -206,8 +206,8 @@ def main() -> None:
                     if args.forward_only:
                         continue
                     python_run(
-                        "bench_torchsim.py",
-                        f"torchsim-jacobian1-{atoms}{suffix}",
+                        "bench_blochsim.py",
+                        f"blochsim-jacobian1-{atoms}{suffix}",
                         atoms=atoms,
                         mode="jacobian",
                         diff="T1",
@@ -221,8 +221,8 @@ def main() -> None:
                 # the pool; on a card there is no such pair to take.
                 for atoms in [n for n in sizes if n >= 1_000]:
                     python_run(
-                        "bench_torchsim.py",
-                        f"torchsim-forward-{atoms}-{device}-t1",
+                        "bench_blochsim.py",
+                        f"blochsim-forward-{atoms}-{device}-t1",
                         atoms=atoms,
                         mode="forward",
                         device=device,

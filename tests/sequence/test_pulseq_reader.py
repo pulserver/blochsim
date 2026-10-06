@@ -14,10 +14,10 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import Excitation, SequenceDescription, SPGRReadout
-from torchsim.model import Simulator
-from torchsim.sequence import AdcRole, EventType, RfUse
-from torchsim.simulators import SPGRSimulator
+from blochsim import Excitation, SequenceDescription, SPGRReadout
+from blochsim.model import Simulator
+from blochsim.sequence import AdcRole, EventType, RfUse
+from blochsim.simulators import SPGRSimulator
 
 pp = pytest.importorskip("pypulseq", reason="reading a .seq file needs pypulseq")
 

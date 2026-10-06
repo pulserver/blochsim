@@ -17,18 +17,18 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     NO_GEOMETRY,
     _pack_events,
     _run_packed,
 )
-from torchsim.sequence._lineshape import lineshape_table
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._lineshape import lineshape_table
+from blochsim.sequence._simulation import _prepare_tissue
 from utils.packed_reference import simulate_packed
 
 ECHOES = 8
@@ -156,7 +156,7 @@ def _free_induction(times_s, **properties):
     ``times_s`` are measured from the excitation; the events carry the
     intervals between them, which is what the state machine steps through.
     """
-    from torchsim.sequence._accelerators import _EXCITATION, _RECORD
+    from blochsim.sequence._accelerators import _EXCITATION, _RECORD
 
     intervals = [
         after - before for before, after in zip((0.0, *times_s), times_s, strict=False)
@@ -252,7 +252,7 @@ def _inversion_recovery(delays_s, **properties):
     fixed point. The readout is a hard ninety degrees, which writes ``Z`` into
     the transverse plane.
     """
-    from torchsim.sequence._accelerators import _EXCITATION, _INVERSION, _RECORD
+    from blochsim.sequence._accelerators import _EXCITATION, _INVERSION, _RECORD
 
     prepared, _, _ = _prepare_tissue(
         TissueProperties(**{"t1_ms": 1000.0, "t2_ms": 80.0, **properties}), "cpu"
@@ -357,7 +357,7 @@ def _live_events():
     of a difference, which is a property of the probe rather than of the
     kernel; here the recovery interval makes them live.
     """
-    from torchsim.sequence._accelerators import _EXCITATION, _INVERSION, _RECORD
+    from blochsim.sequence._accelerators import _EXCITATION, _INVERSION, _RECORD
 
     return (
         torch.tensor([0.0, 0.35, 0.0, 0.0, 3e-3, 0.0], dtype=torch.float32),
@@ -381,7 +381,7 @@ def _prepared(device="cpu", **properties):
 
 def _live_readout(prepared, seed=None, device="cpu"):
     """The reading, or its directional derivative."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     events = tuple(value.to(device) for value in _live_events())
     table = lineshape_table(device=torch.device(device))
@@ -407,7 +407,7 @@ def test_forward_mode_matches_finite_differences(name: str) -> None:
     """Every direction the three-pool system carries, including the two that
     only the semisolid pool has and the five only the exchanging one does.
     """
-    from torchsim.sequence._parameters import TISSUE_NAMES
+    from blochsim.sequence._parameters import TISSUE_NAMES
 
     index = TISSUE_NAMES.index(name)
     prepared = _prepared()
@@ -493,7 +493,7 @@ def test_forward_mode_reaches_three_pools_through_the_public_api():
 
 def _live_adjoint(prepared, seed):
     """The gradients a cotangent on the reading leaves."""
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     return _run_packed_vjp(
         prepared,
@@ -531,7 +531,7 @@ def test_the_adjoint_matches_finite_differences(name: str) -> None:
     """Every direction three pools carry, including the semisolid pool's own
     three and the exchanging pool's five.
     """
-    from torchsim.sequence._parameters import TISSUE_NAMES
+    from blochsim.sequence._parameters import TISSUE_NAMES
 
     index = TISSUE_NAMES.index(name)
     seed = _cotangent()
@@ -581,7 +581,7 @@ def test_the_second_order_pass_differentiates_the_adjoint():
     """Given no direction to follow, the forward-over-reverse kernel returns
     the adjoint on its own -- and given one, the adjoint's own derivative.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     prepared = _prepared()
     events = _live_events()
@@ -603,7 +603,7 @@ def test_the_second_order_pass_differentiates_the_adjoint():
         if scale > 1e-9:
             assert float((expected - measured).abs().max()) / scale < 1e-4
 
-    from torchsim.sequence._parameters import TISSUE_NAMES
+    from blochsim.sequence._parameters import TISSUE_NAMES
 
     # The direction is confined to the properties the difference below moves,
     # so the two are contracted against the same one.
@@ -648,7 +648,7 @@ def test_the_second_order_pass_saturates_the_pool_the_pulse_deposits_into():
     what the first-order adjoint does, and the two reach the saturation by
     different code.
     """
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence._accelerators import (
         _run_packed_vjp,
         _run_packed_vjp_jvp,
     )
@@ -863,7 +863,7 @@ def _train_events():
 
 def _routes(leaves, events):
     """The kernels and the oracle, fed from one place."""
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     fused = _NativeEpg.apply(
         *leaves,
@@ -1034,7 +1034,7 @@ def test_the_cuda_kernel_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_a_streamed_volume_matches_the_whole_one():
     """Streaming cuts the voxel axis, which all three pools follow."""
-    from torchsim.sequence._accelerators import offload
+    from blochsim.sequence._accelerators import offload
 
     voxels = 3000
     packed = _pack_events(
@@ -1088,7 +1088,7 @@ def test_a_streamed_adjoint_matches_the_whole_one():
     Given no direction to follow the forward-over-reverse kernel returns the
     adjoint on its own, and that is the reverse route the offload plan reaches.
     """
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp, offload
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp, offload
 
     voxels = 3000
     packed = _pack_events(
@@ -1205,7 +1205,7 @@ def test_the_cuda_forward_mode_matches_the_cpu_kernel():
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
 def test_a_streamed_forward_mode_matches_the_whole_one():
     """Streaming cuts the voxel axis, which all three pools' seeds follow."""
-    from torchsim.sequence._accelerators import offload
+    from blochsim.sequence._accelerators import offload
 
     voxels = 3000
     prepared = _prepared(
@@ -1243,8 +1243,8 @@ def _instantaneous_table():
     """A pulse with no gradient across it: one rotation, every position."""
     import numpy as np
 
-    from torchsim.sequence._description import RfDefinition, RfShape
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._description import RfDefinition, RfShape
+    from blochsim.sequence._transition import transition_table
 
     flat = RfDefinition(
         id=0,
@@ -1262,7 +1262,7 @@ def test_a_tabulated_rotation_reaches_both_pools() -> None:
     """The kernels are templated on the rotation mode and the pool count
     together, so a table beside three pools is an instantiation of its own.
     """
-    from torchsim.sequence._accelerators import _NativeEpg
+    from blochsim.sequence._accelerators import _NativeEpg
 
     leaves = _prepared()
     events = _train_events()
@@ -1308,9 +1308,9 @@ def test_three_pools_take_the_first_order_kernel_on_the_card(
     forward-over-reverse pass on the same card: two arms of one wrong kernel
     agree with each other, and the backends share no code.
     """
-    from torchsim.sequence import _accelerators
-    from torchsim.sequence._accelerators import _run_packed_vjp
-    from torchsim.sequence._parameters import TISSUE_NAMES
+    from blochsim.sequence import _accelerators
+    from blochsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._parameters import TISSUE_NAMES
 
     voxels = 64
     tissue = TissueProperties(
@@ -1473,8 +1473,8 @@ def test_the_series_carries_the_answer_up_to_the_spread_it_is_trusted_to() -> No
     import triton
     import triton.language as tl
 
-    from torchsim.sequence._epg_triton import _three_pool_step
-    from torchsim.sequence._parameters import NARROW_SPREAD
+    from blochsim.sequence._epg_triton import _three_pool_step
+    from blochsim.sequence._parameters import NARROW_SPREAD
 
     @triton.jit
     def only_the_series(
@@ -1557,7 +1557,7 @@ def test_a_long_interval_declines_the_series_branch() -> None:
     so the launch has to fall back to the roots -- checked on the predicate the
     launchers call, not inferred from the answer agreeing.
     """
-    from torchsim.sequence._parameters import narrow_three_pool
+    from blochsim.sequence._parameters import narrow_three_pool
 
     voxels = 256
     tissue, _, _ = _prepare_tissue(
@@ -1597,7 +1597,7 @@ def test_the_series_branch_gives_the_answer_the_roots_give(state_count) -> None:
     The gate cannot be measured against the host: that comparison moves for
     reasons of its own. What it has to be held to is the branch it replaces.
     """
-    from torchsim.sequence import _accelerators, _epg_triton
+    from blochsim.sequence import _accelerators, _epg_triton
 
     voxels = 256
     tissue, _, _ = _prepare_tissue(

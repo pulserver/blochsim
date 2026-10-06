@@ -20,7 +20,7 @@ with it. Here a 90 degree excitation is reshaped so that it stays as close to
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim
+#    !pip install blochsim
 
 # sphinx_gallery_start_ignore
 import warnings
@@ -52,7 +52,7 @@ import math
 
 import torch
 
-from torchsim import SequenceDesign, compose_spinor
+from blochsim import SequenceDesign, compose_spinor
 
 # %%
 #
@@ -125,7 +125,7 @@ def cost(real, imag):
 # ---------------
 #
 # The real and imaginary parts of every sample are the designed parameters,
-# free of limits: the scanner's peak B1 would be a :class:`~torchsim.Bounded`
+# free of limits: the scanner's peak B1 would be a :class:`~blochsim.Bounded`
 # on them.
 #
 

@@ -17,16 +17,16 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     rf_definition,
 )
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     RfMode,
     exact_slice_profile,
     fse_description,
 )
-from torchsim.sequence._simulation import TissueProperties
+from blochsim.sequence._simulation import TissueProperties
 
 ECHOES = 6
 STATES = 10

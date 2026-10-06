@@ -55,7 +55,7 @@ class ColabLinkDirective(SphinxDirective):
         )
 
         # Generate the Colab URL based on GitHub repo information
-        self.colab_url = f"https://colab.research.google.com/github/pulserver/torchsim/blob/{binder['branch']}/{on_the_branch}"
+        self.colab_url = f"https://colab.research.google.com/github/pulserver/blochsim/blob/{binder['branch']}/{on_the_branch}"
 
         # Create the HTML button or link
         self.html = f"""<div class="colab-button">
@@ -106,7 +106,7 @@ class ColabLinkDirective(SphinxDirective):
             )
             message_class = "warning"
             message = (
-                "Running this torchsim example requires a GPU, and hence is NOT "
+                "Running this blochsim example requires a GPU, and hence is NOT "
                 "possible on binder currently We request you to kindly run this notebook "
                 "on Google Colab by clicking the link below. Additionally, please make "
                 "sure to set the runtime on Colab to use a GPU and install the below "

@@ -15,7 +15,7 @@ import math
 import numpy as np
 import pytest
 
-from torchsim.simulators import (
+from blochsim.simulators import (
     FLASHSimulator,
     HyperechoSimulator,
     StimulatedEchoSimulator,

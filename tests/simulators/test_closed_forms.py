@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.simulators import (
+from blochsim.simulators import (
     ASLSimulator,
     DiffusionSimulator,
     HSFPSimulator,

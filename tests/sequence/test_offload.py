@@ -15,10 +15,10 @@ the narrow one.
 import pytest
 import torch
 
-import torchsim._execution as _policy
-import torchsim.sequence._accelerators as accelerators
-from torchsim.sequence import EpgEngine, offload
-from torchsim.sequence._accelerators import (
+import blochsim._execution as _policy
+import blochsim.sequence._accelerators as accelerators
+from blochsim.sequence import EpgEngine, offload
+from blochsim.sequence._accelerators import (
     _FLOAT_INPUTS,
     _bytes_per_voxel,
     _chunk_voxels,
@@ -27,9 +27,9 @@ from torchsim.sequence._accelerators import (
     _pack_events,
     _run_packed,
 )
-from torchsim.sequence._builders import fse_description
-from torchsim.sequence._parameters import NO_GEOMETRY, OUTSIDE_THE_SUBSPACE, Geometry
-from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+from blochsim.sequence._builders import fse_description
+from blochsim.sequence._parameters import NO_GEOMETRY, OUTSIDE_THE_SUBSPACE, Geometry
+from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
 pytestmark = pytest.mark.skipif(
     not torch.cuda.is_available(), reason="CUDA is unavailable"
@@ -240,7 +240,7 @@ def _spgr_volume(voxels, trains=1, pulses=12):
     rounding noise around zero and comparing it says nothing. SPGR records at an
     echo time, so every gradient is live and worth checking.
     """
-    from torchsim.sequence._builders import spgr_description
+    from blochsim.sequence._builders import spgr_description
 
     generator = torch.Generator().manual_seed(0)
     packed = [
@@ -303,7 +303,7 @@ def _seeds(events, prepared, index):
 @pytest.mark.parametrize("real_axis", [1, -1])
 @pytest.mark.parametrize("trains", [1, 3])
 def test_a_streamed_forward_mode_matches_the_cpu_run(budget, real_axis, trains):
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     events, prepared, outputs = _volume(4000, trains=trains)
     tissue_seed, event_seed = _seeds(events, prepared, 1)
@@ -319,7 +319,7 @@ def test_a_streamed_forward_mode_matches_the_cpu_run(budget, real_axis, trains):
 
 def test_an_event_seed_reaches_every_chunk():
     """Event seeds are shared by all voxels, so they are replicated not sliced."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     events, prepared, outputs = _volume(4000)
     tissue_seed = tuple(torch.zeros_like(value) for value in prepared)
@@ -340,7 +340,7 @@ def test_an_event_seed_reaches_every_chunk():
 def _adjoint(
     events, prepared, outputs, voxels, trains, real_axis, budget, geometry=NO_GEOMETRY
 ):
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     tissue_seed, event_seed = _seeds(events, prepared, 1)
     generator = torch.Generator().manual_seed(7)
@@ -522,7 +522,7 @@ def test_a_streamed_shimmed_volume_matches_the_whole_one(budget, trains):
 
 @pytest.mark.parametrize("budget", [1 << 20, 512 << 20])
 def test_a_streamed_shimmed_forward_mode_matches_the_whole_one(budget):
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     events, prepared, outputs = _shim_volume(4000)
     # Seed the transmit magnitude, so the tangent travels the shim rows too.
@@ -605,7 +605,7 @@ def _first_order_adjoint(
     geometry=NO_GEOMETRY,
 ):
     """The route ``torch.autograd`` takes for a plain ``.backward()``."""
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     generator = torch.Generator().manual_seed(7)
     shape = (trains, voxels, outputs) if trains > 1 else (voxels, outputs)
@@ -678,7 +678,7 @@ def test_a_host_resident_first_order_adjoint_follows_the_execution_target():
     """The forward moves to the card under this policy, so the backward has to
     move with it rather than stay behind.
     """
-    from torchsim.sequence import execution
+    from blochsim.sequence import execution
 
     voxels = 20_000
     events, prepared, outputs = _volume(voxels)
@@ -727,7 +727,7 @@ def test_a_backward_through_the_public_api_streams():
     ``torch.autograd`` reaches the adjoint by a route of its own, and it is
     the one an ordinary user's ``.backward()`` takes.
     """
-    from torchsim.sequence import TissueProperties
+    from blochsim.sequence import TissueProperties
 
     voxels = 20_000
     reached = []
@@ -785,7 +785,7 @@ def test_a_streamed_first_order_adjoint_takes_its_own_kernel(trains):
     """A chunk of a first-order adjoint is a first-order adjoint, so streaming
     must not cost the kernel written for it.
     """
-    from torchsim.sequence import _accelerators as accelerators
+    from blochsim.sequence import _accelerators as accelerators
 
     voxels = 2000
     events, prepared, outputs = _volume(voxels, trains=trains)
@@ -813,7 +813,7 @@ def test_streaming_a_first_order_adjoint_makes_wider_chunks():
     """Half the trajectory is the second saving: for one budget the chunks come
     out wider than the pass carrying a forward direction would allow.
     """
-    from torchsim.sequence._accelerators import _bytes_per_voxel
+    from blochsim.sequence._accelerators import _bytes_per_voxel
 
     shape = (4, 40, 8, 16, None, 1)
     around = _bytes_per_voxel("adjoint", *shape)

@@ -12,8 +12,8 @@ import time
 import pytest
 import torch
 
-from torchsim.optim import Bounded, SequenceDesign, crlb
-from torchsim.simulators import FSESimulator, SPGRSimulator, bSSFPSimulator
+from blochsim.optim import Bounded, SequenceDesign, crlb
+from blochsim.simulators import FSESimulator, SPGRSimulator, bSSFPSimulator
 
 TISSUE = {"T1": [800.0, 1400.0], "T2": [45.0, 120.0]}
 

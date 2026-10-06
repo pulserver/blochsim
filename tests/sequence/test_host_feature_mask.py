@@ -3,7 +3,7 @@
 The Triton backend takes a flag per term because each one compiles a kernel of
 its own; the host kernels take one integer and branch on it at run time. These
 pin the two ends together -- that the mask says what
-:func:`torchsim.sequence._parameters.feature_flags` says, and that a host
+:func:`blochsim.sequence._parameters.feature_flags` says, and that a host
 kernel told to drop a term gives the answer it gives when told to keep it.
 """
 
@@ -12,13 +12,13 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _accelerators,
     fse_description,
 )
-from torchsim.sequence._parameters import (
+from blochsim.sequence._parameters import (
     FEATURE_BITS,
     Geometry,
     feature_flags,
@@ -237,7 +237,7 @@ def test_an_inversion_the_tissue_never_declared_is_left_out(monkeypatch) -> None
     """The one term a refocused train cannot exercise: it drives no inversion,
     so the gate is held against a sequence that does.
     """
-    from torchsim.sequence import EpgEngine, mprage_description
+    from blochsim.sequence import EpgEngine, mprage_description
 
     def signal(mask, efficiency):
         monkeypatch.setattr(

@@ -8,14 +8,14 @@ reached for by size, so the threshold is pinned rather than relied on.
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import _pack_events, _run_packed, _run_packed_vjp
-from torchsim.sequence._parameters import TISSUE_COUNT
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._accelerators import _pack_events, _run_packed, _run_packed_vjp
+from blochsim.sequence._parameters import TISSUE_COUNT
+from blochsim.sequence._simulation import _prepare_tissue
 
 # Where duration, flip and phase land in a gradient tuple.
 _EVENT_GRADIENTS = (TISSUE_COUNT, TISSUE_COUNT + 1, TISSUE_COUNT + 2)
@@ -215,7 +215,7 @@ TRAINS, ATOMS = 19, 8
 
 
 def _second_order(threads):
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     flip = _schedules(TRAINS, 12)
     tissue = TissueProperties(
@@ -330,7 +330,7 @@ def test_placing_a_definition_at_once_writes_what_placing_it_per_pulse_writes(tr
     out rather than after, so that one entry rounds a step earlier. Every other
     entry is bit for bit.
     """
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     flip = _schedules(trains, 6)
     scattered = _pack(flip)
@@ -355,7 +355,7 @@ def test_a_schedule_of_tensors_is_placed_bit_for_bit():
     gathering changes no dtype and the two ways of filling the buffers do the
     same arithmetic on the same values.
     """
-    from torchsim.sequence import _accelerators, _builders
+    from blochsim.sequence import _accelerators, _builders
 
     echoes = 12
     description = _builders.mrf_description(
@@ -386,7 +386,7 @@ def test_a_definition_is_asked_what_it_turns_through_once_per_packing():
     nested forward-mode interpreters, so a call per pulse is the cost that
     makes a long train expensive to resolve.
     """
-    from torchsim.sequence._description import RfDefinition
+    from blochsim.sequence._description import RfDefinition
 
     flip = _schedules(1, 64)
     calls = 0

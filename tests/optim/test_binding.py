@@ -14,11 +14,11 @@ from copy import copy
 import pytest
 import torch
 
-from torchsim.model import Simulator, SpinPhysics
-from torchsim.model._binding import bind
-from torchsim.sequence import _accelerators
-from torchsim.sequence._accelerators import pack_description
-from torchsim.simulators import (
+from blochsim.model import Simulator, SpinPhysics
+from blochsim.model._binding import bind
+from blochsim.sequence import _accelerators
+from blochsim.sequence._accelerators import pack_description
+from blochsim.simulators import (
     FSESimulator,
     MPnRAGESimulator,
     MPRAGESimulator,

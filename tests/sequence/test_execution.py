@@ -13,9 +13,9 @@ import pytest
 import torch
 from test_offload import _seeds, _volume  # noqa: E402
 
-import torchsim._execution as _policy
-from torchsim.sequence import execution
-from torchsim.sequence._accelerators import (
+import blochsim._execution as _policy
+from blochsim.sequence import execution
+from blochsim.sequence._accelerators import (
     _FLOAT_INPUTS,
     _bytes_per_voxel,
     _choose,
@@ -24,8 +24,8 @@ from torchsim.sequence._accelerators import (
     _run_packed_vjp,
     _run_packed_vjp_jvp,
 )
-from torchsim.sequence._calibration import crossover
-from torchsim.sequence._parameters import OUTSIDE_THE_SUBSPACE
+from blochsim.sequence._calibration import crossover
+from blochsim.sequence._parameters import OUTSIDE_THE_SUBSPACE
 
 STATES = 10
 cuda_only = pytest.mark.skipif(

@@ -1,7 +1,7 @@
 # Signal models
 
 ```{eval-rst}
-.. currentmodule:: torchsim.model
+.. currentmodule:: blochsim.model
 ```
 
 **There is one user-facing base class: {class}`Simulator`.**
@@ -56,7 +56,7 @@ Nothing is declared about the tissue. Every property a voxel can have may be
 given to any simulator, and giving one is what turns its term on.
 
 A sequence that came from somewhere else is read through those same handlers.
-{func}`~torchsim.sequence.read_mrd_description` decodes the description
+{func}`~blochsim.sequence.read_mrd_description` decodes the description
 carried ahead of the acquisitions on an MRD stream, and
 {meth}`~Simulator.from_description` turns one of those descriptions into the
 chosen simulator. {meth}`~Simulator.from_pulseq` does the same from a Pulseq
@@ -68,8 +68,8 @@ Implement {meth}`~Simulator.evaluate` instead when the signal has a closed
 form -- a mono-exponential decay, an inversion-recovery curve, an Ernst
 steady state. There is nothing to play and no state to carry, so there is no
 `layout` and the `SpinPhysics` carries only the property declaration.
-{class}`~torchsim.simulators.SPGRSimulator` is written this way, and
-{class}`~torchsim.simulators.MP2RAGESimulator` carries both: the closed form a
+{class}`~blochsim.simulators.SPGRSimulator` is written this way, and
+{class}`~blochsim.simulators.MP2RAGESimulator` carries both: the closed form a
 lookup table is built from, and the layout a description arriving from a
 scanner is compared against.
 
@@ -132,12 +132,12 @@ the slots itself:
 | {data}`REFOCUSED` | the sample at the echo centre | crushed |
 
 ```{eval-rst}
-.. autodata:: torchsim.model.SPOILED
+.. autodata:: blochsim.model.SPOILED
    :no-value:
-.. autodata:: torchsim.model.UNBALANCED
+.. autodata:: blochsim.model.UNBALANCED
    :no-value:
-.. autodata:: torchsim.model.BALANCED
+.. autodata:: blochsim.model.BALANCED
    :no-value:
-.. autodata:: torchsim.model.REFOCUSED
+.. autodata:: blochsim.model.REFOCUSED
    :no-value:
 ```

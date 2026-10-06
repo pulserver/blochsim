@@ -10,7 +10,7 @@ and a map of where the rest of this documentation is.
 
 ## Install
 
-TorchSim is a PyTorch package with two compiled kernels behind it. `pip`
+BlochSim is a PyTorch package with two compiled kernels behind it. `pip`
 installs the Python side and its NumPy and SciPy dependencies for you. Two
 things it cannot decide on your behalf, and which you therefore settle first:
 **which build of PyTorch you want**, and **where you want the whole thing to
@@ -34,8 +34,8 @@ Any of these works. Pick the one you already use.
 Ships with Python, nothing to install first:
 
 ```sh
-python -m venv ~/envs/torchsim
-source ~/envs/torchsim/bin/activate     # Windows: ~\envs\torchsim\Scripts\activate
+python -m venv ~/envs/blochsim
+source ~/envs/blochsim/bin/activate     # Windows: ~\envs\blochsim\Scripts\activate
 python -m pip install --upgrade pip
 ```
 :::
@@ -47,11 +47,11 @@ Useful when you also want a specific Python, or non-Python libraries
 beside it:
 
 ```sh
-conda create -n torchsim python=3.12
-conda activate torchsim
+conda create -n blochsim python=3.12
+conda activate blochsim
 ```
 
-Install TorchSim itself with `pip` inside that environment; there is no
+Install BlochSim itself with `pip` inside that environment; there is no
 conda package.
 :::
 
@@ -61,8 +61,8 @@ conda package.
 The fastest of the three, and it resolves the whole set at once:
 
 ```sh
-uv venv --python 3.12 ~/envs/torchsim
-source ~/envs/torchsim/bin/activate
+uv venv --python 3.12 ~/envs/blochsim
+source ~/envs/blochsim/bin/activate
 ```
 
 Read `uv pip install` for `pip install` in everything that follows.
@@ -72,9 +72,9 @@ Read `uv pip install` for `pip install` in everything that follows.
 
 ### PyTorch first
 
-**Install PyTorch before TorchSim.** The wheel you want depends on hardware
+**Install PyTorch before BlochSim.** The wheel you want depends on hardware
 `pip` cannot see: a CPU-only build and a CUDA build have the same name and
-version, and differ only in which index they came from. Install TorchSim first
+version, and differ only in which index they came from. Install BlochSim first
 and you get whichever build the default index happens to serve, which is
 usually not the one you meant.
 
@@ -92,7 +92,7 @@ the smallest download by a wide margin:
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
-Everything in TorchSim runs here. The state machine has a threaded,
+Everything in BlochSim runs here. The state machine has a threaded,
 vectorized C++ kernel behind it, so a dictionary of a few thousand atoms
 is seconds rather than minutes.
 :::
@@ -140,10 +140,10 @@ python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda
 A CUDA build prints a version and `True`; a CPU build prints `None` and
 `False`.
 
-### TorchSim
+### BlochSim
 
 ```sh
-pip install torchsim
+pip install blochsim
 ```
 
 Where a wheel exists for your platform this is the whole of it. Where one does
@@ -159,7 +159,7 @@ once:
 
 ```python
 import torch
-from torchsim.simulators import FSESimulator
+from blochsim.simulators import FSESimulator
 
 acquisition = FSESimulator(
     ESP=5.0,
@@ -184,14 +184,14 @@ seems to hang is almost always that compile.
 
 ## Your first simulation
 
-The central public object in TorchSim is a
-{class}`~torchsim.model.Simulator`. A shipped simulator fixes the sequence;
+The central public object in BlochSim is a
+{class}`~blochsim.model.Simulator`. A shipped simulator fixes the sequence;
 `simulate` receives the tissue and anything you want to vary. Asking for a
 Jacobian is the same model and the same protocol:
 
 ```python
 import numpy as np
-from torchsim.simulators import MRFSimulator
+from blochsim.simulators import MRFSimulator
 
 flip = np.concatenate(
     (np.linspace(5.0, 60.0, 300), np.linspace(60.0, 2.0, 300), np.full(280, 2.0))
@@ -205,9 +205,9 @@ respect to T1 and T2. Dictionary fitting, nonlinear least squares,
 model-based reconstruction and sequence design all consume the same simulator
 interface.
 
-Functional calls such as {func}`torchsim.mrf_sim` are convenience wrappers
+Functional calls such as {func}`blochsim.mrf_sim` are convenience wrappers
 around the shipped simulator classes. They are useful for a one-off call, but
-{class}`~torchsim.model.Simulator` is the interface to learn and the class to
+{class}`~blochsim.model.Simulator` is the interface to learn and the class to
 subclass when you implement a sequence.
 
 Arrays go in and come back in whatever library you wrote them in -- NumPy here,
@@ -222,7 +222,7 @@ CuPy or PyTorch elsewhere -- over the same memory rather than a copy.
 {doc}`generated/autoexamples/index`
 : The executable Course and Tours. The Course starts with a shipped simulator,
   then shows how to implement a new sequence by subclassing
-  {class}`~torchsim.model.Simulator`; the Tours cover inference, design and
+  {class}`~blochsim.model.Simulator`; the Tours cover inference, design and
   model-based reconstruction.
 
 {doc}`api/index`
@@ -231,19 +231,19 @@ CuPy or PyTorch elsewhere -- over the same memory rather than a copy.
   placing a run across devices.
 
 {doc}`developer_guide`
-: Setting up to change TorchSim: the editable install, the style the code is
+: Setting up to change BlochSim: the editable install, the style the code is
   written in, the tests, and how a pull request is opened.
 
 ## Getting help, and reporting what breaks
 
 **Ask a question** in
-[Discussions](https://github.com/pulserver/torchsim/discussions). How to model
+[Discussions](https://github.com/pulserver/blochsim/discussions). How to model
 a sequence, whether a signal you got is expected, which estimator suits a
 problem -- these belong there, and the answer is then findable by whoever asks
 next.
 
 **Report a bug** in
-[Issues](https://github.com/pulserver/torchsim/issues/new/choose), where a
+[Issues](https://github.com/pulserver/blochsim/issues/new/choose), where a
 form asks for what a fix needs:
 
 - the shortest script that reproduces it, pasted whole -- a sequence is enough
@@ -252,7 +252,7 @@ form asks for what a fix needs:
   bug: say which analytic case, published figure or alternative simulator you
   are comparing against;
 - the full traceback, if it raises;
-- the environment, as the form's command prints it -- TorchSim, PyTorch, CUDA,
+- the environment, as the form's command prints it -- BlochSim, PyTorch, CUDA,
   Python;
 - whether you have seen it on the CPU kernels, the CUDA kernels, or both. That
   difference is often the whole diagnosis.
@@ -262,8 +262,8 @@ the same form chooser. Name the paper the model comes from and the figure it
 would have to reproduce; that is what makes it implementable.
 
 **Report a vulnerability** privately instead: open a draft advisory from the
-repository's [Security tab](https://github.com/pulserver/torchsim/security/advisories/new),
-or email the address in the [security policy](https://github.com/pulserver/torchsim/blob/main/.github/SECURITY.md).
+repository's [Security tab](https://github.com/pulserver/blochsim/security/advisories/new),
+or email the address in the [security policy](https://github.com/pulserver/blochsim/blob/main/.github/SECURITY.md).
 The kernels index raw pointers, so anything reachable from ordinary arguments
 that reads or writes out of bounds is worth reporting that way rather than in a
 public issue. Wrong physics is a bug report, not a vulnerability.

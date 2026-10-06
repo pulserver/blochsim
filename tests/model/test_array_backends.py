@@ -12,9 +12,9 @@ import numpy as np
 import pytest
 import torch
 
-import torchsim
-from torchsim.sequence._array import as_torch, backend_of, brought, like, matched
-from torchsim.simulators import FSESimulator, MRFSimulator, SPGRSimulator
+import blochsim
+from blochsim.sequence._array import as_torch, backend_of, brought, like, matched
+from blochsim.simulators import FSESimulator, MRFSimulator, SPGRSimulator
 
 cupy = pytest.importorskip("cupy", reason="no second device backend installed")
 
@@ -129,13 +129,13 @@ def test_a_shared_parameter_is_spread_over_the_events() -> None:
 @pytest.mark.parametrize(
     "call",
     [
-        lambda d: torchsim.spgr_sim(
+        lambda d: blochsim.spgr_sim(
             5.0, TE=2.0, TR=10.0, T1=1000.0, T2star=100.0, device=d
         ),
-        lambda d: torchsim.bssfp_sim(
+        lambda d: blochsim.bssfp_sim(
             5.0, TE=2.0, TR=10.0, T1=1000.0, T2=100.0, device=d
         ),
-        lambda d: torchsim.mp2rage_sim(
+        lambda d: blochsim.mp2rage_sim(
             TI=(500.0, 1500.0),
             flip=5.0,
             TRspgr=5.0,
@@ -144,14 +144,14 @@ def test_a_shared_parameter_is_spread_over_the_events() -> None:
             T1=1000.0,
             device=d,
         ),
-        lambda d: torchsim.mrf_sim(FLIP, TR=10.0, T1=1000.0, T2=80.0, device=d),
-        lambda d: torchsim.mprage_sim(
+        lambda d: blochsim.mrf_sim(FLIP, TR=10.0, T1=1000.0, T2=80.0, device=d),
+        lambda d: blochsim.mprage_sim(
             TI=500.0, flip=5.0, TRspgr=5.0, nshots=128, T1=1000.0, device=d
         ),
-        lambda d: torchsim.mpnrage_sim(
+        lambda d: blochsim.mpnrage_sim(
             nshots=8, flip=5.0, TR=10.0, T1=1000.0, device=d
         ),
-        lambda d: torchsim.fse_sim(
+        lambda d: blochsim.fse_sim(
             flip=np.full(4, 120.0, dtype=np.float32),
             ESP=5.0,
             T1=1000.0,

@@ -12,11 +12,11 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     NO_GEOMETRY,
     _NativeEpg,
     _pack_events,
@@ -25,8 +25,8 @@ from torchsim.sequence._accelerators import (
     _run_packed_vjp_jvp,
     damping_scale,
 )
-from torchsim.sequence._parameters import FLOAT_NAMES, TISSUE_NAMES
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._parameters import FLOAT_NAMES, TISSUE_NAMES
+from blochsim.sequence._simulation import _prepare_tissue
 from utils.epg import diffusion_op
 from utils.packed_reference import simulate_packed
 

@@ -38,7 +38,7 @@ What the Jacobian costs on each path, same event stream
   few times the plain one. The multiple is the check that the dual and
   adjoint kernels take the same path the plain ones take, rather than
   the arithmetic being cheap where the plumbing is not. Run the whole
-  file again under TORCHSIM_REAL_SCALAR=1 to separate what the real
+  file again under BLOCHSIM_REAL_SCALAR=1 to separate what the real
   subspace is worth from what the lane kernels on top of it are worth:
   a multiple that does not move is a pass with no laned kernel to take.
 
@@ -84,6 +84,6 @@ What the Jacobian costs on each path, same event stream
   few times the plain one. The multiple is the check that the dual and
   adjoint kernels take the same path the plain ones take, rather than
   the arithmetic being cheap where the plumbing is not. Run the whole
-  file again under TORCHSIM_REAL_SCALAR=1 to separate what the real
+  file again under BLOCHSIM_REAL_SCALAR=1 to separate what the real
   subspace is worth from what the lane kernels on top of it are worth:
   a multiple that does not move is a pass with no laned kernel to take.

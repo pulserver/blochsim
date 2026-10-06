@@ -1,7 +1,7 @@
 # Sequences
 
 ```{eval-rst}
-.. currentmodule:: torchsim
+.. currentmodule:: blochsim
 ```
 
 Device-agnostic description of an acquisition, shared by the interpreter, the
@@ -17,7 +17,7 @@ and the temporal basis a run spans is on {doc}`recon`.
 
 The modules a sequence is assembled from. An operator is a Python function
 returning the events it plays and how long it holds the timeline, and `@`
-composes two into one -- so a preparation or a readout TorchSim does not ship
+composes two into one -- so a preparation or a readout BlochSim does not ship
 reaches the fused kernels with no change to them.
 
 The five readouts differ only in what they play around the sample, which is
@@ -78,10 +78,10 @@ arriving from a scanner is read into.
 {meth}`SequenceDescription.from_pulseq` reads one out of a Pulseq `.seq` file
 or a sequence a design holds in memory, {func}`read_mrd_description` reads the
 ones an MRD stream carries ahead of its first acquisition,
-and {meth}`~torchsim.model.Simulator.from_description` runs any of them.
+and {meth}`~blochsim.model.Simulator.from_description` runs any of them.
 
 Reading a `.seq` file needs pypulseq, which parses the format and computes the
-gradient trajectory the echo is found on: `pip install torchsim[pulseq]`.
+gradient trajectory the echo is found on: `pip install blochsim[pulseq]`.
 Nothing else in the package imports it.
 
 ```{eval-rst}

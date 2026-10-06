@@ -10,8 +10,8 @@ on:
       - pyproject.toml
       - CMakeLists.txt
       - setup.py
-      - "src/torchsim/*.cpp"
-      - "src/torchsim/*.hpp"
+      - "src/blochsim/*.cpp"
+      - "src/blochsim/*.hpp"
       - scripts/check_wheel.py
       - .github/workflows/wheels.yml
   workflow_dispatch:
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/torchsim
+      url: https://pypi.org/p/blochsim
     permissions:
       # Trusted publishing: no API token is stored anywhere.
       id-token: write

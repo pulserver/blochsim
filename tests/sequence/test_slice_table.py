@@ -18,20 +18,20 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     _pack_events,
     _run_packed,
     offload,
     real_subspace_axis,
 )
-from torchsim.sequence._description import RfDefinition, RfShape
-from torchsim.sequence._parameters import FLOAT_NAMES, TISSUE_COUNT
-from torchsim.sequence._simulation import _prepare_tissue
-from torchsim.sequence._transition import transition_table
+from blochsim.sequence._description import RfDefinition, RfShape
+from blochsim.sequence._parameters import FLOAT_NAMES, TISSUE_COUNT
+from blochsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._transition import transition_table
 from utils.packed_reference import simulate_packed
 
 ECHOES = 4
@@ -272,7 +272,7 @@ def test_a_chunk_holds_whole_voxels_when_a_table_is_read() -> None:
     So a chunk boundary inside a voxel's slice copies shifts every row after
     it, which returns a plausible signal for an entirely different slice.
     """
-    from torchsim.sequence._accelerators import _Offload, _offload_plan
+    from blochsim.sequence._accelerators import _Offload, _offload_plan
 
     _, events, outputs = _packed(96)
     plan = _Offload(devices=(torch.device("cuda"),), budget_bytes=1 << 12, lanes=1)
@@ -292,7 +292,7 @@ def test_a_chunk_holds_whole_voxels_when_a_table_is_read() -> None:
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA")
 def test_a_streamed_adjoint_reads_the_table_a_whole_one_does() -> None:
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     locations, voxels = 3, 24
     table = transition_table(
@@ -328,7 +328,7 @@ def test_a_streamed_adjoint_reads_the_table_a_whole_one_does() -> None:
 
 def test_forward_mode_follows_the_table() -> None:
     """The tangent rides the slope the table already stores."""
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     locations, voxels = 3, 3
     table = transition_table(
@@ -393,7 +393,7 @@ def _compare(expected, actual, names, tolerance=2e-4) -> None:
 
 def test_the_adjoint_follows_the_table() -> None:
     """Every gradient the table stands in front of, against the oracle."""
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     locations, voxels = 3, 3
     table = transition_table(
@@ -439,7 +439,7 @@ def test_the_adjoint_follows_the_table() -> None:
 
 def test_an_unprofiled_adjoint_is_untouched() -> None:
     """The table path is another kernel, not a branch inside this one."""
-    from torchsim.sequence._accelerators import _run_packed_vjp
+    from blochsim.sequence._accelerators import _run_packed_vjp
 
     tissue, events, outputs = _packed(6)
     generator = torch.Generator().manual_seed(5)
@@ -456,7 +456,7 @@ def test_an_unprofiled_adjoint_is_untouched() -> None:
 
 def test_the_second_order_pass_follows_the_table() -> None:
     """Forward-over-reverse, which needs the Hermite's own curvature."""
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     locations, voxels = 3, 2
     table = transition_table(
@@ -512,7 +512,7 @@ def test_the_second_order_pass_follows_the_table() -> None:
 
 
 def test_an_unprofiled_second_order_pass_is_untouched() -> None:
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     tissue, events, outputs = _packed(6)
     generator = torch.Generator().manual_seed(7)
@@ -536,7 +536,7 @@ def test_an_unprofiled_second_order_pass_is_untouched() -> None:
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA")
 def test_the_card_follows_the_table_through_both_adjoint_passes() -> None:
     """One kernel serves both: the card reaches a first adjoint through it."""
-    from torchsim.sequence._accelerators import _run_packed_vjp_jvp
+    from blochsim.sequence._accelerators import _run_packed_vjp_jvp
 
     locations, voxels = 3, 2
     table = transition_table(
@@ -582,7 +582,7 @@ def test_the_card_follows_the_table_through_both_adjoint_passes() -> None:
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA")
 def test_the_card_follows_the_table_in_forward_mode() -> None:
-    from torchsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._accelerators import _run_packed_jvp
 
     locations, voxels = 3, 3
     table = transition_table(

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Changed
+
+- **The package is `blochsim`.** The distribution, the import name and the
+  repository are `blochsim`; `import torchsim` becomes `import blochsim`, with
+  the same modules and names beneath it.
+
 ### Added
 
 - **Up to four chemically exchanging pools beside the free water.**
@@ -10,7 +16,7 @@
   five pools of BART's Bloch-McConnell simulation, each exchanging with the free
   water alone. From two exchanging pools on, a tissue reaches the kernels as the
   relaxation-exchange operators of each distinct interval length, formed per
-  voxel in double precision (`torchsim.sequence._pools`). The C++ and Triton
+  voxel in double precision (`blochsim.sequence._pools`). The C++ and Triton
   kernels apply them in the forward, forward-mode, adjoint and
   forward-over-reverse passes, under hard, tabulated and per-voxel pulses and a
   transmit array, and the pool properties take their derivatives back through
@@ -88,7 +94,7 @@
   Both are table lookups now, `sequence/_calibration.py` is a table, and
   `_calibrate.py` -- the same idea for the estimators and the model-based
   operator -- is gone, along with the four closures those built for it to time.
-  `torchsim._execution.choose` and `per_voxel` take the crossover as a number
+  `blochsim._execution.choose` and `per_voxel` take the crossover as a number
   rather than a callable to answer later. Placement is unchanged and stays the
   caller's: with no `execution()` block a call runs wherever its tensors are, a
   named device is an instruction, and whether a volume is resident or streamed
@@ -104,7 +110,7 @@
   of twenty-seven: 7.75 ms against 8.02 ms forward, 41.7 ms against 41.3 ms for
   the Jacobian.
 
-  `calibrate` and `TORCHSIM_CALIBRATION` are gone with the probes.
+  `calibrate` and `BLOCHSIM_CALIBRATION` are gone with the probes.
 
 - **How many orders a run keeps is a number, not a compilation.** The Triton
   kernels read `state_count` as a mask bound and as the stride between the
@@ -691,10 +697,10 @@
   documentation build. *Extended phase graphs* is the physics: dephasing as a
   helix, configuration states as its Fourier coefficients, the RF and shift
   operators, relaxation reaching only order zero, the phase graph read against
-  the echo amplitudes TorchSim computes for the same train, why a low-flip
+  the echo amplitudes BlochSim computes for the same train, why a low-flip
   train is not a mono-exponential, how many orders a sequence has to carry,
   the order-weighted diffusion b-factors, and the two-pool extensions. *How
-  TorchSim runs it* is the realization: events carrying their own action word,
+  BlochSim runs it* is the realization: events carrying their own action word,
   one fused kernel per voxel, the terms a declaration switches on, the real
   subspace, forward against reverse derivatives, the affine rebinding, the
   execution policy, and the closed forms the state machine is held to.
@@ -729,7 +735,7 @@
 
   Nothing was added to the library for it.
 
-- **`torchsim.recon`: the signal model as an operator.** A physics-based
+- **`blochsim.recon`: the signal model as an operator.** A physics-based
   reconstruction writes its forward operator as `P F C M` -- sampling, Fourier
   encoding, coil sensitivities, signal model -- and solves for the parameter
   maps against k-space directly. Only `M` changes with the sequence, and only
@@ -796,7 +802,7 @@
   echo times still on the host. `bound()` adds or replaces tissue, which is
   what a fit does with a property measured separately.
 
-- **`torchsim.ParameterMapping`**, with `Estimator` and `Subspace`. A mapping
+- **`blochsim.ParameterMapping`**, with `Estimator` and `Subspace`. A mapping
   problem is stated the way a design problem is: an `Acquisition`, the
   properties that are unknown and the range to train each over, the ones
   measured separately, and the noise. `train(method)` simulates the training
@@ -859,7 +865,7 @@
   grid it can rule out the group holding the match; widening it recovers the
   voxel, and a test pins both halves of that.
 
-- **`torchsim.NonlinearLeastSquares`**, Levenberg-Marquardt stepping every
+- **`blochsim.NonlinearLeastSquares`**, Levenberg-Marquardt stepping every
   voxel at once. Where a dictionary spans a grid whose size is the product of
   the parameter ranges, a nonlinear fit pays for a third parameter with a third
   column of the Jacobian. Voxels do not take turns: each carries its own
@@ -892,7 +898,7 @@
   expression. The inversion recovery carries the repetition time as well, which
   the usual fully-relaxed expression drops.
 
-- **`torchsim.LookupTable`**, for a model with a single unknown. Its atoms lie
+- **`blochsim.LookupTable`**, for a model with a single unknown. Its atoms lie
   on a curve rather than filling a space, so the nearest one is found by
   looking along it, and interpolating between the two nearest removes the grid
   spacing from the answer -- which is otherwise what a matched estimate is
@@ -923,7 +929,7 @@
   individual readouts agree.
 
 - **Fused kernels for PERK**, forward and adjoint, in Triton on CUDA and in a
-  new `torchsim._perk_cpu` extension on the host. The feature matrix is never
+  new `blochsim._perk_cpu` extension on the host. The feature matrix is never
   written: a tile of features is formed and consumed into the output
   accumulator in registers. On a million voxels of 64 contrasts at a thousand
   features that is 3.3x on this card and 2.4-2.9x on this host, agreeing with
@@ -962,7 +968,7 @@
   `docs/conf.py` drops sphinx-gallery's code-link pass on interpreters whose
   standard library has no `dbm`.
 
-- **`torchsim.model`**, with `SignalModel`, `StateMachineModel`, `Triggers`
+- **`blochsim.model`**, with `SignalModel`, `StateMachineModel`, `Triggers`
   and `AbstractSimulator`. A signal model is written in two pieces: a
   state-machine model saying what a voxel holds -- `properties` maps the name
   a caller uses to the tissue field it fills, so declaring `b0_hz` or a second
@@ -980,20 +986,20 @@
   `AbstractSimulator.from_description` takes a stream someone else assembled,
   which is the path a description arriving from a scanner takes.
 
-- **`torchsim.simulators`**, replacing `torchsim.models`. Each shipped
+- **`blochsim.simulators`**, replacing `blochsim.models`. Each shipped
   sequence names its protocol at construction (`MRFSimulator(flip=..., TR=...)`)
   and its tissue at the call (`.simulate(T1=..., T2=...)`), so parameter
   inference, sequence optimization and a reconstruction pipeline take all of
   them the same way. A protocol argument may still be overridden per call.
 
-- **`torchsim.sequence` operators.** `Operator`, `compose`, `module` and the
+- **`blochsim.sequence` operators.** `Operator`, `compose`, `module` and the
   factories `excitation`, `refocusing`, `inversion`, `saturation`, `readout`
   and `delay`, with a name registry (`register_operator`, `operator`,
   `operator_names`). A preparation, a readout or a shaped pulse is written by
   composing these and reaches the fused kernels with no change to them. The
   five shipped builders are written over them.
 
-- **`torchsim.sequence.ideal_rf_definition`**, the hard-pulse RF definition a
+- **`blochsim.sequence.ideal_rf_definition`**, the hard-pulse RF definition a
   description built by hand needs.
 
 - **Sequence design: `Acquisition`, `Bounded`, `SequenceDesign` and `crlb`.**
@@ -1153,11 +1159,11 @@
   Anything matching the `LeastSquares` protocol -- `A`, `AT`, `y`, `z`,
   `gamma`, `max_iter`, `tol` in, the damped step out -- is called directly. A
   reconstruction that brings its own conjugate gradients, or wraps a proximal
-  solver to carry a regularizer, needs nothing from a dependency TorchSim does
+  solver to carry a regularizer, needs nothing from a dependency BlochSim does
   not have. Given nothing, it falls back to deepinv's `least_squares`, which
   satisfies the protocol unchanged; one of deepinv's others is that same
   function with its argument bound, which is the caller's own composition
-  rather than a name TorchSim interprets.
+  rather than a name BlochSim interprets.
 
 - **The API pages follow one subject each.** *Sequences* is the description
   and what assembles it -- events, operators, builders. The engine and the
@@ -1178,9 +1184,9 @@
   Under a streaming fit that is the difference between simulating the training
   set twice and simulating it three times.
 
-- **`Acquisition` moved to `torchsim.model`**, where both `torchsim.optim` and
-  `torchsim.estimators` can reach it without either depending on the other. It
-  is still exported from `torchsim` and `torchsim.optim`.
+- **`Acquisition` moved to `blochsim.model`**, where both `blochsim.optim` and
+  `blochsim.estimators` can reach it without either depending on the other. It
+  is still exported from `blochsim` and `blochsim.optim`.
 
 - **`SubspaceBasis` carries a `Subspace`** rather than its own copy of the
   basis and singular values, which it still exposes under the same names.
@@ -1245,11 +1251,11 @@
   reaching for is `Triggers`, where it decides something. `simulate_subspace`
   loses its simulator argument for the same reason.
 
-- **`torchsim.models` and the seven `*Model` classes.** Use
-  `torchsim.simulators` and the `*Simulator` classes, which take the protocol
+- **`blochsim.models` and the seven `*Model` classes.** Use
+  `blochsim.simulators` and the `*Simulator` classes, which take the protocol
   at construction. The seven `*_sim` functional wrappers are unchanged.
 
-- **`torchsim.epg`.** The package held the state-machine operators the
+- **`blochsim.epg`.** The package held the state-machine operators the
   simulator's torch loop was written from. That loop is gone: every sequence
   now runs on the fused CPU and CUDA kernels, which reach the same operators
   through their own code. The operators survive as the tests' parity oracle
@@ -1269,7 +1275,7 @@
   there is nothing to select between. A tissue no kernel can take now raises.
 
 - **`slice_profile=` as a tensor of flip-angle scalings**, and
-  `torchsim.utils.slice_prof` with it. A slice profile is a Bloch response and
+  `blochsim.utils.slice_prof` with it. A slice profile is a Bloch response and
   is worked out from the RF definition; `slice_profile=` now says only where
   across the slice to sample it, through `exact_slice_profile(...)`.
 
@@ -1277,10 +1283,10 @@
   functional wrappers, for the same reason. Give the RF definition its
   waveform instead.
 
-- **`torchsim.base`**, with `AbstractModel`, `autocast`, and the
+- **`blochsim.base`**, with `AbstractModel`, `autocast`, and the
   `prepare_single_pool` / `prepare_two_pool_bm` / `prepare_two_pool_mt` /
   `prepare_three_pool` / `prepare_environmental_parameters` helpers. Write a
-  model over `torchsim.model.SignalModel` or `EpgModel` instead; a tissue is
+  model over `blochsim.model.SignalModel` or `EpgModel` instead; a tissue is
   built by naming the fields a model exposes.
 
 - **`chunk_size` on the seven `*_sim` wrappers.** It selected a `torch.vmap`

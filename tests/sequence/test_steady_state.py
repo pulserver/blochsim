@@ -7,7 +7,7 @@ stream that many times and records the last, which is what makes a simulated
 dictionary the dictionary the scanner acquires.
 
 The settled answer is held against a closed form written out here, so what is
-being checked is the physics rather than TorchSim's agreement with itself.
+being checked is the physics rather than BlochSim's agreement with itself.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _builders,
@@ -131,7 +131,7 @@ def test_settling_is_refused_where_it_makes_no_sense():
 
 def test_a_sequence_may_declare_how_far_it_has_to_settle():
     """A simulator knows its own physics; a caller may still overrule it."""
-    from torchsim.simulators import MRFSimulator
+    from blochsim.simulators import MRFSimulator
 
     flip = torch.linspace(5.0, 60.0, 20)
     assert MRFSimulator(flip=flip, TR=10.0, states=16).repetitions == 1

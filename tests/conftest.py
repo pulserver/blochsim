@@ -12,6 +12,6 @@ def always_worth_detecting(monkeypatch):
     trains one by one -- can fall on opposite sides of it and be compared
     across kernels.
     """
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     monkeypatch.setattr(_accelerators, "detection", lambda kind, device: 0.0)

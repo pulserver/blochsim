@@ -1,4 +1,4 @@
-name = "TorchSimBenchmarks"
+name = "BlochSimBenchmarks"
 
 # The two Julia simulators the dictionary benchmark runs against, and what the
 # scripts here need to drive them. Instantiate with:

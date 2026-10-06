@@ -20,5 +20,5 @@ body:
   - type: input
     id: version
     attributes:
-      label: TorchSim version
+      label: BlochSim version
       placeholder: "0.4.1, or the commit you are on"

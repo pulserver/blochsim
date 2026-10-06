@@ -6,7 +6,7 @@ inside dephase against each other, and a Lorentzian spread of half-width
 gone unrefocused -- growing either side of a spin echo and never recovering
 after a gradient echo.
 
-These hold that against things outside TorchSim: the characteristic function of
+These hold that against things outside BlochSim: the characteristic function of
 the Cauchy distribution, summed here over a quadrature rather than taken on
 trust, and the closed form ``T2*`` a gradient echo decays at. The ensemble is
 also played through the states themselves, so the claim that a spread and a
@@ -19,18 +19,18 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     EventAction,
     TissueProperties,
     _builders,
 )
-from torchsim.sequence._description import (
+from blochsim.sequence._description import (
     AdcRole,
     SequenceDescription,
     ideal_rf_definition,
 )
-from torchsim.sequence._operators import (
+from blochsim.sequence._operators import (
     Dephase,
     Excitation,
     Readout,
@@ -152,7 +152,7 @@ def _signal(description, *, repetitions=1, **tissue) -> np.ndarray:
 
 def _unrefocused_s(description) -> np.ndarray:
     """How long each sample has gone unrefocused, from the run's own labels."""
-    from torchsim.sequence._accelerators import _pack_events
+    from blochsim.sequence._accelerators import _pack_events
 
     packed = _pack_events(
         description,
@@ -340,8 +340,8 @@ def test_a_settled_state_carries_the_spread(route):
 
 
 def test_a_model_declares_it_like_any_other_property():
-    from torchsim.model._state_machine import SpinPhysics
-    from torchsim.sequence._parameters import features_of
+    from blochsim.model._state_machine import SpinPhysics
+    from blochsim.sequence._parameters import features_of
 
     physics = SpinPhysics(
         properties={"T1": "t1_ms", "T2": "t2_ms", "T2p": "t2_prime_ms"}

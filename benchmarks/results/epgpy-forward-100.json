@@ -25,7 +25,7 @@
     "processor": "x86_64",
     "python": "3.11.5"
   },
-  "note": "max_nstate matches the orders TorchSim keeps",
+  "note": "max_nstate matches the orders BlochSim keeps",
   "best": 0.2370688480004901,
   "median": 0.27986130800127285,
   "atoms_per_second": 421.81839091652085,

@@ -9,8 +9,8 @@ from typing import Any
 import pytest
 import torch
 
-from torchsim.model import Simulator
-from torchsim.recon import (
+from blochsim.model import Simulator
+from blochsim.recon import (
     GaussNewton,
     ModelOperator,
     Schedule,
@@ -18,10 +18,10 @@ from torchsim.recon import (
     direct,
     iterative,
 )
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.simulators import MultiEchoSimulator
 
 #: ``iterative()`` with nothing named falls back to deepinv's ``least_squares``,
-#: which TorchSim does not depend on.
+#: which BlochSim does not depend on.
 needs_deepinv = pytest.mark.skipif(
     importlib.util.find_spec("deepinv") is None,
     reason="deepinv supplies the fallback inner solve",

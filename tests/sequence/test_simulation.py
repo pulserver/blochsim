@@ -7,7 +7,7 @@ import importlib.util
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
@@ -91,7 +91,7 @@ def test_subspace_basis_uses_time_as_leading_dimension() -> None:
 
 
 @pytest.mark.skipif(
-    importlib.util.find_spec("torchsim._epg_cpu") is None,
+    importlib.util.find_spec("blochsim._epg_cpu") is None,
     reason="CPU extension has not been built",
 )
 @pytest.mark.parametrize("policy_name", ["fse", "ssfp-fid", "spgr"])
@@ -233,8 +233,8 @@ def _oracle(description, tissue, device: str, state_count: int = 10):
     route -- description, preparation, packing, kernel -- against an
     implementation that shares none of it.
     """
-    from torchsim.sequence._accelerators import _pack_events, geometry_of
-    from torchsim.sequence._simulation import _prepare_tissue
+    from blochsim.sequence._accelerators import _pack_events, geometry_of
+    from blochsim.sequence._simulation import _prepare_tissue
     from utils.packed_reference import simulate_packed
 
     prepared, shape, resolved = _prepare_tissue(tissue, device)

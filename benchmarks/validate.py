@@ -1,4 +1,4 @@
-"""Whether TorchSim, sycomore and epgpy compute the same fingerprint.
+"""Whether BlochSim, sycomore and epgpy compute the same fingerprint.
 
 Three independent implementations of the same model -- a fused C++ or Triton
 state machine over a packed event stream, a C++ EPG library driven one tissue
@@ -6,7 +6,7 @@ at a time from Python, and an operator-per-event NumPy library -- should agree
 to the precision the coarsest of them carries. This says by how much they do,
 over a tissue grid, and shows what truncating the configuration orders costs.
 
-Where there is a card, TorchSim's two kernels are held against each other as
+Where there is a card, BlochSim's two kernels are held against each other as
 well: they are separate implementations of one recursion, and a run placed on a
 card has to answer what the same run on the CPU answers.
 
@@ -67,7 +67,7 @@ def epgpy_signal(
     return np.asarray(epg.simulate(sequence, max_nstate=states)).T
 
 
-def torchsim_signal(
+def blochsim_signal(
     T1: np.ndarray,
     T2: np.ndarray,
     flip: np.ndarray,
@@ -78,7 +78,7 @@ def torchsim_signal(
     """The same train on the fused state machine, at a given order count."""
     import torch
 
-    from torchsim.simulators import MRFSimulator
+    from blochsim.simulators import MRFSimulator
 
     where = torch.device(device)
     sequence = MRFSimulator(
@@ -152,7 +152,7 @@ def main() -> None:
     print("Reference: sycomore, every order kept, double precision.\n")
     print(f"{'states':>7s}  {'max |difference|':>17s}  {'relative':>10s}")
     for states in (4, 8, 16, 32, 64):
-        signal = torchsim_signal(T1, T2, flip, TR, states)
+        signal = blochsim_signal(T1, T2, flip, TR, states)
         # The two differ by the constant phase each writes its echo with.
         turn = np.exp(1j * np.angle(np.sum(reference * np.conj(signal))))
         difference = np.abs(reference - signal * turn)
@@ -168,11 +168,11 @@ def main() -> None:
         # The two kernels are separate implementations of the same recursion,
         # so this is a comparison of the C++ one against the Triton one rather
         # than a check that a tensor made the trip.
-        on_cpu = torchsim_signal(T1, T2, flip, TR, arguments.states)
-        on_card = torchsim_signal(T1, T2, flip, TR, arguments.states, device="cuda")
+        on_cpu = blochsim_signal(T1, T2, flip, TR, arguments.states)
+        on_card = blochsim_signal(T1, T2, flip, TR, arguments.states, device="cuda")
         difference = np.abs(on_cpu - on_card)
         print(
-            f"\nTorchSim on {torch.cuda.get_device_name(0)} against its CPU kernel: "
+            f"\nBlochSim on {torch.cuda.get_device_name(0)} against its CPU kernel: "
             f"max {difference.max():.3e}, "
             f"relative {difference.max() / np.abs(on_cpu).max():.2e}"
         )
@@ -187,11 +187,11 @@ def main() -> None:
     except ImportError:
         other = None
     if other is not None:
-        signal = torchsim_signal(T1, T2, flip, TR, arguments.states)
+        signal = blochsim_signal(T1, T2, flip, TR, arguments.states)
         turn = np.exp(1j * np.angle(np.sum(other * np.conj(signal))))
         difference = np.abs(other - signal * turn)
         print(
-            f"\nTorchSim against epgpy, both truncated to {arguments.states} orders: "
+            f"\nBlochSim against epgpy, both truncated to {arguments.states} orders: "
             f"max {difference.max():.3e}, "
             f"relative {difference.max() / np.abs(other).max():.2e}"
         )
@@ -239,7 +239,7 @@ def main() -> None:
             )
 
     print(f"\nPer tissue, at {arguments.states} orders:")
-    signal = torchsim_signal(T1, T2, flip, TR, arguments.states)
+    signal = blochsim_signal(T1, T2, flip, TR, arguments.states)
     turn = np.exp(1j * np.angle(np.sum(reference * np.conj(signal))))
     for row, (a, b) in enumerate(TISSUES):
         difference = np.abs(reference[row] - signal[row] * turn)
@@ -248,7 +248,7 @@ def main() -> None:
             f"max {difference.max():.3e}, "
             f"NRMSE {np.sqrt(np.mean(difference**2)) / np.sqrt(np.mean(np.abs(reference[row]) ** 2)):.3e}"
         )
-        record.setdefault("against", {}).setdefault("TorchSim", []).append(
+        record.setdefault("against", {}).setdefault("BlochSim", []).append(
             {
                 "T1_ms": a,
                 "T2_ms": b,

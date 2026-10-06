@@ -18,7 +18,7 @@ bash benchmarks/setup.sh          # or: setup.sh python / setup.sh julia
 source benchmarks/.env/activate
 ```
 
-That builds a virtual environment with PyTorch, TorchSim, epgpy and sycomore
+That builds a virtual environment with PyTorch, BlochSim, epgpy and sycomore
 in it, and a Julia with BlochSimulators.jl, KomaMRI.jl and CUDA.jl, all under
 `benchmarks/.env`, which is the only thing to delete afterwards. Every piece is
 optional: `run_all.py` skips a backend that is not installed and says so.
@@ -28,7 +28,7 @@ Three notes on the awkward ones.
 **Which interpreter the environment is built on matters.** `PYTHON` says which,
 and the default is whatever `python3` finds first. An interpreter that ships a
 C++ runtime of its own -- a conda one does -- loads that runtime ahead of the
-system's, and TorchSim's kernels are compiled against the system's. The
+system's, and BlochSim's kernels are compiled against the system's. The
 extension then fails to load with a missing `GLIBCXX` version, every fused
 kernel is reported absent, and nothing here can run:
 
@@ -52,11 +52,11 @@ benchmarks alone.
 python benchmarks/run_all.py                     # the CPU sweep, into results/
 python benchmarks/run_all.py --device cuda       # the same sweep, on a card
 python benchmarks/run_all.py --quick             # stop at 1000 tissues
-python benchmarks/run_all.py --backends torchsim,blochsimulators
+python benchmarks/run_all.py --backends blochsim,blochsimulators
 python benchmarks/validate.py                    # do they agree?
 python benchmarks/summarize.py                   # the table, from results/
 python benchmarks/make_figures.py                # the figures, into figures/
-python benchmarks/anatomy.py [--device cuda]     # what TorchSim's runtime is made of
+python benchmarks/anatomy.py [--device cuda]     # what BlochSim's runtime is made of
 ```
 
 `--device` reaches every backend that has a card to be placed on. Sycomore and
@@ -105,7 +105,7 @@ measures what it costs rather than pretending it is the same computation.
 
 **Wall time**, the fastest of the timed runs. What comes before them is a
 warm-up given a budget of seconds rather than a count, because what has to be
-warm differs by orders of magnitude: TorchSim resolves the *structure* of a
+warm differs by orders of magnitude: BlochSim resolves the *structure* of a
 sequence once and rebinds values on every call afterwards, Julia compiles on
 first call, and a card idles at a low clock and takes the better part of a
 second of continuous work to reach its boost one. That last is the one that
@@ -140,7 +140,7 @@ placed on a card computed what the same run computes on a CPU.
 *every* order in double precision as the reference. Where 32 orders are enough
 for the tissue -- everything at brain T2 -- the implementations agree to
 **float32 round-off**, and what is left at long T2 is the truncation and not a
-disagreement: it halves as the orders double. TorchSim's two kernels are held
+disagreement: it halves as the orders double. BlochSim's two kernels are held
 against each other as well, since they are separate implementations of one
 recursion: a dictionary run on the card matches the same dictionary on the CPU
 to **6e-06 relative**. `results/validation.json` and `results/validation.txt`
@@ -173,16 +173,16 @@ The measurements committed here were taken on an Intel Core i7-13700H -- six
 performance cores, eight efficiency cores, 23 GB -- with an NVIDIA GeForce RTX
 4060 Laptop GPU, 8 GB; Python 3.11.5, PyTorch 2.13 with CUDA 13.0, Triton
 3.7.1, NumPy 2.4.6, sycomore 2.0.0, epgpy at 82eebbf, Julia 1.12.7,
-BlochSimulators 0.9.0, KomaMRICore 0.13.0, CUDA.jl 5. TorchSim and
+BlochSimulators 0.9.0, KomaMRICore 0.13.0, CUDA.jl 5. BlochSim and
 BlochSimulators compute in float32, sycomore and epgpy in float64. The CPU
 sweep pins **four threads** for every backend that takes them, which is what
 makes the packages comparable to each other rather than to the machine.
 
 At ten thousand tissues, four CPU threads, 32 orders:
 
-| | forward | against TorchSim |
+| | forward | against BlochSim |
 | --- | ---: | ---: |
-| TorchSim | 0.187 s | -- |
+| BlochSim | 0.187 s | -- |
 | BlochSimulators.jl, real states | 0.212 s | 1.1x slower |
 | BlochSimulators.jl, complex states | 0.520 s | 2.8x slower |
 | sycomore | 28.40 s | 152x slower |
@@ -194,8 +194,8 @@ asking:
 | | CPU, four threads | RTX 4060 Laptop | what the card buys |
 | --- | ---: | ---: | ---: |
 | BlochSimulators.jl | 2.276 s | 0.037 s | 61x |
-| TorchSim | 1.903 s | 0.069 s | 28x |
-| TorchSim, Jacobian in T1 and T2 | 9.657 s | 0.381 s | 25x |
+| BlochSim | 1.903 s | 0.069 s | 28x |
+| BlochSim, Jacobian in T1 and T2 | 9.657 s | 0.381 s | 25x |
 | BlochSimulators.jl, finite differences | 7.409 s | 0.119 s | 62x |
 
 KomaMRI reaches a thousand tissues, and 64 isochromats each: 7.33 s on four
@@ -208,18 +208,18 @@ BlochSimulators.jl is the comparison that matters -- it is the one other
 package built for exactly this workload -- and at ten thousand tissues on four
 threads the two are within a tenth of each other. Both take a real path when a
 train's pulses share one axis: BlochSimulators reads that off the element type
-of its `RF_train`, TorchSim decides it per run from the phases the description
+of its `RF_train`, BlochSim decides it per run from the phases the description
 carries, and both fall back to complex arithmetic when they cannot. The real
 path is worth 2.5x in BlochSimulators (0.212 s against 0.520 s) and 4.9x in
-TorchSim, which `anatomy.py` measures on one event stream with only the verdict
+BlochSim, which `anatomy.py` measures on one event stream with only the verdict
 changed.
 
 On the card the two separate. BlochSimulators simulates a hundred thousand
-tissues in 37 ms against TorchSim's 69 ms, and takes its finite-difference
-Jacobian in 119 ms against TorchSim's 381 ms. The two lay the same recursion out
+tissues in 37 ms against BlochSim's 69 ms, and takes its finite-difference
+Jacobian in 119 ms against BlochSim's 381 ms. The two lay the same recursion out
 differently: BlochSimulators gives each voxel a whole warp and each thread
 `states / 32` of the configuration orders, held in registers as an immutable
-`SMatrix`, while TorchSim's Triton kernel takes a tile of voxels by all of
+`SMatrix`, while BlochSim's Triton kernel takes a tile of voxels by all of
 their orders per program. Whatever the gap is, it is in the kernel and not in
 the dispatch around it: `anatomy.py --device cuda` puts a forced-real verdict at
 106.3 ms against 107.2 ms for the automatic one, so the fast path is reached and
@@ -243,15 +243,15 @@ an order of magnitude between one tissue and a hundred, then stops improving.
 **A Jacobian costs a few times the forward pass it comes from, on every
 package that has one.** At ten thousand tissues on four threads:
 BlochSimulators' finite differences 0.847 s, which is 4.0x its own forward pass
-and is what three passes should cost; TorchSim's dual arithmetic 1.088 s for
+and is what three passes should cost; BlochSim's dual arithmetic 1.088 s for
 two properties and 0.551 s for one, which is 2.9x its own forward pass per
-property; epgpy's analytic derivative 156 s, 4.5x its own. TorchSim's is linear
+property; epgpy's analytic derivative 156 s, 4.5x its own. BlochSim's is linear
 in the number of properties, as forward mode should be, and exact where the
 finite differences are not. The reverse pass takes the same lanes: a gradient
 through a 500-echo train costs 4.6x its forward pass on the real path, against
 the Jacobian's 5.9x.
 
-**TorchSim pays a structure cost the others do not.** Resolving a
+**BlochSim pays a structure cost the others do not.** Resolving a
 500-repetition fingerprinting train -- walking 2 000 events, packing them,
 learning the affine rebinding -- takes 1.9 s, once per sequence *shape*; a
 500-echo refocused train takes 0.16 s. What it buys is the calls afterwards:
@@ -275,7 +275,7 @@ samples and the fastest of them, but a desktop or datacentre card would
 separate the kernels differently and neither ratio above should be read as
 architectural.
 
-**A second and third task.** One 64-echo CPMG train, where TorchSim's
+**A second and third task.** One 64-echo CPMG train, where BlochSim's
 real-subspace specialization does apply; one two-pool run, which sycomore
 cannot express at all and epgpy can. That pair separates "faster" from "does
 more", which no single-task benchmark can.

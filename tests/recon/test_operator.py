@@ -5,12 +5,12 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     Subspace,
     execution,
 )
-from torchsim.recon import ModelOperator
-from torchsim.simulators import FSESimulator, MultiEchoSimulator
+from blochsim.recon import ModelOperator
+from blochsim.simulators import FSESimulator, MultiEchoSimulator
 
 TE_MS = torch.tensor([10.0, 20.0, 40.0, 80.0, 160.0])
 BOUND = {"T2": (10.0, 300.0)}

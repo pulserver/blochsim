@@ -50,45 +50,45 @@
 | sycomore | forward | cpu | 1 | 100 | 0.2687 | 372 | 37 | 3.5 | 0 |
 | sycomore | forward | cpu | 1 | 1000 | 2.2262 | 449 | 57 | 23.8 | 0 |
 | sycomore | forward | cpu | 1 | 10000 | 28.3982 | 352 | 266 | 233.0 | 0 |
-| torchsim | forward | cpu | 1 | 1000 | 0.0698 | 14,324 | 724 | 117.5 | 0 |
-| torchsim | forward | cpu | 1 | 10000 | 0.7669 | 13,039 | 822 | 215.4 | 0 |
-| torchsim | forward | cpu | 1 | 100000 | 7.1735 | 13,940 | 1861 | 1254.3 | 0 |
-| torchsim | forward | cpu | 4 | 1 | 0.0009 | 1,132 | 708 | 101.6 | 0 |
-| torchsim | forward | cpu | 4 | 10 | 0.0016 | 6,343 | 708 | 101.1 | 0 |
-| torchsim | forward | cpu | 4 | 100 | 0.0037 | 27,010 | 708 | 101.2 | 0 |
-| torchsim | forward | cpu | 4 | 1000 | 0.0233 | 42,972 | 720 | 113.5 | 0 |
-| torchsim | forward | cpu | 4 | 10000 | 0.1866 | 53,578 | 860 | 252.6 | 0 |
-| torchsim | forward | cpu | 4 | 100000 | 1.9028 | 52,554 | 1861 | 1254.0 | 0 |
-| torchsim | forward | cuda | 4 | 1 | 0.0037 | 267 | 1152 | 551.3 | 54 |
-| torchsim | forward | cuda | 4 | 10 | 0.0034 | 2,942 | 1180 | 582.2 | 54 |
-| torchsim | forward | cuda | 4 | 100 | 0.0028 | 35,256 | 1240 | 639.7 | 54 |
-| torchsim | forward | cuda | 4 | 1000 | 0.0033 | 301,734 | 1202 | 600.6 | 54 |
-| torchsim | forward | cuda | 4 | 10000 | 0.0087 | 1,150,290 | 1194 | 592.4 | 196 |
-| torchsim | forward | cuda | 4 | 100000 | 0.0687 | 1,454,714 | 1204 | 602.3 | 1586 |
-| torchsim | jacobian(T1) | cpu | 4 | 1 | 0.0054 | 185 | 712 | 105.2 | 0 |
-| torchsim | jacobian(T1) | cpu | 4 | 10 | 0.0081 | 1,234 | 712 | 105.4 | 0 |
-| torchsim | jacobian(T1) | cpu | 4 | 100 | 0.0117 | 8,520 | 713 | 106.3 | 0 |
-| torchsim | jacobian(T1) | cpu | 4 | 1000 | 0.0534 | 18,738 | 745 | 138.4 | 0 |
-| torchsim | jacobian(T1) | cpu | 4 | 10000 | 0.5511 | 18,146 | 941 | 333.8 | 0 |
-| torchsim | jacobian(T1) | cpu | 4 | 100000 | 5.4812 | 18,244 | 3007 | 2400.2 | 0 |
-| torchsim | jacobian(T1) | cuda | 4 | 1 | 0.0084 | 119 | 1167 | 560.0 | 122 |
-| torchsim | jacobian(T1) | cuda | 4 | 10 | 0.0081 | 1,242 | 1158 | 556.2 | 54 |
-| torchsim | jacobian(T1) | cuda | 4 | 100 | 0.0079 | 12,640 | 1209 | 607.9 | 72 |
-| torchsim | jacobian(T1) | cuda | 4 | 1000 | 0.0080 | 124,412 | 1211 | 609.8 | 56 |
-| torchsim | jacobian(T1) | cuda | 4 | 10000 | 0.0237 | 421,684 | 1206 | 605.2 | 316 |
-| torchsim | jacobian(T1) | cuda | 4 | 100000 | 0.1895 | 527,615 | 1209 | 607.7 | 2732 |
-| torchsim | jacobian(T1,T2) | cpu | 4 | 1 | 0.0101 | 99 | 712 | 105.1 | 0 |
-| torchsim | jacobian(T1,T2) | cpu | 4 | 10 | 0.0117 | 856 | 712 | 105.7 | 0 |
-| torchsim | jacobian(T1,T2) | cpu | 4 | 100 | 0.0229 | 4,358 | 714 | 107.2 | 0 |
-| torchsim | jacobian(T1,T2) | cpu | 4 | 1000 | 0.1285 | 7,783 | 757 | 150.1 | 0 |
-| torchsim | jacobian(T1,T2) | cpu | 4 | 10000 | 1.0879 | 9,192 | 1055 | 448.1 | 0 |
-| torchsim | jacobian(T1,T2) | cpu | 4 | 100000 | 9.6565 | 10,356 | 4147 | 3540.4 | 0 |
-| torchsim | jacobian(T1,T2) | cuda | 4 | 1 | 0.0156 | 64 | 1164 | 563.0 | 72 |
-| torchsim | jacobian(T1,T2) | cuda | 4 | 10 | 0.0156 | 640 | 1197 | 595.8 | 54 |
-| torchsim | jacobian(T1,T2) | cuda | 4 | 100 | 0.0159 | 6,282 | 1253 | 651.3 | 54 |
-| torchsim | jacobian(T1,T2) | cuda | 4 | 1000 | 0.0158 | 63,392 | 1206 | 605.0 | 56 |
-| torchsim | jacobian(T1,T2) | cuda | 4 | 10000 | 0.0459 | 217,764 | 1206 | 605.3 | 512 |
-| torchsim | jacobian(T1,T2) | cuda | 4 | 100000 | 0.3813 | 262,295 | 1208 | 606.0 | 4642 |
+| blochsim | forward | cpu | 1 | 1000 | 0.0698 | 14,324 | 724 | 117.5 | 0 |
+| blochsim | forward | cpu | 1 | 10000 | 0.7669 | 13,039 | 822 | 215.4 | 0 |
+| blochsim | forward | cpu | 1 | 100000 | 7.1735 | 13,940 | 1861 | 1254.3 | 0 |
+| blochsim | forward | cpu | 4 | 1 | 0.0009 | 1,132 | 708 | 101.6 | 0 |
+| blochsim | forward | cpu | 4 | 10 | 0.0016 | 6,343 | 708 | 101.1 | 0 |
+| blochsim | forward | cpu | 4 | 100 | 0.0037 | 27,010 | 708 | 101.2 | 0 |
+| blochsim | forward | cpu | 4 | 1000 | 0.0233 | 42,972 | 720 | 113.5 | 0 |
+| blochsim | forward | cpu | 4 | 10000 | 0.1866 | 53,578 | 860 | 252.6 | 0 |
+| blochsim | forward | cpu | 4 | 100000 | 1.9028 | 52,554 | 1861 | 1254.0 | 0 |
+| blochsim | forward | cuda | 4 | 1 | 0.0037 | 267 | 1152 | 551.3 | 54 |
+| blochsim | forward | cuda | 4 | 10 | 0.0034 | 2,942 | 1180 | 582.2 | 54 |
+| blochsim | forward | cuda | 4 | 100 | 0.0028 | 35,256 | 1240 | 639.7 | 54 |
+| blochsim | forward | cuda | 4 | 1000 | 0.0033 | 301,734 | 1202 | 600.6 | 54 |
+| blochsim | forward | cuda | 4 | 10000 | 0.0087 | 1,150,290 | 1194 | 592.4 | 196 |
+| blochsim | forward | cuda | 4 | 100000 | 0.0687 | 1,454,714 | 1204 | 602.3 | 1586 |
+| blochsim | jacobian(T1) | cpu | 4 | 1 | 0.0054 | 185 | 712 | 105.2 | 0 |
+| blochsim | jacobian(T1) | cpu | 4 | 10 | 0.0081 | 1,234 | 712 | 105.4 | 0 |
+| blochsim | jacobian(T1) | cpu | 4 | 100 | 0.0117 | 8,520 | 713 | 106.3 | 0 |
+| blochsim | jacobian(T1) | cpu | 4 | 1000 | 0.0534 | 18,738 | 745 | 138.4 | 0 |
+| blochsim | jacobian(T1) | cpu | 4 | 10000 | 0.5511 | 18,146 | 941 | 333.8 | 0 |
+| blochsim | jacobian(T1) | cpu | 4 | 100000 | 5.4812 | 18,244 | 3007 | 2400.2 | 0 |
+| blochsim | jacobian(T1) | cuda | 4 | 1 | 0.0084 | 119 | 1167 | 560.0 | 122 |
+| blochsim | jacobian(T1) | cuda | 4 | 10 | 0.0081 | 1,242 | 1158 | 556.2 | 54 |
+| blochsim | jacobian(T1) | cuda | 4 | 100 | 0.0079 | 12,640 | 1209 | 607.9 | 72 |
+| blochsim | jacobian(T1) | cuda | 4 | 1000 | 0.0080 | 124,412 | 1211 | 609.8 | 56 |
+| blochsim | jacobian(T1) | cuda | 4 | 10000 | 0.0237 | 421,684 | 1206 | 605.2 | 316 |
+| blochsim | jacobian(T1) | cuda | 4 | 100000 | 0.1895 | 527,615 | 1209 | 607.7 | 2732 |
+| blochsim | jacobian(T1,T2) | cpu | 4 | 1 | 0.0101 | 99 | 712 | 105.1 | 0 |
+| blochsim | jacobian(T1,T2) | cpu | 4 | 10 | 0.0117 | 856 | 712 | 105.7 | 0 |
+| blochsim | jacobian(T1,T2) | cpu | 4 | 100 | 0.0229 | 4,358 | 714 | 107.2 | 0 |
+| blochsim | jacobian(T1,T2) | cpu | 4 | 1000 | 0.1285 | 7,783 | 757 | 150.1 | 0 |
+| blochsim | jacobian(T1,T2) | cpu | 4 | 10000 | 1.0879 | 9,192 | 1055 | 448.1 | 0 |
+| blochsim | jacobian(T1,T2) | cpu | 4 | 100000 | 9.6565 | 10,356 | 4147 | 3540.4 | 0 |
+| blochsim | jacobian(T1,T2) | cuda | 4 | 1 | 0.0156 | 64 | 1164 | 563.0 | 72 |
+| blochsim | jacobian(T1,T2) | cuda | 4 | 10 | 0.0156 | 640 | 1197 | 595.8 | 54 |
+| blochsim | jacobian(T1,T2) | cuda | 4 | 100 | 0.0159 | 6,282 | 1253 | 651.3 | 54 |
+| blochsim | jacobian(T1,T2) | cuda | 4 | 1000 | 0.0158 | 63,392 | 1206 | 605.0 | 56 |
+| blochsim | jacobian(T1,T2) | cuda | 4 | 10000 | 0.0459 | 217,764 | 1206 | 605.3 | 512 |
+| blochsim | jacobian(T1,T2) | cuda | 4 | 100000 | 0.3813 | 262,295 | 1208 | 606.0 | 4642 |
 
 - BlochSimulators.jl n=1000: float32; real RF train, so the states stay real; max_state is a multiple of 32 by construction
 - BlochSimulators.jl n=10000: float32; real RF train, so the states stay real; max_state is a multiple of 32 by construction
@@ -125,16 +125,16 @@
 - KomaMRI.jl n=10: isochromat: 64 spins per tissue through one spoiler cycle, 640 spins in all
 - KomaMRI.jl n=100: isochromat: 64 spins per tissue through one spoiler cycle, 6400 spins in all
 - KomaMRI.jl n=1000: isochromat: 64 spins per tissue through one spoiler cycle, 64000 spins in all
-- epgpy n=1: max_nstate matches the orders TorchSim keeps
-- epgpy n=10: max_nstate matches the orders TorchSim keeps
-- epgpy n=100: max_nstate matches the orders TorchSim keeps
-- epgpy n=1000: max_nstate matches the orders TorchSim keeps
-- epgpy n=10000: max_nstate matches the orders TorchSim keeps
-- epgpy n=1: max_nstate matches the orders TorchSim keeps
-- epgpy n=10: max_nstate matches the orders TorchSim keeps
-- epgpy n=100: max_nstate matches the orders TorchSim keeps
-- epgpy n=1000: max_nstate matches the orders TorchSim keeps
-- epgpy n=10000: max_nstate matches the orders TorchSim keeps
+- epgpy n=1: max_nstate matches the orders BlochSim keeps
+- epgpy n=10: max_nstate matches the orders BlochSim keeps
+- epgpy n=100: max_nstate matches the orders BlochSim keeps
+- epgpy n=1000: max_nstate matches the orders BlochSim keeps
+- epgpy n=10000: max_nstate matches the orders BlochSim keeps
+- epgpy n=1: max_nstate matches the orders BlochSim keeps
+- epgpy n=10: max_nstate matches the orders BlochSim keeps
+- epgpy n=100: max_nstate matches the orders BlochSim keeps
+- epgpy n=1000: max_nstate matches the orders BlochSim keeps
+- epgpy n=10000: max_nstate matches the orders BlochSim keeps
 - sycomore n=1: threshold=1e-06; orders reached 11-11
 - sycomore n=10: threshold=1e-06; orders reached 11-158
 - sycomore n=100: threshold=1e-06; orders reached 11-158

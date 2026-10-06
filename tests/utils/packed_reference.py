@@ -20,7 +20,7 @@ from typing import Any
 
 import torch
 
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     _INVERSION,
     _POST_SHIFT,
     _PRE_SHIFT,
@@ -28,7 +28,7 @@ from torchsim.sequence._accelerators import (
     _SHIFT_AFTER,
     _SPOIL_AFTER,
 )
-from torchsim.sequence._parameters import NO_GEOMETRY, Geometry
+from blochsim.sequence._parameters import NO_GEOMETRY, Geometry
 
 __all__ = ["simulate_packed", "simulate_packed_pools"]
 
@@ -63,12 +63,12 @@ def simulate_packed(
         The two scales the velocity is read through, exactly as the kernels
         take them.
     profile
-        A :class:`~torchsim.sequence._transition.TransitionTable`, or ``None``
+        A :class:`~blochsim.sequence._transition.TransitionTable`, or ``None``
         for the instantaneous pulse. Given one, a pulse turns through the
         rotation the table holds at its effective flip rather than through a
         flip and a phase.
     dynamic
-        A :class:`~torchsim.sequence._transition.DynamicPairs`, for a pulse
+        A :class:`~blochsim.sequence._transition.DynamicPairs`, for a pulse
         whose channel weights vary while it plays. The rotation is already
         integrated at that pulse's own flip, so only the event's phase is left
         to apply. Mutually exclusive with ``profile``: a pair integrated at the
@@ -78,7 +78,7 @@ def simulate_packed(
         voxel-major, so a voxel's position along the slice is its index modulo
         this, which is the row of the table it reads.
     lineshape
-        A :class:`~torchsim.sequence._lineshape.LineshapeTable`, or ``None``
+        A :class:`~blochsim.sequence._lineshape.LineshapeTable`, or ``None``
         for a single pool. Given one, the longitudinal step carries a bound
         pool alongside the free water and each pulse saturates it.
     exchanging
@@ -634,7 +634,7 @@ def simulate_packed_pools(
     events, state_count, output_count, geometry, profile, dynamic, locations
         As :func:`simulate_packed` takes them.
     lineshape
-        A :class:`~torchsim.sequence._lineshape.LineshapeTable` for a
+        A :class:`~blochsim.sequence._lineshape.LineshapeTable` for a
         semisolid pool, or ``None`` for none.
 
     Returns

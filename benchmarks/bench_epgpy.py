@@ -1,6 +1,6 @@
 """The same fingerprinting dictionary, on epgpy's operator-per-event EPG.
 
-Epgpy is the closest thing to TorchSim in Python: NumPy under the hood, the
+Epgpy is the closest thing to BlochSim in Python: NumPy under the hood, the
 dictionary carried in the array shape rather than in a loop, analytic first-
 and second-order derivatives, and CuPy for a card. What it does not do is fuse:
 each operator is a pass over the whole state matrix, so a train of a thousand
@@ -86,7 +86,7 @@ def main() -> None:
         checksum=complex(np.asarray(signal).sum()),
         versions={"epgpy": release, "numpy": np.__version__},
         machine=machine(),
-        note="max_nstate matches the orders TorchSim keeps",
+        note="max_nstate matches the orders BlochSim keeps",
     )
     report(measurement, args.json)
 

@@ -5,7 +5,7 @@ body:
     attributes:
       label: The idea
       description: |
-        A model, an interface or a direction you think TorchSim should take,
+        A model, an interface or a direction you think BlochSim should take,
         before it is concrete enough to be a feature request.
     validations:
       required: true

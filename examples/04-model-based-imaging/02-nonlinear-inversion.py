@@ -17,7 +17,7 @@ operator is a chain
 -- sampling, Fourier encoding, coil sensitivities, and the **signal model** --
 and the parameter maps are solved for directly against the k-space that was
 measured. Only the last factor changes with the sequence, and it is the only
-one TorchSim supplies: :class:`~torchsim.recon.ModelOperator` turns any
+one BlochSim supplies: :class:`~blochsim.recon.ModelOperator` turns any
 simulator into it, and the encoding comes from mri-nufft.
 
 Unlike a subspace this stays nonlinear, so it needs a starting guess and a loop
@@ -34,7 +34,7 @@ methods for magnetic resonance imaging.* Phil Trans R Soc A 379:20200196
 # .. colab-link::
 #    :needs_gpu: 1
 #
-#    !pip install torchsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
+#    !pip install blochsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
 
 # %%
 #
@@ -137,12 +137,12 @@ from brainweb_dl import get_mri
 
 # %%
 #
-# The Fourier encoding is not TorchSim's and never will be. ``mri-nufft``
+# The Fourier encoding is not BlochSim's and never will be. ``mri-nufft``
 # supplies the radial trajectory and the non-uniform transform that plays it;
 # ``deepinv`` supplies the :class:`~deepinv.physics.LinearPhysics` base class
 # the encoding operator is written against, and the linear solver a
 # Gauss-Newton step hands its linearized problem to. Anything exposing ``A``
-# and ``A_adjoint`` composes with what TorchSim supplies.
+# and ``A_adjoint`` composes with what BlochSim supplies.
 #
 import mrinufft
 from deepinv.physics import LinearPhysics
@@ -150,8 +150,8 @@ from mrinufft.trajectories import initialize_2D_radial
 
 # %%
 #
-# From TorchSim: the sequence, the estimator the contrast-then-fit routes
-# need, and :class:`~torchsim.recon.ModelOperator`, which is the signal
+# From BlochSim: the sequence, the estimator the contrast-then-fit routes
+# need, and :class:`~blochsim.recon.ModelOperator`, which is the signal
 # model as a factor of the forward operator.
 #
 import time
@@ -159,9 +159,9 @@ import time
 import numpy as np
 import torch
 
-from torchsim.estimators import DictionaryMatcher
-from torchsim.recon import GaussNewton, ModelOperator, Schedule, iterative
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.estimators import DictionaryMatcher
+from blochsim.recon import GaussNewton, ModelOperator, Schedule, iterative
+from blochsim.simulators import MultiEchoSimulator
 
 
 # %%
@@ -236,7 +236,7 @@ T2_true = torch.where(
 # A multi-echo spin echo on a golden-angle radial trajectory that rotates
 # between echoes. Sixteen spokes per echo across a 96-sample matrix is roughly
 # ninefold undersampled. The protocol stays on the host;
-# :class:`~torchsim.recon.ModelOperator` takes it wherever the maps are.
+# :class:`~blochsim.recon.ModelOperator` takes it wherever the maps are.
 #
 TE = torch.linspace(10.0, 150.0, ECHOES)
 simulator = MultiEchoSimulator(TE=TE)
@@ -263,7 +263,7 @@ class RadialEncoding(LinearPhysics):
     """``(batch, echoes, x, y)`` images to k-space, one trajectory per echo.
 
     This is the whole of ``P F C`` for this experiment, and none of it is
-    TorchSim's: it wraps mri-nufft, which is what a real pipeline would do
+    BlochSim's: it wraps mri-nufft, which is what a real pipeline would do
     with its own trajectory, its own density compensation and its own coils.
     """
 
@@ -425,8 +425,8 @@ initial[0, ..., 2] = gridded[..., 0].imag
 # %%
 #
 # An iteratively regularized Gauss-Newton: linearize, solve, step, lower the
-# damping. TorchSim supplies the loop and the derivative but not the linear
-# solver -- :func:`~torchsim.recon.iterative` hands the linearized problem to
+# damping. BlochSim supplies the loop and the derivative but not the linear
+# solver -- :func:`~blochsim.recon.iterative` hands the linearized problem to
 # the same deepinv routine the baseline called. A proximal solver under a
 # wavelet prior is a change to that one argument.
 #
@@ -538,7 +538,7 @@ scalebar(error, axes[1, 1:], f"|error|, {label}")
 # -------------------------
 #
 # The model is the only thing above that names a relaxation time, and it is an
-# ordinary :class:`~torchsim.model.Simulator` -- the same object the fitting
+# ordinary :class:`~blochsim.model.Simulator` -- the same object the fitting
 # and sequence-design notebooks use. Water-fat separation, T2* with a field
 # map, a Look-Locker inversion recovery: each is a different ``evaluate``, and
 # the operator, the loop and the encoding are unchanged.

@@ -12,8 +12,8 @@ import math
 import pytest
 import torch
 
-import torchsim.estimators._perk as _perk
-from torchsim.estimators import PERK
+import blochsim.estimators._perk as _perk
+from blochsim.estimators import PERK
 
 
 def assert_agrees(
@@ -157,7 +157,7 @@ def test_a_gradient_wanted_for_a_fitted_tensor_falls_back(device, monkeypatch) -
 
 def _through_the_polynomial(angles: torch.Tensor) -> torch.Tensor:
     """``sqrt(2) * cos(angle)``, computed by the host kernel and nothing else."""
-    native = pytest.importorskip("torchsim.estimators._perk_native")
+    native = pytest.importorskip("blochsim.estimators._perk_native")
     one = torch.ones(1, 1)
     return native.regress(
         angles, one, one, torch.zeros(1), torch.zeros(1), one, torch.zeros(1)

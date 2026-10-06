@@ -19,9 +19,9 @@ import numpy as np
 import pytest
 import torch
 
-import torchsim
-from torchsim.estimators import PERK, DictionaryMatcher, NonlinearLeastSquares
-from torchsim.simulators import MRFSimulator
+import blochsim
+from blochsim.estimators import PERK, DictionaryMatcher, NonlinearLeastSquares
+from blochsim.simulators import MRFSimulator
 
 CONTRASTS, VOXELS, DRAWS = 400, 40, 300
 
@@ -290,7 +290,7 @@ def test_a_standard_error_is_never_below_the_bound(
     stated = _least_squares(acquisition, noise_std).uncertainty_of(clean)
 
     _signal, sensitivity = acquisition.jacobian(["T1", "T2"], T1=truth[0], T2=truth[1])
-    floor = torchsim.crlb(sensitivity, noise_variance=noise_std**2).sqrt()
+    floor = blochsim.crlb(sensitivity, noise_variance=noise_std**2).sqrt()
 
     for column, name in enumerate(("T1", "T2")):
         assert float((stated[name] / floor[:, column]).min()) > 0.99, name
@@ -307,9 +307,9 @@ def test_a_voxel_that_cannot_be_read_is_infinite_rather_than_a_failure() -> None
     sensitivity[1, 1] = 0.0  # nothing there responds to the second parameter
 
     with pytest.raises(torch.linalg.LinAlgError):
-        torchsim.crlb(sensitivity)
+        blochsim.crlb(sensitivity)
 
-    bound = torchsim.crlb(sensitivity, singular="infinite")
+    bound = blochsim.crlb(sensitivity, singular="infinite")
     assert torch.isinf(bound[1]).all()
     assert torch.isfinite(bound[[0, 2]]).all()
 

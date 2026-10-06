@@ -8,7 +8,7 @@
 #
 # What it makes, all under $PREFIX (benchmarks/.env by default):
 #
-#   .env/venv          a virtual environment with PyTorch, TorchSim, epgpy and
+#   .env/venv          a virtual environment with PyTorch, BlochSim, epgpy and
 #                      sycomore in it
 #   .env/micromamba    a package manager, only if conda-forge is needed
 #   .env/julia         a Julia, only if there is not one on the path already
@@ -54,7 +54,7 @@ setup_python() {
   say "python environment in $VENV"
   # $PYTHON says which interpreter to build on. It matters: an interpreter that
   # ships a C++ runtime of its own -- a conda one does -- loads that runtime
-  # ahead of the system's, and TorchSim's kernels are compiled against the
+  # ahead of the system's, and BlochSim's kernels are compiled against the
   # system's. The extension then fails to load with a missing GLIBCXX version,
   # every fused kernel is reported absent, and nothing here can run.
   [ -d "$VENV" ] || "${PYTHON:-python3}" -m venv "$VENV"
@@ -67,7 +67,7 @@ setup_python() {
   #   pip install torch --index-url https://download.pytorch.org/whl/cpu
   "$VENV/bin/pip" install --quiet torch
 
-  say "TorchSim, from this checkout"
+  say "BlochSim, from this checkout"
   "$VENV/bin/pip" install --quiet -e "$ROOT"
 
   say "epgpy"
@@ -91,7 +91,7 @@ setup_python() {
   "$VENV/bin/pip" install --quiet matplotlib
 
   "$VENV/bin/python" - <<'PY'
-for name in ("torch", "torchsim", "epgpy", "sycomore", "matplotlib"):
+for name in ("torch", "blochsim", "epgpy", "sycomore", "matplotlib"):
     try:
         __import__(name)
         print(f"  {name}: ok")

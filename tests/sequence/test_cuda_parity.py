@@ -8,16 +8,16 @@ flip angles for every train, which is a wrong answer rather than an error.
 import pytest
 import torch
 
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     _pack_events,
     _run_packed,
     _run_packed_jvp,
     _run_packed_vjp_jvp,
     geometry_of,
 )
-from torchsim.sequence._builders import fse_description
-from torchsim.sequence._parameters import OUTSIDE_THE_SUBSPACE
-from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+from blochsim.sequence._builders import fse_description
+from blochsim.sequence._parameters import OUTSIDE_THE_SUBSPACE
+from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
 pytestmark = pytest.mark.skipif(
     not torch.cuda.is_available(), reason="CUDA is unavailable"
@@ -34,7 +34,7 @@ def _probed_atoms(kind="forward", trains=64, share=8):
     Taken from the threshold rather than written down, so the size follows it
     wherever it moves.
     """
-    from torchsim.sequence._calibration import detection
+    from blochsim.sequence._calibration import detection
 
     events, _prepared, _count = _real_case(trains, "cpu", atoms=1)
     per_atom = trains * int(events[1].numel())
@@ -231,7 +231,7 @@ def test_an_off_resonance_seed_keeps_the_complex_kernel_on_cuda():
 @pytest.mark.parametrize("block_states", [4, 16])
 def test_the_packing_width_is_a_power_of_two(block_states):
     """It indexes a ``tl.arange``, which rejects anything else."""
-    from torchsim.sequence._epg_triton import _problems_per_program
+    from blochsim.sequence._epg_triton import _problems_per_program
 
     width = _problems_per_program(block_states)
     assert width >= 1
@@ -246,7 +246,7 @@ def test_the_packing_width_ignores_how_many_problems_there_are(block_states):
     off the launch size would make a streamed volume answer differently from
     the same volume run whole.
     """
-    from torchsim.sequence._epg_triton import _problems_per_program
+    from blochsim.sequence._epg_triton import _problems_per_program
 
     assert _problems_per_program(block_states) >= 1
 
@@ -269,7 +269,7 @@ def test_a_small_problem_skips_the_subspace_test_on_cuda():
     A GPU clears the work behind the verdict fast enough that a test worth
     running on the CPU is pure overhead here.
     """
-    from torchsim.sequence._calibration import detection
+    from blochsim.sequence._calibration import detection
 
     assert detection("forward", torch.device("cuda", 0)) > detection(
         "forward", torch.device("cpu")
@@ -362,7 +362,7 @@ def test_an_inversion_pulse_reaches_the_same_gradients(inversion):
 
 def test_a_trajectory_too_large_for_one_launch_is_split(monkeypatch):
     """The grid rounds up past a wave, onto rows the next launch owns."""
-    from torchsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_triton
 
     expected = _second_order("cpu", 17, 5)
     monkeypatch.setattr(_epg_triton, "_TRAJECTORY_BUDGET_BYTES", 40_000)
@@ -389,7 +389,7 @@ SPGR_VOXEL_M = 5e-4
 
 
 def _spgr_description(flip):
-    from torchsim.sequence._builders import spgr_description
+    from blochsim.sequence._builders import spgr_description
 
     return spgr_description(
         flip,
@@ -496,7 +496,7 @@ def test_the_complex_second_order_kernel_matches_across_shapes(trains, atoms):
 
 def test_the_complex_trajectory_splits_into_waves(monkeypatch):
     """Twice the planes of the real one, so it reaches the budget sooner."""
-    from torchsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_triton
 
     expected = _complex_second_order("cpu", 17, 5)
     monkeypatch.setattr(_epg_triton, "_TRAJECTORY_BUDGET_BYTES", 40_000)
@@ -542,7 +542,7 @@ def test_the_second_order_path_needs_no_subspace_verdict_on_cuda():
 
 def test_device_tensors_are_refused_by_the_cpu_kernels():
     """A CPU kernel must never be handed a device pointer."""
-    from torchsim.sequence._accelerators import _pointers
+    from blochsim.sequence._accelerators import _pointers
 
     events, prepared, _ = _real_case(4, "cuda", atoms=2)
     with pytest.raises(ValueError, match="CPU tensors"):
@@ -573,7 +573,7 @@ def test_one_half_of_the_off_axis_turn_matches_the_cpu_kernel(given):
     after each echo winds unlike the crushers, which keeps off-resonance in
     the states rather than on the samples.
     """
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         AdcRole,
         EpgEngine,
         EventAction,

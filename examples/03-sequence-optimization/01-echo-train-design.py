@@ -19,12 +19,12 @@ the bounded parameters and the loop are the same.
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim
+#    !pip install blochsim
 
 # %%
 #
 # A design is a simulator with its tissue fixed on it, a cost written on what
-# it records, and the bounded parameters :class:`~torchsim.SequenceDesign`
+# it records, and the bounded parameters :class:`~blochsim.SequenceDesign`
 # drives.
 #
 
@@ -107,8 +107,8 @@ import time
 
 import torch
 
-from torchsim.optim import Bounded, SequenceDesign
-from torchsim.simulators import FSESimulator
+from blochsim.optim import Bounded, SequenceDesign
+from blochsim.simulators import FSESimulator
 
 # %%
 #
@@ -273,7 +273,7 @@ def single_train(control):
 #
 # A conventional prescription to start from: 50 degree minimum, 90 degree
 # centre-of-k-space angle, 150 degree maximum. The limits are what the scanner
-# will play, and :class:`~torchsim.Bounded` holds them exactly.
+# will play, and :class:`~blochsim.Bounded` holds them exactly.
 #
 design = SequenceDesign(single_train, control=Bounded(PRESCRIBED, LOWEST, HIGHEST))
 

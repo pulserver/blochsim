@@ -1,6 +1,6 @@
 """MP2RAGE tests."""
 
-from torchsim import mp2rage_sim
+from blochsim import mp2rage_sim
 
 
 def test_scalar_forward():

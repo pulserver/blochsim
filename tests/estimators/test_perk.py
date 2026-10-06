@@ -7,9 +7,9 @@ import math
 import pytest
 import torch
 
-from torchsim.estimators import PERK, DictionaryMatcher
-from torchsim.model import Simulator
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.estimators import PERK, DictionaryMatcher
+from blochsim.model import Simulator
+from blochsim.simulators import MultiEchoSimulator
 
 
 @pytest.mark.parametrize(

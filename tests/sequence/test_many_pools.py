@@ -3,7 +3,7 @@
 BART's Bloch-McConnell model carries the free water, up to four pools that
 exchange with it and not with each other, and a semisolid pool. Past one
 exchanging pool the kernels read a tissue as the operators its intervals apply,
-tabulated per voxel and per interval length by ``torchsim.sequence._pools``, so
+tabulated per voxel and per interval length by ``blochsim.sequence._pools``, so
 what is held here is the tables and the kernels that walk them: against the
 state machine written out in torch, against the package's own N-pool
 operators, against the closed-form kernels at one pool, and against the
@@ -19,8 +19,8 @@ import pytest
 import torch
 from torch.autograd import forward_ad
 
-from torchsim.sequence import EpgEngine, TissueProperties, _pools, fse_description
-from torchsim.sequence._accelerators import (
+from blochsim.sequence import EpgEngine, TissueProperties, _pools, fse_description
+from blochsim.sequence._accelerators import (
     _EXCITATION,
     _INVERSION,
     _POST_SHIFT,
@@ -31,9 +31,9 @@ from torchsim.sequence._accelerators import (
     NO_GEOMETRY,
     _NativeEpg,
 )
-from torchsim.sequence._lineshape import lineshape_table
-from torchsim.sequence._parameters import POOL_NAMES, Geometry
-from torchsim.sequence._transition import DynamicPairs
+from blochsim.sequence._lineshape import lineshape_table
+from blochsim.sequence._parameters import POOL_NAMES, Geometry
+from blochsim.sequence._transition import DynamicPairs
 from utils.packed_reference import simulate_packed_pools
 
 STATES = 6
@@ -93,8 +93,8 @@ def _instantaneous_table():
     """
     import numpy as np
 
-    from torchsim.sequence._description import RfDefinition, RfShape
-    from torchsim.sequence._transition import transition_table
+    from blochsim.sequence._description import RfDefinition, RfShape
+    from blochsim.sequence._transition import transition_table
 
     flat = RfDefinition(
         id=0,

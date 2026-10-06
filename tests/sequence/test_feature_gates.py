@@ -14,12 +14,12 @@ from dataclasses import replace
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     fse_description,
 )
-from torchsim.sequence._parameters import (
+from blochsim.sequence._parameters import (
     TISSUE_NAMES,
     TISSUE_PARAMETERS,
     Geometry,
@@ -28,12 +28,12 @@ from torchsim.sequence._parameters import (
 )
 
 # The kernel module imports Triton at its top, and Triton is a dependency of
-# the CUDA build of PyTorch rather than of TorchSim. Everything below the guard
+# the CUDA build of PyTorch rather than of BlochSim. Everything below the guard
 # reaches it, so the two imports stay here rather than moving up with the rest.
 pytest.importorskip("triton")
 
-from torchsim.sequence import _epg_triton  # noqa: E402
-from torchsim.sequence._epg_triton import _feature_flags  # noqa: E402
+from blochsim.sequence import _epg_triton  # noqa: E402
+from blochsim.sequence._epg_triton import _feature_flags  # noqa: E402
 
 ECHOES = 8
 STATES = 8
@@ -294,8 +294,8 @@ GATE_IDS = [
 
 
 def _gate_inputs(extra):
-    from torchsim.sequence._accelerators import _pack_events
-    from torchsim.sequence._simulation import _prepare_tissue
+    from blochsim.sequence._accelerators import _pack_events
+    from blochsim.sequence._simulation import _prepare_tissue
 
     generator = torch.Generator().manual_seed(7)
 
@@ -356,8 +356,8 @@ def test_the_forward_answer_does_not_depend_on_the_gate(extra, geometry):
     """The forward kernel, run once with the terms the tissue asks for and
     once with every term, on the same input.
     """
-    from torchsim.sequence._accelerators import _run_packed
-    from torchsim.sequence._parameters import features_of
+    from blochsim.sequence._accelerators import _run_packed
+    from blochsim.sequence._parameters import features_of
 
     prepared, events, output_count = _gate_inputs(extra)
     live = features_of(
@@ -393,8 +393,8 @@ def test_the_forward_direction_does_not_depend_on_the_gate(extra, geometry):
     product beside it to be rounded on its own, which moves the last bits: the
     value half of this same pair is exact.
     """
-    from torchsim.sequence._accelerators import _run_packed_jvp
-    from torchsim.sequence._parameters import features_of
+    from blochsim.sequence._accelerators import _run_packed_jvp
+    from blochsim.sequence._parameters import features_of
 
     prepared, events, output_count = _gate_inputs(extra)
     seeds = _seeds(prepared, events, {"t1_ms", "t2_ms", *extra})
@@ -446,7 +446,7 @@ def test_a_diffusion_coefficient_asked_for_its_gradient_gets_a_real_one():
 
 def _laid_out(tissue: TissueProperties, features) -> set[str]:
     """Which tissue properties got a value per voxel."""
-    from torchsim.sequence._simulation import _prepare_tissue
+    from blochsim.sequence._simulation import _prepare_tissue
 
     prepared, _, _ = _prepare_tissue(tissue, torch.device("cpu"), 1, features)
     return {

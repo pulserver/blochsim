@@ -1,4 +1,4 @@
-"""What TorchSim's own runtime is made of, on one CPU core count.
+"""What BlochSim's own runtime is made of, on one CPU core count.
 
 Four experiments, each isolating one thing the dictionary benchmark cannot:
 
@@ -40,7 +40,7 @@ from typing import Any
 
 import torch
 
-from torchsim.simulators import FSESimulator, MRFSimulator
+from blochsim.simulators import FSESimulator, MRFSimulator
 
 WARMUP_SECONDS = 2.0
 
@@ -84,14 +84,14 @@ def _reached(
     which kernel a verdict selects, which is not something a caller can ask
     for.
     """
-    from torchsim.sequence import _builders
-    from torchsim.sequence._accelerators import (
+    from blochsim.sequence import _builders
+    from blochsim.sequence._accelerators import (
         _pack_events,
         _run_packed,
         _run_packed_jvp,
         real_subspace_axis,
     )
-    from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+    from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
     description = _builders.fse_description(
         echo_train.to(torch.float32) * (torch.pi / 180.0),
@@ -308,7 +308,7 @@ def main() -> None:
         "  few times the plain one. The multiple is the check that the dual and\n"
         "  adjoint kernels take the same path the plain ones take, rather than\n"
         "  the arithmetic being cheap where the plumbing is not. Run the whole\n"
-        "  file again under TORCHSIM_REAL_SCALAR=1 to separate what the real\n"
+        "  file again under BLOCHSIM_REAL_SCALAR=1 to separate what the real\n"
         "  subspace is worth from what the lane kernels on top of it are worth:\n"
         "  a multiple that does not move is a pass with no laned kernel to take."
     )

@@ -18,8 +18,8 @@ import pytest
 import torch
 from scipy.linalg import expm
 
-from torchsim.sequence import SampledPulse
-from torchsim.simulators import CESTSimulator, FLASHSimulator, TrueFISPSimulator
+from blochsim.sequence import SampledPulse
+from blochsim.simulators import CESTSimulator, FLASHSimulator, TrueFISPSimulator
 
 GAMMA_BAR = 42.57747892e6
 DWELL = 1e-5

@@ -11,7 +11,7 @@ for the crossover along with the order of the passes.
 import pytest
 import torch
 
-from torchsim.sequence._calibration import crossover, detection
+from blochsim.sequence._calibration import crossover, detection
 
 KINDS = ["forward", "jvp", "adjoint"]
 

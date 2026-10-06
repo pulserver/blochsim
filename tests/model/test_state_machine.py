@@ -15,7 +15,7 @@ from dataclasses import replace
 import pytest
 import torch
 
-from torchsim.model import (
+from blochsim.model import (
     BALANCED,
     REFOCUSED,
     SPOILED,
@@ -24,8 +24,8 @@ from torchsim.model import (
     Simulator,
     SpinPhysics,
 )
-from torchsim.sequence import EpgEngine, EventAction, EventType, ideal_rf_definition
-from torchsim.simulators import MRFSimulator
+from blochsim.sequence import EpgEngine, EventAction, EventType, ideal_rf_definition
+from blochsim.simulators import MRFSimulator
 
 FLIP = torch.linspace(5.0, 60.0, 12)
 T1 = torch.tensor([600.0, 1000.0, 1400.0])
@@ -102,7 +102,7 @@ def test_the_trigger_leaves_the_description_ordinary() -> None:
 
 def test_a_shipped_simulator_reaches_the_fused_kernels(monkeypatch) -> None:
     """A fast path has to be shown taken, not inferred from agreement."""
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     seen: list[int] = []
     original = _accelerators._run_packed
@@ -177,7 +177,7 @@ def test_a_handed_over_description_agrees_with_the_engine_directly() -> None:
     described = protocol.describe(flip=FLIP, TR=10.0)
     handed = Simulator.from_description(described, protocol.model, states=8)
 
-    from torchsim.sequence import TissueProperties
+    from blochsim.sequence import TissueProperties
 
     direct = (
         EpgEngine()
@@ -198,7 +198,7 @@ def test_the_protocol_may_be_overridden_per_call() -> None:
 
 def test_a_trigger_table_defaults_to_the_bare_operators() -> None:
     """An unassigned slot is the plain event, not a surprise."""
-    from torchsim.sequence import Excitation, Readout
+    from blochsim.sequence import Excitation, Readout
 
     table = EventOperators()
     assert table.excitation is Excitation
@@ -238,9 +238,9 @@ def test_a_gradient_standing_on_its_own_does_not_survive_the_round_trip() -> Non
     nor a sample, so nothing reinstates it, and a stream arriving from a
     scanner could not have carried it either.
     """
-    from torchsim import Delay, Excitation, Spoil
-    from torchsim.model._state_machine import realised
-    from torchsim.sequence import EventAction
+    from blochsim import Delay, Excitation, Spoil
+    from blochsim.model._state_machine import realised
+    from blochsim.sequence import EventAction
 
     class Prepared(Simulator):
         model = _with(SPOILED).model
@@ -277,8 +277,8 @@ def test_shim_definition_reaches_the_pulses():
     array whose sensitivities are alike cancels exactly when the drive is a
     half turn apart, and does not when it is not.
     """
-    from torchsim import ShimDefinition
-    from torchsim.simulators import FSESimulator
+    from blochsim import ShimDefinition
+    from blochsim.simulators import FSESimulator
 
     array = dict(
         T1=torch.tensor([1000.0]),

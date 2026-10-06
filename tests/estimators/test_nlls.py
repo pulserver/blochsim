@@ -7,9 +7,9 @@ import pytest
 import torch
 from scipy.optimize import least_squares
 
-import torchsim.recon._operator as _operator
-from torchsim.estimators import NonlinearLeastSquares
-from torchsim.simulators import (
+import blochsim.recon._operator as _operator
+from blochsim.estimators import NonlinearLeastSquares
+from blochsim.simulators import (
     FSESimulator,
     InversionRecoverySimulator,
     MultiEchoSimulator,
@@ -255,7 +255,7 @@ def test_an_equality_constraint_is_written_into_the_model() -> None:
     restoring it after each step, so the constraint holds at every iterate
     and not merely at the answer.
     """
-    from torchsim.model import Simulator
+    from blochsim.model import Simulator
 
     class FatWater(Simulator):
         """Two species at their own frequencies, in known proportion."""
@@ -327,7 +327,7 @@ def test_the_solve_is_a_gauss_newton_and_nothing_else_is_here() -> None:
     moves, what stops a voxel -- lives on the loop, so there is one place to
     set it and one place for it to be wrong.
     """
-    from torchsim.recon import GaussNewton, TrustRegion, direct
+    from blochsim.recon import GaussNewton, TrustRegion, direct
 
     default = NonlinearLeastSquares()
 
@@ -347,7 +347,7 @@ def test_the_solve_is_a_gauss_newton_and_nothing_else_is_here() -> None:
 )
 def test_loop_settings_that_make_no_sense(settings, complaint) -> None:
     """Caught where they are written, not where they misbehave."""
-    from torchsim.recon import GaussNewton
+    from blochsim.recon import GaussNewton
 
     with pytest.raises(ValueError, match=complaint):
         GaussNewton(**settings)

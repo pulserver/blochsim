@@ -12,17 +12,17 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     _accelerators,
     fse_description,
 )
-from torchsim.sequence._accelerators import (
+from blochsim.sequence._accelerators import (
     _pack_events,
     _run_packed_vjp,
     _train_count,
 )
-from torchsim.sequence._parameters import FLOAT_NAMES, Geometry
-from torchsim.sequence._simulation import TissueProperties, _prepare_tissue
+from blochsim.sequence._parameters import FLOAT_NAMES, Geometry
+from blochsim.sequence._simulation import TissueProperties, _prepare_tissue
 
 ECHOES = 12
 ECHO_SPACING_S = 5e-3

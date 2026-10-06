@@ -6,11 +6,11 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     Subspace,
 )
-from torchsim.estimators import DictionaryMatcher
-from torchsim.simulators import MultiEchoSimulator
+from blochsim.estimators import DictionaryMatcher
+from blochsim.simulators import MultiEchoSimulator
 
 mrinufft = pytest.importorskip("mrinufft")
 

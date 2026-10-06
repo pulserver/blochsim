@@ -14,7 +14,7 @@ the k-space is brought back and coil-combined. The undersampled series and the
 fully sampled one are the pair, with the ground-truth maps and the
 segmentation.
 
-Only the simulation is TorchSim's. The phantom, the coils and the encoding come
+Only the simulation is BlochSim's. The phantom, the coils and the encoding come
 from torchio, deepmriprep, SigPy and mri-nufft.
 """
 
@@ -22,11 +22,11 @@ from torchio, deepmriprep, SigPy and mri-nufft.
 # .. colab-link::
 #    :needs_gpu: 1
 #
-#    !pip install torchsim torchio deepmriprep sigpy cmap mri-nufft[finufft,cufinufft]
+#    !pip install blochsim torchio deepmriprep sigpy cmap mri-nufft[finufft,cufinufft]
 
 # %%
 #
-# Only one step of this pipeline is TorchSim's. Four other packages do the
+# Only one step of this pipeline is BlochSim's. Four other packages do the
 # rest, and each has exactly one job here:
 #
 # * ``torchio`` fetches a T1-weighted IXI subject and gives it as tensors,
@@ -152,7 +152,7 @@ from mrinufft.trajectories import initialize_2D_spiral
 
 # %%
 #
-# TorchSim's part is the third step: one fingerprinting simulation per tissue
+# BlochSim's part is the third step: one fingerprinting simulation per tissue
 # class, rather than one per voxel.
 #
 import tempfile
@@ -162,7 +162,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from torchsim.simulators import MRFSimulator
+from blochsim.simulators import MRFSimulator
 
 
 # %%
@@ -194,7 +194,7 @@ backend = "cufinufft" if on_gpu else "finufft"
 # ``download=True`` fetches the archive once, a few hundred MB, into a cache
 # under the home directory.
 #
-CACHE = Path.home() / ".cache" / "torchsim" / "ixi-tiny"
+CACHE = Path.home() / ".cache" / "blochsim" / "ixi-tiny"
 subject = tio.datasets.IXITiny(str(CACHE), download=True)[0]
 
 
@@ -311,7 +311,7 @@ for k, name in enumerate(NAMES):
 # --------------------
 #
 # An inversion, then four hundred repetitions whose flip angle sweeps.
-# :class:`~torchsim.simulators.MRFSimulator` takes arrays of tissue properties,
+# :class:`~blochsim.simulators.MRFSimulator` takes arrays of tissue properties,
 # so the whole table is one call: three extended phase graph runs rather than
 # sixteen thousand.
 #

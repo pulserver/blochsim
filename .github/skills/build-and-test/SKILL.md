@@ -1,9 +1,9 @@
 ---
 name: build-and-test
-description: Compile the C++ kernels and run the TorchSim suite, including the Triton paths on a machine with no GPU. Use when asked to build, install, test, or reproduce a failure in torchsim.
+description: Compile the C++ kernels and run the BlochSim suite, including the Triton paths on a machine with no GPU. Use when asked to build, install, test, or reproduce a failure in blochsim.
 ---
 
-# Build and test TorchSim
+# Build and test BlochSim
 
 ## Install
 
@@ -15,7 +15,7 @@ pip install -e ".[dev]" ; echo "exit: $?"
 run alone, `pip install -e ".[test]"` is enough and much smaller.
 
 An editable install puts the Python sources on the path, so an edit under
-`src/torchsim` takes effect on the next import. The two C++ extensions are
+`src/blochsim` takes effect on the next import. The two C++ extensions are
 compiled artifacts and do not: re-run the install after editing any `.cpp`.
 
 **Read the exit status, not the output.** A failed compile leaves the
@@ -24,7 +24,7 @@ that no longer corresponds to the source. Confirm the extension is the one you
 just built:
 
 ```sh
-python -c "import torchsim._epg_cpu as k; print(k.__file__)"
+python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 ```
 
 ## Test

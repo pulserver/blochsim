@@ -10,12 +10,12 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim import (
+from blochsim import (
     PERK,
     DictionaryMatcher,
     Estimator,
 )
-from torchsim.simulators import FSESimulator, MRFSimulator
+from blochsim.simulators import FSESimulator, MRFSimulator
 
 ECHOES = 32
 

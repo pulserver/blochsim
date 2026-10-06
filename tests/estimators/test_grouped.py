@@ -5,9 +5,9 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.estimators import DictionaryMatcher
-from torchsim.estimators._grouped import Grouping
-from torchsim.simulators import MRFSimulator
+from blochsim.estimators import DictionaryMatcher
+from blochsim.estimators._grouped import Grouping
+from blochsim.simulators import MRFSimulator
 
 
 @pytest.fixture(scope="module")
@@ -220,7 +220,7 @@ def test_grouping_composes_with_a_temporal_subspace(fingerprints, measured) -> N
     other, and the answer is the one the compressed dictionary gives without
     grouping -- the grouping must not add error of its own.
     """
-    from torchsim import (
+    from blochsim import (
         Subspace,
     )
 
@@ -247,7 +247,7 @@ def test_clustering_happens_inside_the_global_basis(fingerprints) -> None:
     leaving the space the measurement is in. Everything stays at the rank the
     dictionary was compressed to.
     """
-    from torchsim import (
+    from blochsim import (
         Subspace,
     )
 

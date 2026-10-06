@@ -11,14 +11,14 @@ import dataclasses
 
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _accelerators,
     fse_description,
 )
-from torchsim.sequence._accelerators import _pack_events
-from torchsim.sequence._parameters import (
+from blochsim.sequence._accelerators import _pack_events
+from blochsim.sequence._parameters import (
     EVENT_PARAMETERS,
     FLOAT_INPUTS,
     PACKED_COUNT,
@@ -32,7 +32,7 @@ from torchsim.sequence._parameters import (
     tissue_gradient_height,
     tissue_gradient_rows,
 )
-from torchsim.sequence._simulation import _prepare_tissue
+from blochsim.sequence._simulation import _prepare_tissue
 
 
 def test_the_table_names_the_tissue_dataclass_fields():

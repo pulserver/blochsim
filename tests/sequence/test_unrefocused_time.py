@@ -20,12 +20,12 @@ import numpy as np
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
     _builders,
 )
-from torchsim.sequence._accelerators import _pack_events
+from blochsim.sequence._accelerators import _pack_events
 
 T1_MS, T2_MS = 1000.0, 80.0
 # Deliberately not a whole number of turns per repetition or echo spacing: a
@@ -162,7 +162,7 @@ def test_a_spoiled_train_carries_its_echo_time_to_every_sample():
 
 def _both_ways(description, tissue, wants_grad=False):
     """The same run with the field on the samples and carried by the states."""
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     answers = []
     for analytic in (True, False):
@@ -226,7 +226,7 @@ def test_off_resonance_no_longer_keeps_a_run_off_the_real_kernels(
     is not: the states never see it, so they stay on the axis and the reduced
     kernels stay available -- for the plain pass and for the derivatives alike.
     """
-    from torchsim.sequence import _accelerators
+    from blochsim.sequence import _accelerators
 
     verdicts = []
     original = _accelerators._auto_real_axis

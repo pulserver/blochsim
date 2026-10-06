@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 import torch
 
-from torchsim.sequence import (
+from blochsim.sequence import (
     AdcRole,
     Delay,
     Dephase,

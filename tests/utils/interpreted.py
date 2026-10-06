@@ -73,16 +73,16 @@ class _Poisoned:
 
 def install(poison: bool = False) -> None:
     """Point the kernels at an ``acos`` the interpreter can evaluate."""
-    from torchsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_triton
 
     _epg_triton.libdevice = _Poisoned if poison else _Interpretable
 
 
 def _tissue(voxels: int) -> tuple[torch.Tensor, ...]:
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         TissueProperties,
     )
-    from torchsim.sequence._simulation import _prepare_tissue
+    from blochsim.sequence._simulation import _prepare_tissue
 
     prepared, _, _ = _prepare_tissue(
         TissueProperties(
@@ -101,7 +101,7 @@ def _tissue(voxels: int) -> tuple[torch.Tensor, ...]:
 
 
 def _events(description: Any) -> tuple[tuple[torch.Tensor, ...], int]:
-    from torchsim.sequence._accelerators import _pack_events
+    from blochsim.sequence._accelerators import _pack_events
 
     packed = _pack_events(
         description,
@@ -131,7 +131,7 @@ def _both(run: Any, force_narrow: bool) -> tuple[Any, Any]:
     narrow, so every row takes the series and the two arms should agree to the
     bit.
     """
-    from torchsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_triton
 
     original = _epg_triton._tabulate_three_pool
     built: list[bool] = []
@@ -188,7 +188,7 @@ def _chunked(voxels: int) -> Any:
     The cotangent table is sized and indexed per chunk, so a single-chunk run
     cannot tell a chunk-local index from a global one.
     """
-    from torchsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_triton
 
     cut: list[int] = []
 
@@ -210,9 +210,9 @@ def _unread(voxels: int, states: int) -> None:
     is what says so rather than reading the branches and believing it.
     """
     install(poison=True)
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._lineshape import lineshape_table
-    from torchsim.sequence._parameters import narrow_three_pool
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence._parameters import narrow_three_pool
 
     echoes = 6
     tissue = _tissue(voxels)
@@ -257,7 +257,7 @@ def _streamed(voxels: int, states: int) -> None:
     and nothing else here reaches it.
     """
     install()
-    from torchsim.sequence import _builders, _epg_triton
+    from blochsim.sequence import _builders, _epg_triton
 
     echoes = 6
     tissue = _tissue(voxels)
@@ -301,9 +301,9 @@ def _washed(voxels: int, states: int) -> None:
     than one, because the gradients it pools are scaled by it.
     """
     install()
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._lineshape import lineshape_table
-    from torchsim.sequence._parameters import TISSUE_NAMES, Geometry
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence._parameters import TISSUE_NAMES, Geometry
 
     echoes = 6
     tissue = list(_tissue(voxels))
@@ -353,9 +353,9 @@ def _real(voxels: int, states: int, shims: int = 1) -> None:
     of it is reached by the other cases here, which are all complex.
     """
     install()
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._accelerators import real_subspace_axis
-    from torchsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._accelerators import real_subspace_axis
+    from blochsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
     from utils.packed_reference import simulate_packed
 
     echoes = 6
@@ -465,9 +465,9 @@ def _spoiled(voxels: int, states: int) -> None:
     each held to the complex kernels that carry the same train.
     """
     install()
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._accelerators import real_subspace_axis
-    from torchsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._accelerators import real_subspace_axis
+    from blochsim.sequence._parameters import FLOAT_NAMES, OUTSIDE_THE_SUBSPACE
     from utils.packed_reference import simulate_packed
 
     repetitions = 6
@@ -547,8 +547,8 @@ def _pooled(voxels: int, states: int, pools: int) -> None:
     and neither is exercised at one or two pools without a card.
     """
     install()
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._lineshape import lineshape_table
     from utils.packed_reference import simulate_packed
 
     echoes = 6
@@ -611,8 +611,8 @@ def _shimmed(voxels: int, states: int) -> None:
     case that would show one standing in for the other.
     """
     install()
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._lineshape import lineshape_table
 
     shims, echoes = 2, 6
     held = _tissue(voxels)
@@ -712,10 +712,10 @@ def _profiled(voxels: int, states: int) -> None:
 
     import numpy as np
 
-    from torchsim import rf_definition
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._accelerators import _across_the_table
-    from torchsim.sequence._transition import (
+    from blochsim import rf_definition
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._accelerators import _across_the_table
+    from blochsim.sequence._transition import (
         SliceTables,
         exact_slice_profile,
         transition_table,
@@ -773,14 +773,14 @@ def _narrowed(voxels: int, states: int) -> None:
     install()
     import math
 
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         TissueProperties,
         _builders,
         _epg_triton,
     )
-    from torchsim.sequence._accelerators import real_subspace_axis
-    from torchsim.sequence._parameters import TISSUE_NAMES, features_of
-    from torchsim.sequence._simulation import _prepare_tissue
+    from blochsim.sequence._accelerators import real_subspace_axis
+    from blochsim.sequence._parameters import TISSUE_NAMES, features_of
+    from blochsim.sequence._simulation import _prepare_tissue
 
     echoes = 6
     tissue = TissueProperties(
@@ -861,8 +861,8 @@ def _case(name: str) -> None:
         _unread(3, 4)
         return
     install()
-    from torchsim.sequence import _builders, _epg_triton
-    from torchsim.sequence._lineshape import lineshape_table
+    from blochsim.sequence import _builders, _epg_triton
+    from blochsim.sequence._lineshape import lineshape_table
 
     voxels, states = 3, 4
     if name == "narrow":

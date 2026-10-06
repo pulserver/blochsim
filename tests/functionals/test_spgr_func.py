@@ -3,7 +3,7 @@
 import numpy as np
 from pytest import fixture
 
-from torchsim import (
+from blochsim import (
     spgr_sim,
 )
 

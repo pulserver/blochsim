@@ -1,7 +1,7 @@
 # Parameter estimation
 
 ```{eval-rst}
-.. currentmodule:: torchsim
+.. currentmodule:: blochsim
 ```
 
 Estimating tissue properties from a measured volume. An estimator is made from
