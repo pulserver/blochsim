@@ -15093,35 +15093,29 @@ def _epg_kernel(
             )
             longitudinal_real += tl.where(state == 0, recovery, 0.0)
 
+        # Every program reads the same event, so a branch on what it does is
+        # taken by all of them alike: an event pays only for what it does.
         event_action = tl.load(action + event).to(tl.int32)
-        pre_shift = (event_action & 1) != 0
-        shifted_pr, shifted_pi, shifted_mr, shifted_mi = _shift(
-            fplus_real,
-            fplus_imag,
-            fminus_real,
-            fminus_imag,
-            state,
-            state_mask,
-            state_count,
-        )
-        fplus_real = tl.where(pre_shift, shifted_pr, fplus_real)
-        fplus_imag = tl.where(pre_shift, shifted_pi, fplus_imag)
-        fminus_real = tl.where(pre_shift, shifted_mr, fminus_real)
-        fminus_imag = tl.where(pre_shift, shifted_mi, fminus_imag)
-        if pools == 2 or pools == 3:
-            b_pr, b_pi, b_mr, b_mi = _shift(
-                bplus_real,
-                bplus_imag,
-                bminus_real,
-                bminus_imag,
+        if (event_action & 1) != 0:
+            fplus_real, fplus_imag, fminus_real, fminus_imag = _shift(
+                fplus_real,
+                fplus_imag,
+                fminus_real,
+                fminus_imag,
                 state,
                 state_mask,
                 state_count,
             )
-            bplus_real = tl.where(pre_shift, b_pr, bplus_real)
-            bplus_imag = tl.where(pre_shift, b_pi, bplus_imag)
-            bminus_real = tl.where(pre_shift, b_mr, bminus_real)
-            bminus_imag = tl.where(pre_shift, b_mi, bminus_imag)
+            if pools == 2 or pools == 3:
+                bplus_real, bplus_imag, bminus_real, bminus_imag = _shift(
+                    bplus_real,
+                    bplus_imag,
+                    bminus_real,
+                    bminus_imag,
+                    state,
+                    state_mask,
+                    state_count,
+                )
 
         event_kind = tl.load(kind + event)
         is_rf = event_kind == 1
@@ -15151,91 +15145,70 @@ def _epg_kernel(
                 atom_b1_phase = tl.load(
                     b1_phase + row + atom, mask=active_atom, other=0.0
                 )
-        alpha = (
-            _event_value(flip, event_base, event, active_atom, single_train) * atom_b1
-        )
-        phi = (
-            _event_value(phase, event_base, event, active_atom, single_train)
-            + atom_b1_phase
-        )
-        if profiled or dynamic:
-            # Either pair is built at zero RF phase, which turns the rotation
-            # axis and so reaches ``b`` alone.
-            if dynamic:
-                # Already integrated at this pulse's own flip, so the flip is
-                # inside the pair rather than read against it.
-                pair = _dynamic_pair_at(
-                    pairs,
-                    pair_index,
-                    event_base,
-                    event,
-                    atom,
-                    atom_count,
-                    active_atom,
-                )
-            else:
-                pair = _profile_pair(
-                    profile,
-                    _table_row(profile_index, event, location, locations),
-                    alpha,
-                    profile_bins,
-                    profile_step,
-                )
-            turn_r = tl.cos(phi)
-            turn_i = -tl.sin(phi)
-            spun_br = pair[2] * turn_r - pair[3] * turn_i
-            spun_bi = pair[2] * turn_i + pair[3] * turn_r
-            (shaped_pr, shaped_pi, shaped_mr, shaped_mi, shaped_zr, shaped_zi) = (
-                _rotate_spinor(
-                    pair[0],
-                    pair[1],
-                    spun_br,
-                    spun_bi,
-                    fplus_real,
-                    fplus_imag,
-                    fminus_real,
-                    fminus_imag,
-                    longitudinal_real,
-                    longitudinal_imag,
-                )
+        if (event_kind == 1) & ((event_action & 4) == 0):
+            alpha = (
+                _event_value(flip, event_base, event, active_atom, single_train)
+                * atom_b1
             )
-        cosine = tl.cos(alpha)
-        sine = tl.sin(alpha)
-        cos_phi = tl.cos(phi)
-        sin_phi = tl.sin(phi)
-        cos_2phi = tl.cos(2.0 * phi)
-        sin_2phi = tl.sin(2.0 * phi)
+            phi = (
+                _event_value(phase, event_base, event, active_atom, single_train)
+                + atom_b1_phase
+            )
+            if profiled or dynamic:
+                # Either pair is built at zero RF phase, which turns the rotation
+                # axis and so reaches ``b`` alone.
+                if dynamic:
+                    # Already integrated at this pulse's own flip, so the flip is
+                    # inside the pair rather than read against it.
+                    pair = _dynamic_pair_at(
+                        pairs,
+                        pair_index,
+                        event_base,
+                        event,
+                        atom,
+                        atom_count,
+                        active_atom,
+                    )
+                else:
+                    pair = _profile_pair(
+                        profile,
+                        _table_row(profile_index, event, location, locations),
+                        alpha,
+                        profile_bins,
+                        profile_step,
+                    )
+                turn_r = tl.cos(phi)
+                turn_i = -tl.sin(phi)
+                spun_br = pair[2] * turn_r - pair[3] * turn_i
+                spun_bi = pair[2] * turn_i + pair[3] * turn_r
+                (shaped_pr, shaped_pi, shaped_mr, shaped_mi, shaped_zr, shaped_zi) = (
+                    _rotate_spinor(
+                        pair[0],
+                        pair[1],
+                        spun_br,
+                        spun_bi,
+                        fplus_real,
+                        fplus_imag,
+                        fminus_real,
+                        fminus_imag,
+                        longitudinal_real,
+                        longitudinal_imag,
+                    )
+                )
+            cosine = tl.cos(alpha)
+            sine = tl.sin(alpha)
+            cos_phi = tl.cos(phi)
+            sin_phi = tl.sin(phi)
+            cos_2phi = tl.cos(2.0 * phi)
+            sin_2phi = tl.sin(2.0 * phi)
 
-        (
-            rotated_pr,
-            rotated_pi,
-            rotated_mr,
-            rotated_mi,
-            rotated_zr,
-            rotated_zi,
-        ) = _rotate_flip_phase(
-            cosine,
-            sine,
-            cos_phi,
-            sin_phi,
-            cos_2phi,
-            sin_2phi,
-            fplus_real,
-            fplus_imag,
-            fminus_real,
-            fminus_imag,
-            longitudinal_real,
-            longitudinal_imag,
-        )
-
-        if pools == 2 or pools == 3:
             (
-                b_rot_pr,
-                b_rot_pi,
-                b_rot_mr,
-                b_rot_mi,
-                b_rot_zr,
-                b_rot_zi,
+                rotated_pr,
+                rotated_pi,
+                rotated_mr,
+                rotated_mi,
+                rotated_zr,
+                rotated_zi,
             ) = _rotate_flip_phase(
                 cosine,
                 sine,
@@ -15243,16 +15216,15 @@ def _epg_kernel(
                 sin_phi,
                 cos_2phi,
                 sin_2phi,
-                bplus_real,
-                bplus_imag,
-                bminus_real,
-                bminus_imag,
-                bound_real,
-                bound_imag,
+                fplus_real,
+                fplus_imag,
+                fminus_real,
+                fminus_imag,
+                longitudinal_real,
+                longitudinal_imag,
             )
-            if profiled or dynamic:
-                # The same pulse, the same rotation: a chemical shift moves
-                # where a pool precesses, not what a pulse does to it.
+
+            if pools == 2 or pools == 3:
                 (
                     b_rot_pr,
                     b_rot_pi,
@@ -15260,11 +15232,13 @@ def _epg_kernel(
                     b_rot_mi,
                     b_rot_zr,
                     b_rot_zi,
-                ) = _rotate_spinor(
-                    pair[0],
-                    pair[1],
-                    spun_br,
-                    spun_bi,
+                ) = _rotate_flip_phase(
+                    cosine,
+                    sine,
+                    cos_phi,
+                    sin_phi,
+                    cos_2phi,
+                    sin_2phi,
                     bplus_real,
                     bplus_imag,
                     bminus_real,
@@ -15272,102 +15246,118 @@ def _epg_kernel(
                     bound_real,
                     bound_imag,
                 )
-        if profiled or dynamic:
-            rotated_pr = shaped_pr
-            rotated_pi = shaped_pi
-            rotated_mr = shaped_mr
-            rotated_mi = shaped_mi
-            rotated_zr = shaped_zr
-            rotated_zi = shaped_zi
+                if profiled or dynamic:
+                    # The same pulse, the same rotation: a chemical shift moves
+                    # where a pool precesses, not what a pulse does to it.
+                    (
+                        b_rot_pr,
+                        b_rot_pi,
+                        b_rot_mr,
+                        b_rot_mi,
+                        b_rot_zr,
+                        b_rot_zi,
+                    ) = _rotate_spinor(
+                        pair[0],
+                        pair[1],
+                        spun_br,
+                        spun_bi,
+                        bplus_real,
+                        bplus_imag,
+                        bminus_real,
+                        bminus_imag,
+                        bound_real,
+                        bound_imag,
+                    )
+            if profiled or dynamic:
+                rotated_pr = shaped_pr
+                rotated_pi = shaped_pi
+                rotated_mr = shaped_mr
+                rotated_mi = shaped_mi
+                rotated_zr = shaped_zr
+                rotated_zi = shaped_zi
 
-        rotate = is_rf & ~is_inversion
-        if pools == 2 or pools == 3:
-            bplus_real = tl.where(rotate, b_rot_pr, bplus_real)
-            bplus_imag = tl.where(rotate, b_rot_pi, bplus_imag)
-            bminus_real = tl.where(rotate, b_rot_mr, bminus_real)
-            bminus_imag = tl.where(rotate, b_rot_mi, bminus_imag)
-            bound_real = tl.where(rotate, b_rot_zr, bound_real)
-            bound_imag = tl.where(rotate, b_rot_zi, bound_imag)
-        if pools == 1 or pools == 3:
-            # The semisolid pool absorbs the power the pulse deposits, so it
-            # reads the bare flip the transmit field gives the voxel -- not the
-            # slice-shaped rotation the free pool takes from the table.
-            offset = tl.load(rf_frequency + event) - atom_b0
-            absorbed = tl.exp(
-                tl.load(saturation + event)
-                * alpha
-                * alpha
-                * _lineshape_at(lineshape, offset, lineshape_bins, lineshape_step)
+            if pools == 2 or pools == 3:
+                bplus_real = b_rot_pr
+                bplus_imag = b_rot_pi
+                bminus_real = b_rot_mr
+                bminus_imag = b_rot_mi
+                bound_real = b_rot_zr
+                bound_imag = b_rot_zi
+            if pools == 1 or pools == 3:
+                # The semisolid pool absorbs the power the pulse deposits, so it
+                # reads the bare flip the transmit field gives the voxel -- not the
+                # slice-shaped rotation the free pool takes from the table.
+                offset = tl.load(rf_frequency + event) - atom_b0
+                absorbed = tl.exp(
+                    tl.load(saturation + event)
+                    * alpha
+                    * alpha
+                    * _lineshape_at(lineshape, offset, lineshape_bins, lineshape_step)
+                )
+                if pools == 1:
+                    bound_real = absorbed * bound_real
+                    bound_imag = absorbed * bound_imag
+                else:
+                    semisolid_real = absorbed * semisolid_real
+                    semisolid_imag = absorbed * semisolid_imag
+            fplus_real = rotated_pr
+            fplus_imag = rotated_pi
+            fminus_real = rotated_mr
+            fminus_imag = rotated_mi
+            longitudinal_real = rotated_zr
+            longitudinal_imag = rotated_zi
+
+        if ((event_action & 32) != 0) & (event_kind == 2):
+            adc_phase = _event_value(
+                phase, event_base, event, active_atom, single_train
             )
-            if pools == 1:
-                bound_real = tl.where(rotate, absorbed * bound_real, bound_real)
-                bound_imag = tl.where(rotate, absorbed * bound_imag, bound_imag)
-            else:
-                semisolid_real = tl.where(
-                    rotate, absorbed * semisolid_real, semisolid_real
-                )
-                semisolid_imag = tl.where(
-                    rotate, absorbed * semisolid_imag, semisolid_imag
-                )
-        fplus_real = tl.where(rotate, rotated_pr, fplus_real)
-        fplus_imag = tl.where(rotate, rotated_pi, fplus_imag)
-        fminus_real = tl.where(rotate, rotated_mr, fminus_real)
-        fminus_imag = tl.where(rotate, rotated_mi, fminus_imag)
-        longitudinal_real = tl.where(rotate, rotated_zr, longitudinal_real)
-        longitudinal_imag = tl.where(rotate, rotated_zi, longitudinal_imag)
+            adc_cos = tl.cos(adc_phase)
+            adc_sin = tl.sin(adc_phase)
+            # A coil sees the whole voxel, so what it records is the sum over
+            # pools; each pool's share is already in its own state.
+            read_real = fplus_real
+            read_imag = fplus_imag
+            if pools == 2 or pools == 3:
+                read_real = fplus_real + bplus_real
+                read_imag = fplus_imag + bplus_imag
+            signal_real = atom_m0 * (read_real * adc_cos + read_imag * adc_sin)
+            signal_imag = atom_m0 * (read_imag * adc_cos - read_real * adc_sin)
+            out = tl.load(output_index + event)
+            output_offset = problem * output_count + out
+            output_mask = active_atom & (state == 0) & (out >= 0)
+            tl.store(output_real + output_offset + state, signal_real, mask=output_mask)
+            tl.store(output_imag + output_offset + state, signal_imag, mask=output_mask)
 
-        record = ((event_action & 32) != 0) & (event_kind == 2)
-        adc_phase = _event_value(phase, event_base, event, active_atom, single_train)
-        adc_cos = tl.cos(adc_phase)
-        adc_sin = tl.sin(adc_phase)
-        # A coil sees the whole voxel, so what it records is the sum over
-        # pools; each pool's share is already in its own state.
-        read_real = fplus_real
-        read_imag = fplus_imag
-        if pools == 2 or pools == 3:
-            read_real = fplus_real + bplus_real
-            read_imag = fplus_imag + bplus_imag
-        signal_real = atom_m0 * (read_real * adc_cos + read_imag * adc_sin)
-        signal_imag = atom_m0 * (read_imag * adc_cos - read_real * adc_sin)
-        out = tl.load(output_index + event)
-        output_offset = problem * output_count + out
-        output_mask = active_atom & (state == 0) & record & (out >= 0)
-        tl.store(output_real + output_offset + state, signal_real, mask=output_mask)
-        tl.store(output_imag + output_offset + state, signal_imag, mask=output_mask)
-
-        do_shift = ((event_action & 2) != 0) | ((event_action & 16) != 0)
-        shifted_pr, shifted_pi, shifted_mr, shifted_mi = _shift(
-            fplus_real,
-            fplus_imag,
-            fminus_real,
-            fminus_imag,
-            state,
-            state_mask,
-            state_count,
-        )
-        fplus_real = tl.where(do_shift, shifted_pr, fplus_real)
-        fplus_imag = tl.where(do_shift, shifted_pi, fplus_imag)
-        fminus_real = tl.where(do_shift, shifted_mr, fminus_real)
-        fminus_imag = tl.where(do_shift, shifted_mi, fminus_imag)
-        spoil = (event_action & 8) != 0
-        fplus_real = tl.where(spoil, 0.0, fplus_real)
-        fplus_imag = tl.where(spoil, 0.0, fplus_imag)
-        fminus_real = tl.where(spoil, 0.0, fminus_real)
-        fminus_imag = tl.where(spoil, 0.0, fminus_imag)
-        if pools == 2 or pools == 3:
-            b_pr, b_pi, b_mr, b_mi = _shift(
-                bplus_real,
-                bplus_imag,
-                bminus_real,
-                bminus_imag,
+        if (event_action & 18) != 0:
+            fplus_real, fplus_imag, fminus_real, fminus_imag = _shift(
+                fplus_real,
+                fplus_imag,
+                fminus_real,
+                fminus_imag,
                 state,
                 state_mask,
                 state_count,
             )
-            bplus_real = tl.where(spoil, 0.0, tl.where(do_shift, b_pr, bplus_real))
-            bplus_imag = tl.where(spoil, 0.0, tl.where(do_shift, b_pi, bplus_imag))
-            bminus_real = tl.where(spoil, 0.0, tl.where(do_shift, b_mr, bminus_real))
-            bminus_imag = tl.where(spoil, 0.0, tl.where(do_shift, b_mi, bminus_imag))
+            if pools == 2 or pools == 3:
+                bplus_real, bplus_imag, bminus_real, bminus_imag = _shift(
+                    bplus_real,
+                    bplus_imag,
+                    bminus_real,
+                    bminus_imag,
+                    state,
+                    state_mask,
+                    state_count,
+                )
+        if (event_action & 8) != 0:
+            fplus_real = empty
+            fplus_imag = empty
+            fminus_real = empty
+            fminus_imag = empty
+            if pools == 2 or pools == 3:
+                bplus_real = empty
+                bplus_imag = empty
+                bminus_real = empty
+                bminus_imag = empty
 
 
 @triton.jit
