@@ -283,6 +283,20 @@ def test_a_policy_changes_where_the_work_runs_and_nothing_else(
         torch.testing.assert_close(theirs, ours, atol=1e-5, rtol=1e-5)
 
 
+@pytest.mark.parametrize("echo_times", [TE_MS.tolist(), tuple(TE_MS.tolist())])
+def test_maps_on_a_card_meet_echo_times_written_as_numbers_there(echo_times) -> None:
+    """A protocol given as plain numbers travels to the card with the maps."""
+    if not torch.cuda.is_available():
+        pytest.skip("CUDA is unavailable")
+    operator = ModelOperator(MultiEchoSimulator(TE=echo_times), "T2", bounds=BOUND)
+    x = operator.initial((7,), T2=80.0)
+
+    there = operator.A(x.cuda())
+
+    assert there.device.type == "cuda"
+    torch.testing.assert_close(there.cpu(), operator.A(x), atol=1e-5, rtol=1e-5)
+
+
 def test_streaming_a_volume_too_big_for_the_budget(operator) -> None:
     """The chunking is the policy's, and the seams do not show."""
     x = operator.initial((20_000,), T2=80.0)
