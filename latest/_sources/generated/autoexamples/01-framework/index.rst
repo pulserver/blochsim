@@ -5,14 +5,14 @@
 Framework
 ---------
 
-How to use TorchSim, and how to extend it.
+How to use BlochSim, and how to extend it.
 
 The first notebook covers basic usage: simulating a signal, taking its
 derivatives, tuning the run, and reading a sequence back from the description
 a scanner streams. The second covers the physics a simulator can carry beyond
 T1 and T2.
 
-The last two are for sequences TorchSim does not ship. A **signal model** of
+The last two are for sequences BlochSim does not ship. A **signal model** of
 your own is two pieces -- a physics saying what each kind of event does, and a
 simulator saying what order they are played in. An **operator** of your own --
 a preparation, a readout -- is a Python function that returns events.
@@ -33,7 +33,7 @@ None of it requires touching a kernel.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The scope of this notebook is to showcase the basic functionalities of Torchsim, including how to simulate a signal, calculating derivatives etc.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The scope of this notebook is to showcase the basic functionalities of Blochsim, including how to simulate a signal, calculating derivatives etc.">
 
 .. only:: html
 
@@ -67,7 +67,7 @@ None of it requires touching a kernel.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The scope of this notebook is to write a simulator TorchSim does not ship.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The scope of this notebook is to write a simulator BlochSim does not ship.">
 
 .. only:: html
 
@@ -84,7 +84,7 @@ None of it requires touching a kernel.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The scope of this notebook is to show how to add a sequence module TorchSim does not ship -- a preparation, or a readout -- without touching a kernel.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The scope of this notebook is to show how to add a sequence module BlochSim does not ship -- a preparation, or a readout -- without touching a kernel.">
 
 .. only:: html
 

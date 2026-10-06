@@ -36,12 +36,12 @@ every parameter estimated.
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim brainweb-dl cmap
+   !pip install blochsim brainweb-dl cmap
 
 .. GENERATED FROM PYTHON SOURCE LINES 24-27
 
 The two closed-form sequences being designed, the three pieces a design is
-stated in, and :func:`~torchsim.crlb`, which is the cost.
+stated in, and :func:`~blochsim.crlb`, which is the cost.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 28-166
@@ -53,9 +53,9 @@ stated in, and :func:`~torchsim.crlb`, which is the cost.
 
     import torch
 
-    import torchsim
-    from torchsim.optim import Bounded, SequenceDesign
-    from torchsim.simulators import SPGRSimulator, bSSFPSimulator
+    import blochsim
+    from blochsim.optim import Bounded, SequenceDesign
+    from blochsim.simulators import SPGRSimulator, bSSFPSimulator
 
 
 
@@ -131,7 +131,7 @@ Each block is blind to something and the Fisher matrix adds them up.
         together = torch.cat(
             (rows(spgr, flip=spgr_flip), rows(ssfp, flip=ssfp_flip)), dim=-1
         )
-        return torchsim.crlb(together, noise_variance=NOISE**2)
+        return blochsim.crlb(together, noise_variance=NOISE**2)
 
 
 
@@ -253,7 +253,7 @@ differing only in flip angle. Before and after.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fa72d1a2720>
+    <matplotlib.legend.Legend object at 0x7f5085c4af90>
 
 
 
@@ -322,7 +322,7 @@ against the truth rather than against each other.
 .. GENERATED FROM PYTHON SOURCE LINES 416-422
 
 The two blocks are one experiment and are fitted as one: a
-:class:`~torchsim.model.Simulator` that plays each and concatenates what
+:class:`~blochsim.model.Simulator` that plays each and concatenates what
 they record. The fit is the one thing held fixed between the protocols --
 the same nonlinear least squares over the same four unknowns, from the same
 guess.
@@ -332,8 +332,8 @@ guess.
 
 .. code-block:: Python
 
-    from torchsim.estimators import NonlinearLeastSquares
-    from torchsim.model import Simulator
+    from blochsim.estimators import NonlinearLeastSquares
+    from blochsim.model import Simulator
 
 
     class JointRelaxometry(Simulator):
@@ -437,7 +437,7 @@ which is what the measured error is read against.
         together = torch.cat(
             (rows(at_voxel[0], flip=spgr_flip), rows(at_voxel[1], flip=ssfp_flip)), dim=-1
         )
-        bound = torchsim.crlb(together, noise_variance=NOISE**2)
+        bound = blochsim.crlb(together, noise_variance=NOISE**2)
         return {
             "T1": bound[..., 0].sqrt() / truth["T1"],
             "T2": bound[..., 1].sqrt() / truth["T2"],
@@ -528,7 +528,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.477 seconds)
+   **Total running time of the script:** (0 minutes 12.348 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_02-joint-relaxometry.py:
@@ -540,7 +540,7 @@ References
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb
         :alt: Launch binder
         :width: 150 px
 

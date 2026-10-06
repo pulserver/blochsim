@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>PERK: kernel ridge regression &#8212; TorchSim Documentation</title>
+    <title>PERK: kernel ridge regression &#8212; BlochSim Documentation</title>
   
   
   
@@ -57,13 +57,14 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/02-parameter-inference/04-perk';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/torchsim/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/blochsim/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://pulserver.github.io/torchsim/latest/generated/autoexamples/02-parameter-inference/04-perk.html" />
+    <link rel="canonical" href="https://pulserver.github.io/blochsim/latest/generated/autoexamples/02-parameter-inference/04-perk.html" />
+    <link rel="icon" href="../../../_static/blochsim-mark.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Sequence optimization" href="../03-sequence-optimization/index.html" />
@@ -150,8 +151,14 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../../../_static/blochsim-mark.svg" class="logo__image only-light" alt="blochsim"/>
+    <img src="../../../_static/blochsim-mark-dark.svg" class="logo__image only-dark pst-js-only" alt="blochsim"/>
   
-    <p class="title logo__title">TorchSim Documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -196,7 +203,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../explanations/index.html">Explanations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../explanations/description.html">Sequence description</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../explanations/epg.html">Extended phase graphs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../explanations/implementation.html">How TorchSim runs it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/implementation.html">How BlochSim runs it</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Examples</a></li>
@@ -207,97 +214,97 @@
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/model.html">Signal models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.Simulator.html">Simulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.SpinPhysics.html">SpinPhysics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.EventOperators.html">EventOperators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.model.Simulator.html">Simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.model.SpinPhysics.html">SpinPhysics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.model.EventOperators.html">EventOperators</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/simulators.html">Simulators</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.bSSFPSimulator.html">bSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.SPGRSimulator.html">SPGRSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MP2RAGESimulator.html">MP2RAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.InversionRecoverySimulator.html">InversionRecoverySimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MultiEchoSimulator.html">MultiEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.DoubleAngleSimulator.html">DoubleAngleSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.SpinEchoSimulator.html">SpinEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.LookLockerSimulator.html">LookLockerSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MOLLISimulator.html">MOLLISimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.IRbSSFPSimulator.html">IRbSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.HSFPSimulator.html">HSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MultiGradientEchoSimulator.html">MultiGradientEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.IRMultiGradientEchoSimulator.html">IRMultiGradientEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.DiffusionSimulator.html">DiffusionSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.LorentzianSimulator.html">LorentzianSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.ASLSimulator.html">ASLSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.FSESimulator.html">FSESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.HyperechoSimulator.html">HyperechoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.StimulatedEchoSimulator.html">StimulatedEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MPRAGESimulator.html">MPRAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MPnRAGESimulator.html">MPnRAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MRFSimulator.html">MRFSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.FLASHSimulator.html">FLASHSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.TrueFISPSimulator.html">TrueFISPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.fmSSFPSimulator.html">fmSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.CESTSimulator.html">CESTSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.bssfp_sim.html">bssfp_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.spgr_sim.html">spgr_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.fse_sim.html">fse_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mprage_sim.html">mprage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mp2rage_sim.html">mp2rage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mpnrage_sim.html">mpnrage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mrf_sim.html">mrf_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.bSSFPSimulator.html">bSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.SPGRSimulator.html">SPGRSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MP2RAGESimulator.html">MP2RAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.InversionRecoverySimulator.html">InversionRecoverySimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MultiEchoSimulator.html">MultiEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.DoubleAngleSimulator.html">DoubleAngleSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.SpinEchoSimulator.html">SpinEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.LookLockerSimulator.html">LookLockerSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MOLLISimulator.html">MOLLISimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.IRbSSFPSimulator.html">IRbSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.HSFPSimulator.html">HSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MultiGradientEchoSimulator.html">MultiGradientEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.IRMultiGradientEchoSimulator.html">IRMultiGradientEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.DiffusionSimulator.html">DiffusionSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.LorentzianSimulator.html">LorentzianSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.ASLSimulator.html">ASLSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.FSESimulator.html">FSESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.HyperechoSimulator.html">HyperechoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.StimulatedEchoSimulator.html">StimulatedEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MPRAGESimulator.html">MPRAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MPnRAGESimulator.html">MPnRAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MRFSimulator.html">MRFSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.FLASHSimulator.html">FLASHSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.TrueFISPSimulator.html">TrueFISPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.fmSSFPSimulator.html">fmSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.CESTSimulator.html">CESTSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.bssfp_sim.html">bssfp_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.spgr_sim.html">spgr_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.fse_sim.html">fse_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mprage_sim.html">mprage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mp2rage_sim.html">mp2rage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mpnrage_sim.html">mpnrage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mrf_sim.html">mrf_sim</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/sequence.html">Sequences</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Operator.html">Operator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Excitation.html">Excitation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Refocusing.html">Refocusing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Inversion.html">Inversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Saturation.html">Saturation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SampledPulse.html">SampledPulse</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Readout.html">Readout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Delay.html">Delay</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Dephase.html">Dephase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Spoil.html">Spoil</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.bSSFPReadout.html">bSSFPReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SSFPFidReadout.html">SSFPFidReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SSFPEchoReadout.html">SSFPEchoReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SPGRReadout.html">SPGRReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.FSEReadout.html">FSEReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.rf_definition.html">rf_definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.ShimDefinition.html">ShimDefinition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.compose_spinor.html">compose_spinor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SequenceDescription.html">SequenceDescription</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.read_mrd_description.html">read_mrd_description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Operator.html">Operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Excitation.html">Excitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Refocusing.html">Refocusing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Inversion.html">Inversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Saturation.html">Saturation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SampledPulse.html">SampledPulse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Readout.html">Readout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Delay.html">Delay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Dephase.html">Dephase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Spoil.html">Spoil</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.bSSFPReadout.html">bSSFPReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SSFPFidReadout.html">SSFPFidReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SSFPEchoReadout.html">SSFPEchoReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SPGRReadout.html">SPGRReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.FSEReadout.html">FSEReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.rf_definition.html">rf_definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.ShimDefinition.html">ShimDefinition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.compose_spinor.html">compose_spinor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SequenceDescription.html">SequenceDescription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.read_mrd_description.html">read_mrd_description</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Estimator.html">Estimator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.DictionaryMatcher.html">DictionaryMatcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.LookupTable.html">LookupTable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.NonlinearLeastSquares.html">NonlinearLeastSquares</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.PERK.html">PERK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Estimator.html">Estimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.DictionaryMatcher.html">DictionaryMatcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.LookupTable.html">LookupTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.NonlinearLeastSquares.html">NonlinearLeastSquares</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.PERK.html">PERK</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/recon.html">Model-based reconstruction</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.ModelOperator.html">ModelOperator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.GaussNewton.html">GaussNewton</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.TrustRegion.html">TrustRegion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.direct.html">direct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.iterative.html">iterative</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Subspace.html">Subspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.ModelOperator.html">ModelOperator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.GaussNewton.html">GaussNewton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.TrustRegion.html">TrustRegion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.direct.html">direct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.iterative.html">iterative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Subspace.html">Subspace</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/optim.html">Sequence design</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Bounded.html">Bounded</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SequenceDesign.html">SequenceDesign</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.crlb.html">crlb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Bounded.html">Bounded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SequenceDesign.html">SequenceDesign</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.crlb.html">crlb</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/execution.html">Running a simulation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.execution.html">execution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.offload.html">offload</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.utils.b1rms.html">b1rms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.execution.html">execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.offload.html">offload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.utils.b1rms.html">b1rms</a></li>
 </ul>
 </details></li>
 </ul>
@@ -368,7 +375,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim" target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -385,7 +392,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim/edit/main/generated/autoexamples/02-parameter-inference/04-perk.rst" target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim/edit/main/generated/autoexamples/02-parameter-inference/04-perk.rst" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -402,7 +409,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/02-parameter-inference/04-perk.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/02-parameter-inference/04-perk.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -559,25 +566,25 @@ signal onto a fixed set of random Fourier features and reads the answer off a
 linear combination of them. Its cost per voxel does not depend on how many
 parameters are unknown, and the training is paid once.</p>
 <div class="colab-button">
-            <a href="https://colab.research.google.com/github/pulserver/torchsim/blob/gh-pages/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb" target="_blank">
+            <a href="https://colab.research.google.com/github/pulserver/blochsim/blob/gh-pages/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb" target="_blank">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg"
                 alt="Open In Colab"/>
             </a>
         </div>
         <p>The problem is stated over a simulator carrying the sequence and filled in
-by an estimator. <a class="reference internal" href="../../torchsim.execution.html#torchsim.execution" title="torchsim.execution"><code class="xref py py-func docutils literal notranslate"><span class="pre">execution()</span></code></a> decides where that work runs,
+by an estimator. <a class="reference internal" href="../../blochsim.execution.html#blochsim.execution" title="blochsim.execution"><code class="xref py py-func docutils literal notranslate"><span class="pre">execution()</span></code></a> decides where that work runs,
 and the timings below are taken inside it.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="w">
 </span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w">
 </span><span class="w">
-</span><span class="kn">import</span><span class="w"> </span><span class="nn">torchsim</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">blochsim</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
 </span>    <span class="n">Subspace</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="nn">.</span><span class="nn">estimators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.PERK.html#torchsim.PERK" title="torchsim.PERK"><span class="n">PERK</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.DictionaryMatcher.html#torchsim.DictionaryMatcher" title="torchsim.DictionaryMatcher"><span class="n">DictionaryMatcher</span></a><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="nn">.</span><span class="nn">simulators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">MRFSimulator</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="nn">.</span><span class="nn">estimators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.PERK.html#blochsim.PERK" title="blochsim.PERK"><span class="n">PERK</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.DictionaryMatcher.html#blochsim.DictionaryMatcher" title="blochsim.DictionaryMatcher"><span class="n">DictionaryMatcher</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="nn">.</span><span class="nn">simulators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">MRFSimulator</span></a><span class="w">
 </span></pre></div></div>
 <section id="phantom">
 <h2>Phantom<a class="headerlink" href="#phantom" title="Link to this heading">#</a></h2>
@@ -602,17 +609,17 @@ would give trajectories differing by noise rather than by physics.</p>
 </span><span class="n">repetition</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">CONTRASTS</span></a><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="w">
 </span><span class="n">flip</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">+</span> <span class="mf">50.0</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">torch</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">*</span> <span class="n">repetition</span> <span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">CONTRASTS</span></a><span class="p">)</span> <span class="o">*</span><span class="o">*</span> <span class="mi">2</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">simulator</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">MRFSimulator</span></a><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">flip</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">TR_MS</span></a><span class="p">,</span> <span class="n">TI</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">TI_MS</span></a><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">MRFSimulator</span></a><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">flip</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">TR_MS</span></a><span class="p">,</span> <span class="n">TI</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">TI_MS</span></a><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <p>The readouts wind the states on rather than rewinding them, so nothing
 returns transverse magnetization to the imaginary axis: the trajectory comes
 back real to within 3e-8, which halves both the dictionary and the
 arithmetic that searches it.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fingerprints</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fingerprints</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="w">
 </span>    <span class="n">T1</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span> <span class="mf">833.0</span><span class="p">,</span> <span class="mf">2569.0</span><span class="p">]</span><span class="p">)</span><span class="p">,</span> <span class="n">T2</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">83.0</span><span class="p">,</span> <span class="mf">329.0</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_04-perk_002.png" srcset="../../../_images/sphx_glr_04-perk_002.png" alt="the schedule, fingerprints" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7fa71fc61d90&gt;]
+<img src="../../../_images/sphx_glr_04-perk_002.png" srcset="../../../_images/sphx_glr_04-perk_002.png" alt="the schedule, fingerprints" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7f508d8786e0&gt;]
 </pre></div>
 </div>
 <p>The measurement, with noise at 2% of the peak fingerprint. One number sets
@@ -626,7 +633,7 @@ data and answers with the prior instead.</p>
 </span>    <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">T2_true</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">mask</span></a><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span><span class="n">density</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">M0_true</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">mask</span></a><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
-</span><span class="n">clean</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">)</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">density</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="w">
+</span><span class="n">clean</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">)</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">density</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="w">
 </span><span class="n">generator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="w">
 </span><span class="n">measured</span> <span class="o">=</span> <span class="n">clean</span> <span class="o">+</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE_STD</span></a> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">clean</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
@@ -649,7 +656,7 @@ trajectories are nearly parallel.</p>
 simulated trajectories says how many they do span; one minus the energy it
 keeps is the relative squared error of projecting through it and back.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">training_signals</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.PERK.html#torchsim.PERK" title="torchsim.PERK"><span class="n">PERK</span></a><span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.PERK.html#blochsim.PERK" title="blochsim.PERK"><span class="n">PERK</span></a><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="p">)</span><span class="w">
 </span>    <span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="w">
 </span>        <span class="n">T1</span><span class="o">=</span><span class="n">log_uniform</span><span class="p">(</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">T1_RANGE</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">SAMPLES</span></a><span class="p">)</span><span class="p">,</span><span class="w">
 </span>        <span class="n">T2</span><span class="o">=</span><span class="n">log_uniform</span><span class="p">(</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">T2_RANGE</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">SAMPLES</span></a><span class="p">)</span><span class="p">,</span><span class="w">
@@ -662,7 +669,7 @@ keeps is the relative squared error of projecting through it and back.</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">RANK</span></a> <span class="o">=</span> <span class="mi">4</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_04-perk_003.png" srcset="../../../_images/sphx_glr_04-perk_003.png" alt="what projecting through the basis loses" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7fa72c0a1730&gt;]
+<img src="../../../_images/sphx_glr_04-perk_003.png" srcset="../../../_images/sphx_glr_04-perk_003.png" alt="what projecting through the basis loses" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.legend.Legend object at 0x7f508d9b50d0&gt;]
 </pre></div>
 </div>
 <p>Four directions leave less outside the basis than the noise puts in, so
@@ -674,7 +681,7 @@ rank 4 is used from here on.</p>
 the noise the scan has. Fitting is a linear solve against the features.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">FEATURES</span></a> <span class="o">=</span> <span class="mi">1000</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.PERK.html#torchsim.PERK" title="torchsim.PERK"><span class="n">perk</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.PERK.html#torchsim.PERK" title="torchsim.PERK"><span class="n">PERK</span></a><span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">FEATURES</span></a><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="w">
+</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.PERK.html#blochsim.PERK" title="blochsim.PERK"><span class="n">perk</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.PERK.html#blochsim.PERK" title="blochsim.PERK"><span class="n">PERK</span></a><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">FEATURES</span></a><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="w">
 </span>    <span class="n">T1</span><span class="o">=</span><span class="n">log_uniform</span><span class="p">(</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">T1_RANGE</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">SAMPLES</span></a><span class="p">)</span><span class="p">,</span><span class="w">
 </span>    <span class="n">T2</span><span class="o">=</span><span class="n">log_uniform</span><span class="p">(</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">T2_RANGE</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">SAMPLES</span></a><span class="p">)</span><span class="p">,</span><span class="w">
 </span>    <span class="n">noise_std</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE_STD</span></a><span class="p">,</span><span class="w">
@@ -683,7 +690,7 @@ the noise the scan has. Fitting is a linear solve against the features.</p>
 </span>    <span class="n">samples</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">SAMPLES</span></a><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">maps</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.PERK.html#torchsim.PERK" title="torchsim.PERK"><span class="n">perk</span></a><span class="p">(</span><span class="n">measured</span><span class="p">)</span>  <span class="c1"># {&quot;T1&quot;: ..., &quot;T2&quot;: ...}, one value per voxel</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">maps</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.PERK.html#blochsim.PERK" title="blochsim.PERK"><span class="n">perk</span></a><span class="p">(</span><span class="n">measured</span><span class="p">)</span>  <span class="c1"># {&quot;T1&quot;: ..., &quot;T2&quot;: ...}, one value per voxel</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>dictionary: 20000 atoms at rank 4; regression: 1000 features from 20000 training draws
 </pre></div>
@@ -697,10 +704,10 @@ card while the slice was mapped, and a dash on a machine with no card. The
 dictionary row is the reference point.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>method                       train     map     model      peak      T1      T2
 ------------------------------------------------------------------------------
-match, rank 4                 1.1s   1.80s   1.4 MiB        --    0.6%    1.6%
-PERK, 500 features            1.4s   0.03s   0.0 MiB        --    1.4%   15.4%
-PERK, 1000 features           1.8s   0.04s   0.1 MiB        --    0.6%    3.1%
-PERK, 4000 features          10.0s   0.12s   0.4 MiB        --    1.0%    4.6%
+match, rank 4                 1.4s   1.72s   1.4 MiB        --    0.6%    1.6%
+PERK, 500 features            1.5s   0.03s   0.0 MiB        --    1.7%   15.3%
+PERK, 1000 features           2.0s   0.04s   0.1 MiB        --    1.1%    5.3%
+PERK, 4000 features           9.8s   0.12s   0.4 MiB        --    0.9%    6.2%
 </pre></div>
 </div>
 </section>
@@ -717,19 +724,19 @@ PERK, 4000 features          10.0s   0.12s   0.4 MiB        --    1.0%    4.6%
 expected to sit from the truth. PERK learns that at training, from the
 residuals of its own fit, so reporting it is a matrix multiply rather than a
 rerun of the volume.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">maps</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">spread</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.PERK.html#torchsim.PERK" title="torchsim.PERK"><span class="n">perk</span></a><span class="p">(</span><span class="n">measured</span><span class="p">,</span> <span class="n">uncertainty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">maps</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">spread</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.PERK.html#blochsim.PERK" title="blochsim.PERK"><span class="n">perk</span></a><span class="p">(</span><span class="n">measured</span><span class="p">,</span> <span class="n">uncertainty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <p>Read against the Cramer-Rao bound, the lowest standard deviation an unbiased
 estimate could reach from this train at this noise. The bound belongs to the
 sequence, so the gap is what the method loses.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_signal</span><span class="p">,</span> <span class="n">sensitivity</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.MRFSimulator.html#torchsim.simulators.MRFSimulator" title="torchsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">T1 T2</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_signal</span><span class="p">,</span> <span class="n">sensitivity</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">T1 T2</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">)</span><span class="w">
 </span><span class="n">sensitivity</span> <span class="o">=</span> <span class="n">sensitivity</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">density</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="w">
-</span><span class="n">floor</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-function reference internal" href="../../torchsim.crlb.html#torchsim.crlb" title="torchsim.crlb"><span class="n">torchsim</span><span class="o">.</span><span class="n">crlb</span></a><span class="p">(</span><span class="n">sensitivity</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE_STD</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">singular</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">infinite</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">floor</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-function reference internal" href="../../blochsim.crlb.html#blochsim.crlb" title="blochsim.crlb"><span class="n">blochsim</span><span class="o">.</span><span class="n">crlb</span></a><span class="p">(</span><span class="n">sensitivity</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE_STD</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">singular</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">infinite</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">bound</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">floor</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">floor</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="p">)</span><span class="p">}</span><span class="w">
 </span></pre></div></div>
 <img src="../../../_images/sphx_glr_04-perk_006.png" srcset="../../../_images/sphx_glr_04-perk_006.png" alt="PERK, CRLB, PERK, relative" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>            PERK      CRLB     PERK   (median over the brain)
-T1       10.4 ms    2.4 ms     1.4%
-T2       13.9 ms    0.5 ms    19.0%
+T1        7.1 ms    2.4 ms     1.1%
+T2       11.6 ms    0.5 ms    16.3%
 </pre></div>
 </div>
 <p>Each row uses its own parameter’s colormap. The two absolute panels share a
@@ -743,10 +750,10 @@ enlarge.</p>
 <p>The number is not the noise alone. A regression trained on a prior answers
 with the prior where the data is weak, and is wrong the same way in every
 realization, so repeating the scan would never show that part.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 32.239 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 34.312 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-02-parameter-inference-04-perk-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo1.svg" style="width: 150px;" />
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo1.svg" style="width: 150px;" />
 </a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
@@ -832,7 +839,7 @@ realization, so repeating the scan would never show that part.</p>
   <div class="footer-item">
     
 <p class="component-author">
-By TorchSim Contributors
+By BlochSim Contributors
 </p>
 
   </div>
@@ -842,7 +849,7 @@ By TorchSim Contributors
 
   <p class="copyright">
     
-      © Copyright 2024, TorchSim Contributors.
+      © Copyright 2024, BlochSim Contributors.
       <br/>
     
   </p>

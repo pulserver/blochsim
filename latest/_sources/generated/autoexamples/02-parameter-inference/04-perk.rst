@@ -36,12 +36,12 @@ parameters are unknown, and the training is paid once.
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim brainweb-dl cmap
+   !pip install blochsim brainweb-dl cmap
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-27
 
 The problem is stated over a simulator carrying the sequence and filled in
-by an estimator. :func:`~torchsim.execution` decides where that work runs,
+by an estimator. :func:`~blochsim.execution` decides where that work runs,
 and the timings below are taken inside it.
 
 
@@ -55,12 +55,12 @@ and the timings below are taken inside it.
     import numpy as np
     import torch
 
-    import torchsim
-    from torchsim import (
+    import blochsim
+    from blochsim import (
         Subspace,
     )
-    from torchsim.estimators import PERK, DictionaryMatcher
-    from torchsim.simulators import MRFSimulator
+    from blochsim.estimators import PERK, DictionaryMatcher
+    from blochsim.simulators import MRFSimulator
 
 
 
@@ -162,7 +162,7 @@ arithmetic that searches it.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa71fc61d90>]
+    [<matplotlib.legend.Legend object at 0x7f508d8786e0>]
 
 
 
@@ -268,7 +268,7 @@ keeps is the relative squared error of projecting through it and back.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa72c0a1730>]
+    [<matplotlib.legend.Legend object at 0x7f508d9b50d0>]
 
 
 
@@ -343,10 +343,10 @@ dictionary row is the reference point.
 
     method                       train     map     model      peak      T1      T2
     ------------------------------------------------------------------------------
-    match, rank 4                 1.1s   1.80s   1.4 MiB        --    0.6%    1.6%
-    PERK, 500 features            1.4s   0.03s   0.0 MiB        --    1.4%   15.4%
-    PERK, 1000 features           1.8s   0.04s   0.1 MiB        --    0.6%    3.1%
-    PERK, 4000 features          10.0s   0.12s   0.4 MiB        --    1.0%    4.6%
+    match, rank 4                 1.4s   1.72s   1.4 MiB        --    0.6%    1.6%
+    PERK, 500 features            1.5s   0.03s   0.0 MiB        --    1.7%   15.3%
+    PERK, 1000 features           2.0s   0.04s   0.1 MiB        --    1.1%    5.3%
+    PERK, 4000 features           9.8s   0.12s   0.4 MiB        --    0.9%    6.2%
 
 
 
@@ -420,7 +420,7 @@ sequence, so the gap is what the method loses.
 
     _signal, sensitivity = simulator.jacobian("T1 T2".split(), **truth)
     sensitivity = sensitivity.real * density[:, None, None]
-    floor = torchsim.crlb(sensitivity, noise_variance=NOISE_STD**2, singular="infinite")
+    floor = blochsim.crlb(sensitivity, noise_variance=NOISE_STD**2, singular="infinite")
     bound = {"T1": floor[:, 0].sqrt(), "T2": floor[:, 1].sqrt()}
 
 
@@ -438,8 +438,8 @@ sequence, so the gap is what the method loses.
  .. code-block:: none
 
                 PERK      CRLB     PERK   (median over the brain)
-    T1       10.4 ms    2.4 ms     1.4%
-    T2       13.9 ms    0.5 ms    19.0%
+    T1        7.1 ms    2.4 ms     1.1%
+    T2       11.6 ms    0.5 ms    16.3%
 
 
 
@@ -463,7 +463,7 @@ realization, so repeating the scan would never show that part.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 32.239 seconds)
+   **Total running time of the script:** (0 minutes 34.312 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_04-perk.py:
@@ -475,7 +475,7 @@ realization, so repeating the scan would never show that part.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/04-perk.ipynb
         :alt: Launch binder
         :width: 150 px
 

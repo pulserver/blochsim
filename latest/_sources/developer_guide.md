@@ -1,6 +1,6 @@
 # Developer Guide
 
-How to set up to change TorchSim: what has to be on the machine, how to
+How to set up to change BlochSim: what has to be on the machine, how to
 install the source so your edits take effect, the style the code is written
 in, how to run the tests and build these pages, and how a pull request is
 opened.
@@ -16,8 +16,8 @@ Beyond what the {doc}`user_guide` asks of everyone -- an isolated environment
 and a PyTorch build chosen for your hardware -- working on the source needs:
 
 **A C++17 compiler.** The CPU state machine and the PERK kernel are C++
-extensions built from `src/torchsim/_epg_cpu.cpp` and
-`src/torchsim/_perk_cpu.cpp`. An install from source compiles them, and
+extensions built from `src/blochsim/_epg_cpu.cpp` and
+`src/blochsim/_perk_cpu.cpp`. An install from source compiles them, and
 there is no Python fallback to fall back to.
 
 ::::{tab-set}
@@ -49,7 +49,7 @@ the compiler is on the path.
 
 ::::
 
-**Git**, and a fork of https://github.com/pulserver/torchsim if you intend to
+**Git**, and a fork of https://github.com/pulserver/blochsim if you intend to
 open a pull request.
 
 **An NVIDIA card, if you want to touch the GPU kernels.** They are Triton,
@@ -60,8 +60,8 @@ card runs it for real.
 ## Installing for development
 
 ```sh
-git clone https://github.com/pulserver/torchsim
-cd torchsim
+git clone https://github.com/pulserver/blochsim
+cd blochsim
 pip install -e ".[dev]"
 pre-commit install
 ```
@@ -77,7 +77,7 @@ puts the hooks *available*, and this is what puts them *in effect*. See
 {ref}`dev-style` for what they check and how to step around one.
 
 An editable install puts the Python sources on the path, so an edit under
-`src/torchsim` takes effect on the next import with nothing to rebuild. The
+`src/blochsim` takes effect on the next import with nothing to rebuild. The
 C++ extensions are different -- they are compiled artifacts:
 
 ```sh
@@ -92,29 +92,29 @@ the one you just built:
 
 ```sh
 pip install -e ".[dev]" ; echo "exit: $?"
-python -c "import torchsim._epg_cpu as k; print(k.__file__)"
+python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 ```
 
 ### Where the source lives
 
-`src/torchsim/sequence/`
+`src/blochsim/sequence/`
 : The description an acquisition is assembled from -- events, operators,
   builders -- and the dispatch that turns one into a kernel launch. The
   Triton kernels are `_epg_triton.py`; the shared parameter ABI, which the
   Python dispatch, the C++ extension and the Triton kernels all read, is
   `_parameters.py`.
 
-`src/torchsim/model/`
+`src/blochsim/model/`
 : What a signal model is: the physics, the simulator that orders its events,
   and the binding that resolves a protocol's structure once and rebinds its
   values per call.
 
-`src/torchsim/_epg_cpu.cpp`, `src/torchsim/_perk_cpu.cpp`
+`src/blochsim/_epg_cpu.cpp`, `src/blochsim/_perk_cpu.cpp`
 : The CPU kernels. Every path the GPU has -- forward, forward-mode,
   adjoint, forward-over-reverse, the real-subspace specialization, the pool
   models -- exists here too, and the two agree to float32 round-off.
 
-`src/torchsim/simulators/`, `estimators/`, `recon/`, `optim/`
+`src/blochsim/simulators/`, `estimators/`, `recon/`, `optim/`
 : The sequences that ship, and what is built on top of them.
 
 `tests/`, `examples/`, `docs/`
@@ -151,7 +151,7 @@ is a second or two.
 ```sh
 pre-commit run --all-files      # the whole tree, which is what CI does
 pre-commit run ruff-format      # one hook, on the staged files
-pre-commit run --files src/torchsim/model/_signal.py
+pre-commit run --files src/blochsim/model/_signal.py
 pre-commit autoupdate           # move the pinned hook versions forward
 ```
 
@@ -221,7 +221,7 @@ test whose name states the invariant -- those cannot go stale silently, and a
 stale comment actively misleads the next reader. When you are tempted to
 explain *why not the other way*, write a test instead.
 
-The same applies to these pages. The documentation describes what TorchSim
+The same applies to these pages. The documentation describes what BlochSim
 does and why that is right on its own terms; it is not a changelog.
 
 **Units are public at the edges and internal underneath.** A caller writes
@@ -268,7 +268,7 @@ number entirely. Run the whole suite at natural boundaries rather than after
 every edit.
 
 When you change physics, add the test that pins it against something outside
-TorchSim: a closed form, a published figure, or an isochromat summation you
+BlochSim: a closed form, a published figure, or an isochromat summation you
 write in the test itself. The `tests/epg` files are written that way, and
 each states its invariant in its module docstring.
 
@@ -277,15 +277,15 @@ each states its invariant in its module docstring.
 ```sh
 bash scripts/build_docs.sh              # incremental
 bash scripts/build_docs.sh --clean      # re-execute every example
-PYTHON_BIN=~/envs/torchsim/bin/python bash scripts/build_docs.sh
+PYTHON_BIN=~/envs/blochsim/bin/python bash scripts/build_docs.sh
 ```
 
-The script checks that the interpreter it is given can import TorchSim and the
+The script checks that the interpreter it is given can import BlochSim and the
 documentation extensions, then builds into `docs/build/html`. Two things
 happen during the build that make it slower than a plain Sphinx run and are
 the point of it: **sphinx-gallery executes every example**, and **the figures
 of the explanation pages are re-rendered** by
-`docs/explanation_figures.py`, which simulates them with the TorchSim in
+`docs/explanation_figures.py`, which simulates them with the BlochSim in
 your working tree. A figure on those pages is therefore never older than the
 code it illustrates. Read them:
 
@@ -308,7 +308,7 @@ docstring becomes the page's introduction.
    refactor and a fix in the same diff cost the reviewer more than they save
    you.
 2. **Make the change, with a test that fails without it.** For a physics
-   change that test is against something outside TorchSim, as above.
+   change that test is against something outside BlochSim, as above.
 3. **Run what CI runs**, so you find out here rather than there:
 
    ```sh
@@ -330,6 +330,6 @@ docstring becomes the page's introduction.
    changed.
 
 Everything here happens under the {doc}`misc/code_of_conduct`, which applies
-to issues, discussions, pull requests and reviews alike. TorchSim is released
+to issues, discussions, pull requests and reviews alike. BlochSim is released
 under the {doc}`misc/license`, and a contribution is released under the same
 terms; {doc}`misc/contributors` is generated from the repository history.

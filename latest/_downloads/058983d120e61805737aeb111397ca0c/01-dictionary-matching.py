@@ -18,12 +18,12 @@ the same slice.
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim brainweb-dl cmap
+#    !pip install blochsim brainweb-dl cmap
 
 # %%
 #
 # The problem is stated over a simulator carrying the sequence and filled in
-# by an estimator. :func:`~torchsim.execution` decides where that work runs,
+# by an estimator. :func:`~blochsim.execution` decides where that work runs,
 # and the timings below are taken inside it.
 #
 
@@ -165,12 +165,12 @@ import time
 import numpy as np
 import torch
 
-import torchsim
-from torchsim import (
+import blochsim
+from blochsim import (
     Subspace,
 )
-from torchsim.estimators import DictionaryMatcher
-from torchsim.simulators import MRFSimulator
+from blochsim.estimators import DictionaryMatcher
+from blochsim.simulators import MRFSimulator
 
 # %%
 #
@@ -291,7 +291,7 @@ def footprint(problem):
 def mapped(problem, passes=3):
     """Map the slice a few times: the quickest pass, and what it held."""
     on_device = torch.cuda.is_available()
-    with torchsim.execution():
+    with blochsim.execution():
         problem(measured[:64])
         if on_device:
             torch.cuda.reset_peak_memory_stats()

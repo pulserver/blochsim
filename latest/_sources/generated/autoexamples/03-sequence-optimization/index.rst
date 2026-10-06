@@ -10,7 +10,7 @@ given.
 
 A design problem is three pieces: a simulator with the tissue it is designed
 for already fixed on it; a cost, which is a plain function of what that
-simulator records; and a :class:`~torchsim.SequenceDesign`, which holds the
+simulator records; and a :class:`~blochsim.SequenceDesign`, which holds the
 parameters inside the limits the scanner will play and runs the loop.
 
 Only the cost changes between the first two examples here. One asks for a

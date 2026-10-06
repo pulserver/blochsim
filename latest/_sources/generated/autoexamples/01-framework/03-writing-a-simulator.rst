@@ -22,7 +22,7 @@
 Writing a Signal Model
 ======================
 
-The scope of this notebook is to write a simulator TorchSim does not ship.
+The scope of this notebook is to write a simulator BlochSim does not ship.
 
 There are two things to say. **Which operator plays each kind of event** --
 what an excitation is, what a sample is -- and **what order they are played
@@ -35,7 +35,7 @@ device, and reads a sequence back from a description a scanner streamed.
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim
+   !pip install blochsim
 
 .. GENERATED FROM PYTHON SOURCE LINES 22-24
 
@@ -51,7 +51,7 @@ The base class, and the operators a layout is written from.
     import numpy as np
     import torch
 
-    from torchsim import (
+    from blochsim import (
         Delay,
         Excitation,
         Inversion,
@@ -59,7 +59,7 @@ The base class, and the operators a layout is written from.
         SSFPFidReadout,
         Spoil,
     )
-    from torchsim.model import Simulator
+    from blochsim.model import Simulator
 
 
 
@@ -74,10 +74,10 @@ Handlers
 --------
 A simulator says what plays each kind of event by naming it. The five
 readouts are what distinguishes one steady-state family from another: an
-:func:`~torchsim.SSFPFidReadout` winds one configuration order after every
-sample, an :func:`~torchsim.SSFPEchoReadout` winds it before, an
-:func:`~torchsim.SPGRReadout` spoils, a :func:`~torchsim.bSSFPReadout` leaves
-the states where they were, and an :func:`~torchsim.FSEReadout` samples a
+:func:`~blochsim.SSFPFidReadout` winds one configuration order after every
+sample, an :func:`~blochsim.SSFPEchoReadout` winds it before, an
+:func:`~blochsim.SPGRReadout` spoils, a :func:`~blochsim.bSSFPReadout` leaves
+the states where they were, and an :func:`~blochsim.FSEReadout` samples a
 spin echo the refocusing pulses have already crushed around.
 
 Naming one is the whole of choosing between them, and it is also what says
@@ -92,7 +92,7 @@ given to any simulator, and giving one is what turns its term on.
 
 Layout
 ------
-An :class:`~torchsim.model.Simulator` is the protocol. You do not
+An :class:`~blochsim.model.Simulator` is the protocol. You do not
 write timestamps: ``layout`` returns the *operators* of one repetition in
 order, and the simulator turns the span each one holds into the timestamps a
 description carries.
@@ -213,7 +213,7 @@ derivative with respect to tissue is cheapest taken forwards: one directional
 derivative per property yields every voxel's derivative at once, and the cost
 is one pass per property rather than per voxel.
 
-That is what :meth:`~torchsim.model.Simulator.jacobian` does. A single name
+That is what :meth:`~blochsim.model.Simulator.jacobian` does. A single name
 collapses the parameter axis; a sequence of names keeps it.
 
 
@@ -423,7 +423,7 @@ thing a physicist would name rather than as a pulse and a spoiler.
 
       largest disagreement with the closed form: 7.45e-09
 
-    [<matplotlib.legend.Legend object at 0x7fa72f6d1370>]
+    [<matplotlib.legend.Legend object at 0x7f508dc877d0>]
 
 
 
@@ -431,7 +431,7 @@ thing a physicist would name rather than as a pulse and a spoiler.
 
 Inspecting the event stream
 ---------------------------
-:meth:`~torchsim.model.Simulator.describe` returns the event stream, which is
+:meth:`~blochsim.model.Simulator.describe` returns the event stream, which is
 the same object a sequence arriving from a scanner is read into: a timestamp
 and an action word on every event. It is worth looking at once, because a
 sequence that plays the wrong thing is far easier to see here than in the
@@ -460,7 +460,7 @@ signal it produces.
 
       49 events, 6350 ms long
 
-    [<matplotlib.legend.Legend object at 0x7fa72f603230>]
+    [<matplotlib.legend.Legend object at 0x7f5094300aa0>]
 
 
 
@@ -470,7 +470,7 @@ Building from a description
 ---------------------------
 A description that came from somewhere else -- an MRD file, a Pulseq export,
 a scanner's own stream -- becomes a simulator through
-:meth:`~torchsim.model.Simulator.from_description`. No layout is walked: the
+:meth:`~blochsim.model.Simulator.from_description`. No layout is walked: the
 events are re-emitted through this model's handlers, which is what puts the
 gradients back that the transport does not carry.
 
@@ -533,7 +533,7 @@ The shipped models come with one, and yours can too:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.445 seconds)
+   **Total running time of the script:** (0 minutes 2.385 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_03-writing-a-simulator.py:
@@ -545,7 +545,7 @@ The shipped models come with one, and yours can too:
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/03-writing-a-simulator.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/03-writing-a-simulator.ipynb
         :alt: Launch binder
         :width: 150 px
 

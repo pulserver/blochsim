@@ -1,9 +1,9 @@
-# How TorchSim runs it
+# How BlochSim runs it
 
 ```{admonition} TL;DR
 :class: tldr
 
-- {class}`~torchsim.model.Simulator` is the public sequence abstraction.
+- {class}`~blochsim.model.Simulator` is the public sequence abstraction.
   Offline it builds a description from `layout()`; scanner-driven use starts
   from an incoming description and applies the simulator's handlers.
 - The resulting event stream is packed once and executed by fused CPU or
@@ -16,14 +16,14 @@
 of the code is what it is: one description of a sequence, one fused kernel per
 voxel, and derivatives taken in whichever direction the question asks for.
 
-You do not need any of it to use TorchSim. You need it to know what a run costs
+You do not need any of it to use BlochSim. You need it to know what a run costs
 before you launch it, to read a number that surprises you, and to change
 something without breaking the pieces underneath.
 
 ## One path, from the sequence you write to the signal
 
 Everything a sequence can say is said once, in a
-{class}`~torchsim.SequenceDescription`: a list of events, each with a
+{class}`~blochsim.SequenceDescription`: a list of events, each with a
 timestamp, a payload, and an **action word** saying what the sequence plays
 around it. Whatever assembled that description -- operators you composed, a
 builder that ships here, a stream that arrived from a scanner -- what runs
@@ -51,14 +51,14 @@ in it can be the variable an optimizer moves.
 An event is a wait, an RF pulse, or an ADC. Gradients are not events. A Pulseq
 file has no gradient *use* field, so a crusher cannot be told from a phase
 encode by looking at waveforms without tracking the k-space moment through the
-whole TR -- and instead of doing that, TorchSim has each event declare its own
+whole TR -- and instead of doing that, BlochSim has each event declare its own
 role: `CRUSH_BEFORE`, `CRUSH_AFTER`, `SHIFT_AFTER`, `SPOIL_AFTER`.
 
 ```{figure} /generated/figures/event_stream.png
 :width: 100%
 :alt: A timeline of RF, ADC and wait events for a four-echo refocused train.
 
-A four-echo refocused train, as {meth}`~torchsim.model.Simulator.describe`
+A four-echo refocused train, as {meth}`~blochsim.model.Simulator.describe`
 emits it. The crushers ride on the refocusing pulses that sit between them,
 which is why `Refocusing` is one operator rather than three; a spoiled
 readout would instead carry `SPOIL_AFTER`, and an unbalanced one
@@ -92,7 +92,7 @@ voxels a card holds rather than by the sequence.
 ```
 
 You set the order count with `states=` on a simulator, or `nstates=` on a
-call. Left alone, TorchSim counts the winding the description declares --
+call. Left alone, BlochSim counts the winding the description declares --
 every `CRUSH`, every `SHIFT_AFTER`, over every repetition -- and sizes the
 state from that, clamped into a sensible range. Measuring convergence for your
 own sequence is two calls, as in {doc}`epg`.
@@ -174,7 +174,7 @@ off-resonance declared. Only the first is confined to the axis, and it is
 several times faster on this machine.
 ```
 
-TorchSim decides this per run, in one device round trip, and refuses two
+BlochSim decides this per run, in one device round trip, and refuses two
 arrangements that look real but are not: off-resonance is refocused *at* the
 echo centres but not between them, and an excitation a quarter turn from the
 refocusing pulses gives samples that are real while the states fill the plane.
@@ -190,7 +190,7 @@ direction depends on what you are differentiating.
 **With respect to tissue**, forward mode wins. Voxels are independent, so one
 directional derivative covers every voxel at once, and the cost is one pass per
 *property* -- not per voxel, not per echo. That is
-{meth}`~torchsim.model.Simulator.jacobian`, and it is what a dictionary fit, a
+{meth}`~blochsim.model.Simulator.jacobian`, and it is what a dictionary fit, a
 Cramer-Rao bound and a model-based reconstruction all consume. Inside the
 kernels it is dual arithmetic: each quantity carries a tangent beside it, and
 every operator differentiates itself.
@@ -236,7 +236,7 @@ recover the map exactly; afterwards a call rebuilds them with whole-tensor
 arithmetic and leaves the structure alone.
 ```
 
-{meth}`~torchsim.model.Simulator.resolved` asks for that. It checks itself:
+{meth}`~blochsim.model.Simulator.resolved` asks for that. It checks itself:
 where the map does not hold -- an entry drawing on more than one element, a
 rebuild disagreeing with a fresh packing at a point the map never saw -- the
 binding is refused and the ordinary path runs instead, same answer, slower.
@@ -257,7 +257,7 @@ match or a kernel regression.
 What a run does with a problem. Streaming sizes its chunks to a memory
 budget and overlaps one chunk's transfer with another's arithmetic; sharding
 splits the voxels across cards and gathers the signal back. Say it around
-the call with {func}`~torchsim.execution` and {func}`~torchsim.offload`, or
+the call with {func}`~blochsim.execution` and {func}`~blochsim.offload`, or
 leave it alone and let each call decide against what the devices have free.
 ```
 

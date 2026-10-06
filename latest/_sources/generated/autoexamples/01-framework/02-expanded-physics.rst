@@ -35,7 +35,7 @@ what a voxel is not given costs nothing.
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim
+   !pip install blochsim
 
 .. GENERATED FROM PYTHON SOURCE LINES 22-24
 
@@ -53,9 +53,9 @@ Every simulator accepts any tissue property, whether or not it declares one.
     import numpy as np
     import torch
 
-    import torchsim
-    from torchsim import SPGRReadout, ShimDefinition, bSSFPReadout
-    from torchsim.simulators import FSESimulator, MRFSimulator
+    import blochsim
+    from blochsim import SPGRReadout, ShimDefinition, bSSFPReadout
+    from blochsim.simulators import FSESimulator, MRFSimulator
 
 
 
@@ -150,7 +150,7 @@ makes ignoring it a bias in both.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa72d130b90>]
+    [<matplotlib.legend.Legend object at 0x7f5094bd37a0>]
 
 
 
@@ -161,7 +161,7 @@ Transmit array and RF shim
 
 On a parallel-transmit system the field is the complex sum of what several
 channels put on the voxel. ``B1`` and ``B1phase`` then carry one row per
-channel, and a :class:`~torchsim.ShimDefinition` gives the amplitude and
+channel, and a :class:`~blochsim.ShimDefinition` gives the amplitude and
 phase each channel is driven at.
 
 Four channels whose sensitivities sit a quarter turn apart, driven alike,
@@ -225,7 +225,7 @@ machine sees it, so a single pair of per-voxel buffers reaches the kernels.
       driven alike     [0.0, 0.0, 0.0]
       counter-rotated  [0.8234, 0.8765, 0.8949]
 
-    [<matplotlib.legend.Legend object at 0x7fa72c0a1a00>]
+    [<matplotlib.legend.Legend object at 0x7f509499acf0>]
 
 
 
@@ -246,7 +246,7 @@ different angle at each position in the slice, and because that is a Bloch
 response rather than a scaling, it cannot be folded into the flip angle: the
 pulse must be integrated.
 
-TorchSim takes the complex envelope, one row per transmit channel, as it
+BlochSim takes the complex envelope, one row per transmit channel, as it
 comes off a Pulseq block or an MRD sequence description. This one is an SLR
 90 degree pulse, 2 ms long over a 5 mm slice, saved beside this file.
 
@@ -257,7 +257,7 @@ comes off a Pulseq block or an MRD sequence description. This one is an SLR
 
 
     waveform = np.load(DATA / "slr90.npz")
-    excitation = torchsim.rf_definition(
+    excitation = blochsim.rf_definition(
         waveform["samples"],
         dwell_s=float(waveform["dwell_s"]),
         bandwidth_hz=float(waveform["bandwidth_hz"]),
@@ -658,7 +658,7 @@ to the engine rather than a name in a call.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 29.375 seconds)
+   **Total running time of the script:** (0 minutes 28.926 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_02-expanded-physics.py:
@@ -670,7 +670,7 @@ to the engine rather than a name in a call.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/02-expanded-physics.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/02-expanded-physics.ipynb
         :alt: Launch binder
         :width: 150 px
 

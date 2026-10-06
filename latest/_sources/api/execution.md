@@ -1,7 +1,7 @@
 # Running a simulation
 
 ```{eval-rst}
-.. currentmodule:: torchsim
+.. currentmodule:: blochsim
 ```
 
 The differentiable state machine a sequence description is run on, what the
@@ -18,7 +18,7 @@ cards as there are -- and it is stated once, around the call.
 
 The engine runs a {class}`SequenceDescription` directly, which is what
 you reach for when a builder or an interpreter handed you a description rather
-than a simulator. A {class}`~torchsim.model.Simulator` wraps it and is how a
+than a simulator. A {class}`~blochsim.model.Simulator` wraps it and is how a
 sequence is usually written; see {doc}`model`.
 
 ```{eval-rst}

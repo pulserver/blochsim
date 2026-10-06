@@ -16,7 +16,7 @@ what a voxel is not given costs nothing.
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim
+#    !pip install blochsim
 
 # %%
 #
@@ -103,9 +103,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-import torchsim
-from torchsim import SPGRReadout, ShimDefinition, bSSFPReadout
-from torchsim.simulators import FSESimulator, MRFSimulator
+import blochsim
+from blochsim import SPGRReadout, ShimDefinition, bSSFPReadout
+from blochsim.simulators import FSESimulator, MRFSimulator
 
 # %%
 # Test sequence
@@ -167,7 +167,7 @@ key(axis, ncols=4)
 #
 # On a parallel-transmit system the field is the complex sum of what several
 # channels put on the voxel. ``B1`` and ``B1phase`` then carry one row per
-# channel, and a :class:`~torchsim.ShimDefinition` gives the amplitude and
+# channel, and a :class:`~blochsim.ShimDefinition` gives the amplitude and
 # phase each channel is driven at.
 #
 # Four channels whose sensitivities sit a quarter turn apart, driven alike,
@@ -250,7 +250,7 @@ key(axis, ncols=3)
 # response rather than a scaling, it cannot be folded into the flip angle: the
 # pulse must be integrated.
 #
-# TorchSim takes the complex envelope, one row per transmit channel, as it
+# BlochSim takes the complex envelope, one row per transmit channel, as it
 # comes off a Pulseq block or an MRD sequence description. This one is an SLR
 # 90 degree pulse, 2 ms long over a 5 mm slice, saved beside this file.
 #
@@ -260,7 +260,7 @@ key(axis, ncols=3)
 DATA = Path("data") if Path("data").is_dir() else Path(__file__).parent / "data"
 # sphinx_gallery_end_ignore
 waveform = np.load(DATA / "slr90.npz")
-excitation = torchsim.rf_definition(
+excitation = blochsim.rf_definition(
     waveform["samples"],
     dwell_s=float(waveform["dwell_s"]),
     bandwidth_hz=float(waveform["bandwidth_hz"]),
@@ -288,7 +288,7 @@ across = FSESimulator(**REFOCUSED, pulse=excitation, across_slice=21).simulate(
 #
 
 # sphinx_gallery_start_ignore
-from torchsim.sequence._transition import transition_table  # noqa: E402
+from blochsim.sequence._transition import transition_table  # noqa: E402
 
 positions = torch.linspace(-1.0, 1.0, 121, dtype=torch.float64)
 table = transition_table(excitation, positions, bins=64, rf_raster_time_s=1e-6)

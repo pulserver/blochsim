@@ -3,17 +3,17 @@
 Basic Usage
 ===========
 
-The scope of this notebook is to showcase the basic functionalities of Torchsim,
+The scope of this notebook is to showcase the basic functionalities of Blochsim,
 including how to simulate a signal, calculating derivatives etc.
 
-This example uses a fast spin echo that ships with TorchSim.
+This example uses a fast spin echo that ships with BlochSim.
 """
 
 # %%
 # .. colab-link::
 #    :needs_gpu: 0
 #
-#    !pip install torchsim
+#    !pip install blochsim
 
 # sphinx_gallery_start_ignore
 import warnings
@@ -95,8 +95,8 @@ import time
 import numpy as np
 import torch
 
-import torchsim
-from torchsim.simulators import FSESimulator
+import blochsim
+from blochsim.simulators import FSESimulator
 
 # sphinx_gallery_start_ignore
 from pathlib import Path
@@ -159,8 +159,8 @@ key(figure, ncols=3)
 # Derivative with respect to tissue parameters
 # --------------------------------------------
 #
-# Torchsim allows to efficiently evaluate the derivative
-# of the signal wrt input parameters, via :meth:`~torchsim.model.Simulator.jacobian`.
+# Blochsim allows to efficiently evaluate the derivative
+# of the signal wrt input parameters, via :meth:`~blochsim.model.Simulator.jacobian`.
 # The desired derivatives can be specified by string:
 #
 signal, dT2 = simulator.jacobian("T2", flip=flip)  # dT2 is (3, 48) too
@@ -231,7 +231,7 @@ print(
 # the object above with the construction folded in, so the answer is the same
 # to the bit.
 #
-signal, dT2 = torchsim.fse_sim(
+signal, dT2 = blochsim.fse_sim(
     flip=flip, ESP=ESP_MS, TR=3000.0, T1=T1_MS, T2=T2_MS, diff="T2"
 )
 
@@ -327,7 +327,7 @@ for name, candidate in (("held", held), ("rebuilt anew", rebuilt)):
 # through in chunks. Naming a device insists on it, and a block settles it for
 # everything inside:
 #
-with torchsim.execution("cpu"):
+with blochsim.execution("cpu"):
     on_the_host = simulator.simulate(flip=flip)
 
 print(
@@ -342,7 +342,7 @@ print(
 # thousand voxels is the case they exist for, and it is written like this:
 #
 if torch.cuda.is_available():
-    with torchsim.execution("cuda", stream=True, budget_bytes=1 << 28):
+    with blochsim.execution("cuda", stream=True, budget_bytes=1 << 28):
         streamed = simulator.simulate(flip=flip)
     agreement = float((streamed.cpu() - signal_ref).abs().max())
     print(f"  streamed through a card in 256 MiB chunks, agrees to {agreement:.1e}")
@@ -381,7 +381,7 @@ print(
 # %%
 #
 # You do not have to read it. ``describe`` here only shows what a stream looks
-# like; :meth:`~torchsim.SequenceDescription.plot` draws one, which is the way
+# like; :meth:`~blochsim.SequenceDescription.plot` draws one, which is the way
 # to check that a layout laid down what you meant.
 #
 
@@ -458,18 +458,18 @@ key(axis, ncols=2)
 #
 # A description normally arrives; it is not typed. Writing one by hand once is
 # worth it only to see that there is nothing else in it --
-# :meth:`~torchsim.SequenceDescription.from_operators` lays them out.
+# :meth:`~blochsim.SequenceDescription.from_operators` lays them out.
 #
-by_hand = torchsim.SequenceDescription.from_operators(
-    torchsim.Excitation(math.pi / 2, math.pi / 2),
+by_hand = blochsim.SequenceDescription.from_operators(
+    blochsim.Excitation(math.pi / 2, math.pi / 2),
     *[
         part
         for _ in range(ECHOES)
         for part in (
-            torchsim.Delay(0.5 * ESP_MS * 1e-3),
-            torchsim.Refocusing(math.radians(60.0), 0.0),
-            torchsim.Delay(0.5 * ESP_MS * 1e-3),
-            torchsim.Readout(0.0),
+            blochsim.Delay(0.5 * ESP_MS * 1e-3),
+            blochsim.Refocusing(math.radians(60.0), 0.0),
+            blochsim.Delay(0.5 * ESP_MS * 1e-3),
+            blochsim.Readout(0.0),
         )
     ],
 )
@@ -481,7 +481,7 @@ print(
 
 # %%
 #
-# :meth:`~torchsim.model.Simulator.from_description` runs one, and the only
+# :meth:`~blochsim.model.Simulator.from_description` runs one, and the only
 # thing given to it is the tissue. The events are already concrete -- each
 # carries the action word saying whether it winds, spoils or records -- so no
 # layout is walked and no sequence parameter is inferred.
@@ -514,7 +514,7 @@ print(f"  signal {tuple(streamed_signal.shape)}, dT2 {tuple(streamed_dT2.shape)}
 #
 # One thing to know when comparing it against the shipped simulator: a
 # description carries the events, and a simulator may carry physics *around*
-# them. :class:`~torchsim.simulators.FSESimulator` folds in the recovery
+# them. :class:`~blochsim.simulators.FSESimulator` folds in the recovery
 # between one train and the next in closed form, which is not an event and so
 # is not in the stream. The shape of the train is the same; the driven
 # equilibrium the shipped object adds does not come along.
@@ -540,7 +540,7 @@ key(axis, ncols=2)
 # The stream a scanner sends is read off the Pulseq sequence it is running, so
 # the same events can be read from the ``.seq`` file directly -- which is what
 # to do when the scan has not been run yet. The file is parsed by pypulseq,
-# which also computes its trajectory: ``pip install torchsim[pulseq]``.
+# which also computes its trajectory: ``pip install blochsim[pulseq]``.
 #
 # The file states how many blocks one repetition holds, in its ``TRSize``
 # definition, so nothing is searched for. What is read off the trajectory is

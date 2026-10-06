@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Sequence description &#8212; TorchSim Documentation</title>
+    <title>Sequence description &#8212; BlochSim Documentation</title>
   
   
   
@@ -59,13 +59,14 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'explanations/description';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/torchsim/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/blochsim/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://pulserver.github.io/torchsim/latest/explanations/description.html" />
+    <link rel="canonical" href="https://pulserver.github.io/blochsim/latest/explanations/description.html" />
+    <link rel="icon" href="../_static/blochsim-mark.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Extended phase graphs" href="epg.html" />
@@ -152,8 +153,14 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../_static/blochsim-mark.svg" class="logo__image only-light" alt="blochsim"/>
+    <img src="../_static/blochsim-mark-dark.svg" class="logo__image only-dark pst-js-only" alt="blochsim"/>
   
-    <p class="title logo__title">TorchSim Documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -198,7 +205,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Explanations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Sequence description</a></li>
 <li class="toctree-l2"><a class="reference internal" href="epg.html">Extended phase graphs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="implementation.html">How TorchSim runs it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation.html">How BlochSim runs it</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../generated/autoexamples/index.html">Examples</a></li>
@@ -209,97 +216,97 @@
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/model.html">Signal models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.model.Simulator.html">Simulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.model.SpinPhysics.html">SpinPhysics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.model.EventOperators.html">EventOperators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.model.Simulator.html">Simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.model.SpinPhysics.html">SpinPhysics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.model.EventOperators.html">EventOperators</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/simulators.html">Simulators</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.bSSFPSimulator.html">bSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.SPGRSimulator.html">SPGRSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MP2RAGESimulator.html">MP2RAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.InversionRecoverySimulator.html">InversionRecoverySimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MultiEchoSimulator.html">MultiEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.DoubleAngleSimulator.html">DoubleAngleSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.SpinEchoSimulator.html">SpinEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.LookLockerSimulator.html">LookLockerSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MOLLISimulator.html">MOLLISimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.IRbSSFPSimulator.html">IRbSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.HSFPSimulator.html">HSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MultiGradientEchoSimulator.html">MultiGradientEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.IRMultiGradientEchoSimulator.html">IRMultiGradientEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.DiffusionSimulator.html">DiffusionSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.LorentzianSimulator.html">LorentzianSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.ASLSimulator.html">ASLSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.FSESimulator.html">FSESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.HyperechoSimulator.html">HyperechoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.StimulatedEchoSimulator.html">StimulatedEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MPRAGESimulator.html">MPRAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MPnRAGESimulator.html">MPnRAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.MRFSimulator.html">MRFSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.FLASHSimulator.html">FLASHSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.TrueFISPSimulator.html">TrueFISPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.fmSSFPSimulator.html">fmSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.simulators.CESTSimulator.html">CESTSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.bssfp_sim.html">bssfp_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.spgr_sim.html">spgr_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.fse_sim.html">fse_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.mprage_sim.html">mprage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.mp2rage_sim.html">mp2rage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.mpnrage_sim.html">mpnrage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.mrf_sim.html">mrf_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.bSSFPSimulator.html">bSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.SPGRSimulator.html">SPGRSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MP2RAGESimulator.html">MP2RAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.InversionRecoverySimulator.html">InversionRecoverySimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MultiEchoSimulator.html">MultiEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.DoubleAngleSimulator.html">DoubleAngleSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.SpinEchoSimulator.html">SpinEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.LookLockerSimulator.html">LookLockerSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MOLLISimulator.html">MOLLISimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.IRbSSFPSimulator.html">IRbSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.HSFPSimulator.html">HSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MultiGradientEchoSimulator.html">MultiGradientEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.IRMultiGradientEchoSimulator.html">IRMultiGradientEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.DiffusionSimulator.html">DiffusionSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.LorentzianSimulator.html">LorentzianSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.ASLSimulator.html">ASLSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.FSESimulator.html">FSESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.HyperechoSimulator.html">HyperechoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.StimulatedEchoSimulator.html">StimulatedEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MPRAGESimulator.html">MPRAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MPnRAGESimulator.html">MPnRAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.MRFSimulator.html">MRFSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.FLASHSimulator.html">FLASHSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.TrueFISPSimulator.html">TrueFISPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.fmSSFPSimulator.html">fmSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.simulators.CESTSimulator.html">CESTSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.bssfp_sim.html">bssfp_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.spgr_sim.html">spgr_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.fse_sim.html">fse_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.mprage_sim.html">mprage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.mp2rage_sim.html">mp2rage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.mpnrage_sim.html">mpnrage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.mrf_sim.html">mrf_sim</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/sequence.html">Sequences</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Operator.html">Operator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Excitation.html">Excitation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Refocusing.html">Refocusing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Inversion.html">Inversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Saturation.html">Saturation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.SampledPulse.html">SampledPulse</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Readout.html">Readout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Delay.html">Delay</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Dephase.html">Dephase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Spoil.html">Spoil</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.bSSFPReadout.html">bSSFPReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.SSFPFidReadout.html">SSFPFidReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.SSFPEchoReadout.html">SSFPEchoReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.SPGRReadout.html">SPGRReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.FSEReadout.html">FSEReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.rf_definition.html">rf_definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.ShimDefinition.html">ShimDefinition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.compose_spinor.html">compose_spinor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.SequenceDescription.html">SequenceDescription</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.read_mrd_description.html">read_mrd_description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Operator.html">Operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Excitation.html">Excitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Refocusing.html">Refocusing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Inversion.html">Inversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Saturation.html">Saturation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.SampledPulse.html">SampledPulse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Readout.html">Readout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Delay.html">Delay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Dephase.html">Dephase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Spoil.html">Spoil</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.bSSFPReadout.html">bSSFPReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.SSFPFidReadout.html">SSFPFidReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.SSFPEchoReadout.html">SSFPEchoReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.SPGRReadout.html">SPGRReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.FSEReadout.html">FSEReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.rf_definition.html">rf_definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.ShimDefinition.html">ShimDefinition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.compose_spinor.html">compose_spinor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.SequenceDescription.html">SequenceDescription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.read_mrd_description.html">read_mrd_description</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/estimators.html">Parameter estimation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Estimator.html">Estimator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.DictionaryMatcher.html">DictionaryMatcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.LookupTable.html">LookupTable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.NonlinearLeastSquares.html">NonlinearLeastSquares</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.PERK.html">PERK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Estimator.html">Estimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.DictionaryMatcher.html">DictionaryMatcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.LookupTable.html">LookupTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.NonlinearLeastSquares.html">NonlinearLeastSquares</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.PERK.html">PERK</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/recon.html">Model-based reconstruction</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.ModelOperator.html">ModelOperator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.GaussNewton.html">GaussNewton</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.TrustRegion.html">TrustRegion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.direct.html">direct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.iterative.html">iterative</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Subspace.html">Subspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.ModelOperator.html">ModelOperator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.GaussNewton.html">GaussNewton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.TrustRegion.html">TrustRegion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.direct.html">direct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.iterative.html">iterative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Subspace.html">Subspace</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/optim.html">Sequence design</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.Bounded.html">Bounded</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.SequenceDesign.html">SequenceDesign</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.crlb.html">crlb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.Bounded.html">Bounded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.SequenceDesign.html">SequenceDesign</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.crlb.html">crlb</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/execution.html">Running a simulation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.execution.html">execution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.offload.html">offload</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../generated/torchsim.utils.b1rms.html">b1rms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.execution.html">execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.offload.html">offload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/blochsim.utils.b1rms.html">b1rms</a></li>
 </ul>
 </details></li>
 </ul>
@@ -370,7 +377,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim" target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -387,7 +394,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim/edit/main/explanations/description.md" target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim/edit/main/explanations/description.md" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -404,7 +411,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim/issues/new?title=Issue%20on%20page%20%2Fexplanations/description.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim/issues/new?title=Issue%20on%20page%20%2Fexplanations/description.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -549,19 +556,19 @@
 <div class="tldr admonition">
 <p class="admonition-title">TL;DR</p>
 <ul class="simple">
-<li><p>TorchSim consumes a compact sequence description made of RF, ADC and wait
+<li><p>BlochSim consumes a compact sequence description made of RF, ADC and wait
 events plus reusable RF definitions.</p></li>
 <li><p>Pulseq files and scanner MRD streams are both decoded into this same
 description.</p></li>
-<li><p>The description states what was played; a <a class="reference internal" href="../generated/torchsim.model.Simulator.html#torchsim.model.Simulator" title="torchsim.model.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></a>
+<li><p>The description states what was played; a <a class="reference internal" href="../generated/blochsim.model.Simulator.html#blochsim.model.Simulator" title="blochsim.model.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></a>
 supplies the handlers that decide how those commands affect the EPG state.</p></li>
 </ul>
 </div>
-<p>A sequence reaches TorchSim as an <strong>event stream</strong>: one repetition’s worth of
+<p>A sequence reaches BlochSim as an <strong>event stream</strong>: one repetition’s worth of
 events, each with a timestamp and the few numbers its kind carries. This page
 is what that stream holds, how it is read out of a Pulseq file, and how a
 scanner carries it. The physics the events drive is <a class="reference internal" href="epg.html"><span class="doc">Extended phase graphs</span></a>; how the kernels
-run them is <a class="reference internal" href="implementation.html"><span class="doc">How TorchSim runs it</span></a>.</p>
+run them is <a class="reference internal" href="implementation.html"><span class="doc">How BlochSim runs it</span></a>.</p>
 <section id="event-classification">
 <h2>Event classification<a class="headerlink" href="#event-classification" title="Link to this heading">#</a></h2>
 <p>An event is one of three things, and carries a timestamp in microseconds
@@ -619,7 +626,7 @@ acquires, and that default is refused when the repetitions play different
 pulses – an optimized echo train, a fingerprinting schedule – because the
 simulation would otherwise silently stand for whichever came first. Such a file
 says which with a <code class="docutils literal notranslate"><span class="pre">TRRef</span></code> definition, or the caller passes <code class="docutils literal notranslate"><span class="pre">tr_index</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim.simulators</span><span class="w"> </span><span class="kn">import</span> <span class="n">FSESimulator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim.simulators</span><span class="w"> </span><span class="kn">import</span> <span class="n">FSESimulator</span>
 
 <span class="c1"># The tissue is given; the echo spacing, the train length, the refocusing</span>
 <span class="c1"># angle and the pulse shapes are read.</span>
@@ -628,7 +635,7 @@ says which with a <code class="docutils literal notranslate"><span class="pre">T
 </pre></div>
 </div>
 <p>Reading a file needs <code class="docutils literal notranslate"><span class="pre">pypulseq</span></code>, which parses the format and computes the
-gradient trajectory: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">torchsim[pulseq]</span></code>.</p>
+gradient trajectory: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">blochsim[pulseq]</span></code>.</p>
 </section>
 <section id="pulse-shapes">
 <h2>Pulse shapes<a class="headerlink" href="#pulse-shapes" title="Link to this heading">#</a></h2>
@@ -647,7 +654,7 @@ angle in the sequence is halved.</p>
 its own, a slice-select gradient per sample, several frequency bands, and one
 envelope per transmit channel. Which of those are present is what decides
 whether a pulse reaches the kernels as an ideal rotation, an integrated
-rotation about a fixed axis, or a full dynamic one; <a class="reference internal" href="implementation.html"><span class="doc">How TorchSim runs it</span></a> has
+rotation about a fixed axis, or a full dynamic one; <a class="reference internal" href="implementation.html"><span class="doc">How BlochSim runs it</span></a> has
 that.</p>
 </section>
 <section id="echo-detection">
@@ -690,7 +697,7 @@ sequence file a series was played from and sends its description on the MRD
 stream, after the XML header and before the first acquisition, as one <code class="docutils literal notranslate"><span class="pre">TEXT</span></code>
 message holding a description per file of the sequence chain.
 <code class="xref py py-func docutils literal notranslate"><span class="pre">read_mrd_description()</span></code> decodes it into the same object
-<a class="reference internal" href="../generated/torchsim.SequenceDescription.html#torchsim.SequenceDescription.from_pulseq" title="torchsim.SequenceDescription.from_pulseq"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_pulseq()</span></code></a> builds, so a simulation driven
+<a class="reference internal" href="../generated/blochsim.SequenceDescription.html#blochsim.SequenceDescription.from_pulseq" title="blochsim.SequenceDescription.from_pulseq"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_pulseq()</span></code></a> builds, so a simulation driven
 from a design script and one driven from a running scan read one derivation,
 not two. Which model the rows drive is chosen by the reader.</p>
 <p>The fields of an event are positional and in that wire order, which is why an
@@ -713,7 +720,7 @@ of its refocusing pulses, an unbalanced one winds an order after every sample,
 a spoiled one discards the transverse states, a balanced one leaves them where
 they are. Naming the simulator is what says which of those the arriving events
 are to be read as, and it is the only thing a caller chooses:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim.simulators</span><span class="w"> </span><span class="kn">import</span> <span class="n">FSESimulator</span><span class="p">,</span> <span class="n">MRFSimulator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim.simulators</span><span class="w"> </span><span class="kn">import</span> <span class="n">FSESimulator</span><span class="p">,</span> <span class="n">MRFSimulator</span>
 
 <span class="c1"># The same file, read as a refocused train and as an unbalanced one.</span>
 <span class="n">refocused</span> <span class="o">=</span> <span class="n">FSESimulator</span><span class="o">.</span><span class="n">from_pulseq</span><span class="p">(</span><span class="s2">"scan.seq"</span><span class="p">)</span>
@@ -796,7 +803,7 @@ preparation that has to reach the kernels belongs in a pulse the wire can name.<
   <div class="footer-item">
     
 <p class="component-author">
-By TorchSim Contributors
+By BlochSim Contributors
 </p>
 
   </div>
@@ -806,7 +813,7 @@ By TorchSim Contributors
 
   <p class="copyright">
     
-      © Copyright 2024, TorchSim Contributors.
+      © Copyright 2024, BlochSim Contributors.
       <br/>
     
   </p>

@@ -36,7 +36,7 @@ operator is a chain
 -- sampling, Fourier encoding, coil sensitivities, and the **signal model** --
 and the parameter maps are solved for directly against the k-space that was
 measured. Only the last factor changes with the sequence, and it is the only
-one TorchSim supplies: :class:`~torchsim.recon.ModelOperator` turns any
+one BlochSim supplies: :class:`~blochsim.recon.ModelOperator` turns any
 simulator into it, and the encoding comes from mri-nufft.
 
 Unlike a subspace this stays nonlinear, so it needs a starting guess and a loop
@@ -53,7 +53,7 @@ methods for magnetic resonance imaging.* Phil Trans R Soc A 379:20200196
 .. colab-link::
    :needs_gpu: 1
 
-   !pip install torchsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
+   !pip install blochsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
 
 .. GENERATED FROM PYTHON SOURCE LINES 40-45
 
@@ -83,12 +83,12 @@ library imports read.
 
 .. GENERATED FROM PYTHON SOURCE LINES 139-146
 
-The Fourier encoding is not TorchSim's and never will be. ``mri-nufft``
+The Fourier encoding is not BlochSim's and never will be. ``mri-nufft``
 supplies the radial trajectory and the non-uniform transform that plays it;
 ``deepinv`` supplies the :class:`~deepinv.physics.LinearPhysics` base class
 the encoding operator is written against, and the linear solver a
 Gauss-Newton step hands its linearized problem to. Anything exposing ``A``
-and ``A_adjoint`` composes with what TorchSim supplies.
+and ``A_adjoint`` composes with what BlochSim supplies.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 147-151
@@ -108,8 +108,8 @@ and ``A_adjoint`` composes with what TorchSim supplies.
 
 .. GENERATED FROM PYTHON SOURCE LINES 152-156
 
-From TorchSim: the sequence, the estimator the contrast-then-fit routes
-need, and :class:`~torchsim.recon.ModelOperator`, which is the signal
+From BlochSim: the sequence, the estimator the contrast-then-fit routes
+need, and :class:`~blochsim.recon.ModelOperator`, which is the signal
 model as a factor of the forward operator.
 
 
@@ -122,9 +122,9 @@ model as a factor of the forward operator.
     import numpy as np
     import torch
 
-    from torchsim.estimators import DictionaryMatcher
-    from torchsim.recon import GaussNewton, ModelOperator, Schedule, iterative
-    from torchsim.simulators import MultiEchoSimulator
+    from blochsim.estimators import DictionaryMatcher
+    from blochsim.recon import GaussNewton, ModelOperator, Schedule, iterative
+    from blochsim.simulators import MultiEchoSimulator
 
 
 
@@ -191,7 +191,7 @@ Sequence and sampling
 A multi-echo spin echo on a golden-angle radial trajectory that rotates
 between echoes. Sixteen spokes per echo across a 96-sample matrix is roughly
 ninefold undersampled. The protocol stays on the host;
-:class:`~torchsim.recon.ModelOperator` takes it wherever the maps are.
+:class:`~blochsim.recon.ModelOperator` takes it wherever the maps are.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 241-296
@@ -223,7 +223,7 @@ ninefold undersampled. The protocol stays on the host;
         """``(batch, echoes, x, y)`` images to k-space, one trajectory per echo.
 
         This is the whole of ``P F C`` for this experiment, and none of it is
-        TorchSim's: it wraps mri-nufft, which is what a real pipeline would do
+        BlochSim's: it wraps mri-nufft, which is what a real pipeline would do
         with its own trajectory, its own density compensation and its own coils.
         """
 
@@ -395,8 +395,8 @@ An equality constraint would be written into the model instead.
 .. GENERATED FROM PYTHON SOURCE LINES 426-432
 
 An iteratively regularized Gauss-Newton: linearize, solve, step, lower the
-damping. TorchSim supplies the loop and the derivative but not the linear
-solver -- :func:`~torchsim.recon.iterative` hands the linearized problem to
+damping. BlochSim supplies the loop and the derivative but not the linear
+solver -- :func:`~blochsim.recon.iterative` hands the linearized problem to
 the same deepinv routine the baseline called. A proximal solver under a
 wavelet prior is a change to that one argument.
 
@@ -465,7 +465,7 @@ iteration.
  .. code-block:: none
 
     per conjugate-gradient step, 3 channels solved for:
-      model    J  v      3.7 ms
+      model    J  v      3.6 ms
       model    J^H v     1.3 ms
       encoding A         5.3 ms
       encoding A^H       5.1 ms
@@ -500,7 +500,7 @@ Writing a different model
 -------------------------
 
 The model is the only thing above that names a relaxation time, and it is an
-ordinary :class:`~torchsim.model.Simulator` -- the same object the fitting
+ordinary :class:`~blochsim.model.Simulator` -- the same object the fitting
 and sequence-design notebooks use. Water-fat separation, T2* with a field
 map, a Look-Locker inversion recovery: each is a different ``evaluate``, and
 the operator, the loop and the encoding are unchanged.
@@ -509,7 +509,7 @@ the operator, the loop and the encoding are unchanged.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.004 seconds)
+   **Total running time of the script:** (0 minutes 3.955 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_02-nonlinear-inversion.py:
@@ -521,7 +521,7 @@ the operator, the loop and the encoding are unchanged.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion.ipynb
         :alt: Launch binder
         :width: 150 px
 

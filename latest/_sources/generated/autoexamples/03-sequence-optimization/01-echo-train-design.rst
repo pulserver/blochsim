@@ -37,12 +37,12 @@ the bounded parameters and the loop are the same.
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim
+   !pip install blochsim
 
 .. GENERATED FROM PYTHON SOURCE LINES 25-29
 
 A design is a simulator with its tissue fixed on it, a cost written on what
-it records, and the bounded parameters :class:`~torchsim.SequenceDesign`
+it records, and the bounded parameters :class:`~blochsim.SequenceDesign`
 drives.
 
 
@@ -55,8 +55,8 @@ drives.
 
     import torch
 
-    from torchsim.optim import Bounded, SequenceDesign
-    from torchsim.simulators import FSESimulator
+    from blochsim.optim import Bounded, SequenceDesign
+    from blochsim.simulators import FSESimulator
 
 
 
@@ -276,7 +276,7 @@ and the RF power should stay where the scanner will accept it.
 
 A conventional prescription to start from: 50 degree minimum, 90 degree
 centre-of-k-space angle, 150 degree maximum. The limits are what the scanner
-will play, and :class:`~torchsim.Bounded` holds them exactly.
+will play, and :class:`~blochsim.Bounded` holds them exactly.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 278-296
@@ -587,7 +587,7 @@ Starting from the prescription the abstract reports: a 45 echo train at
 
  .. code-block:: none
 
-    a whole protocol designed in 0.44 s, 11.0 ms per iteration
+    a whole protocol designed in 0.43 s, 10.8 ms per iteration
 
 
 
@@ -651,7 +651,7 @@ would leave.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa72c0a3230>, <matplotlib.legend.Legend object at 0x7fa71faf4380>, <matplotlib.legend.Legend object at 0x7fa71fb4d3a0>]
+    [<matplotlib.legend.Legend object at 0x7f5085c5cb30>, <matplotlib.legend.Legend object at 0x7f508d80fa40>, <matplotlib.legend.Legend object at 0x7f508db3eff0>]
 
 
 
@@ -674,7 +674,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.448 seconds)
+   **Total running time of the script:** (0 minutes 2.443 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_01-echo-train-design.py:
@@ -686,7 +686,7 @@ References
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/01-echo-train-design.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/01-echo-train-design.ipynb
         :alt: Launch binder
         :width: 150 px
 

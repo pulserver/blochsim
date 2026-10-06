@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Designing a joint relaxometry protocol &#8212; TorchSim Documentation</title>
+    <title>Designing a joint relaxometry protocol &#8212; BlochSim Documentation</title>
   
   
   
@@ -57,13 +57,14 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/03-sequence-optimization/02-joint-relaxometry';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/torchsim/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/blochsim/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://pulserver.github.io/torchsim/latest/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.html" />
+    <link rel="canonical" href="https://pulserver.github.io/blochsim/latest/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.html" />
+    <link rel="icon" href="../../../_static/blochsim-mark.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Designing an RF pulse by optimal control" href="03-rf-pulse-design.html" />
@@ -150,8 +151,14 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../../../_static/blochsim-mark.svg" class="logo__image only-light" alt="blochsim"/>
+    <img src="../../../_static/blochsim-mark-dark.svg" class="logo__image only-dark pst-js-only" alt="blochsim"/>
   
-    <p class="title logo__title">TorchSim Documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -196,7 +203,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../explanations/index.html">Explanations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../explanations/description.html">Sequence description</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../explanations/epg.html">Extended phase graphs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../explanations/implementation.html">How TorchSim runs it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/implementation.html">How BlochSim runs it</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Examples</a></li>
@@ -207,97 +214,97 @@
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/model.html">Signal models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.Simulator.html">Simulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.SpinPhysics.html">SpinPhysics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.model.EventOperators.html">EventOperators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.model.Simulator.html">Simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.model.SpinPhysics.html">SpinPhysics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.model.EventOperators.html">EventOperators</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/simulators.html">Simulators</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.bSSFPSimulator.html">bSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.SPGRSimulator.html">SPGRSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MP2RAGESimulator.html">MP2RAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.InversionRecoverySimulator.html">InversionRecoverySimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MultiEchoSimulator.html">MultiEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.DoubleAngleSimulator.html">DoubleAngleSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.SpinEchoSimulator.html">SpinEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.LookLockerSimulator.html">LookLockerSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MOLLISimulator.html">MOLLISimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.IRbSSFPSimulator.html">IRbSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.HSFPSimulator.html">HSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MultiGradientEchoSimulator.html">MultiGradientEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.IRMultiGradientEchoSimulator.html">IRMultiGradientEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.DiffusionSimulator.html">DiffusionSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.LorentzianSimulator.html">LorentzianSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.ASLSimulator.html">ASLSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.FSESimulator.html">FSESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.HyperechoSimulator.html">HyperechoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.StimulatedEchoSimulator.html">StimulatedEchoSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MPRAGESimulator.html">MPRAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MPnRAGESimulator.html">MPnRAGESimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.MRFSimulator.html">MRFSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.FLASHSimulator.html">FLASHSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.TrueFISPSimulator.html">TrueFISPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.fmSSFPSimulator.html">fmSSFPSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.simulators.CESTSimulator.html">CESTSimulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.bssfp_sim.html">bssfp_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.spgr_sim.html">spgr_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.fse_sim.html">fse_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mprage_sim.html">mprage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mp2rage_sim.html">mp2rage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mpnrage_sim.html">mpnrage_sim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.mrf_sim.html">mrf_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.bSSFPSimulator.html">bSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.SPGRSimulator.html">SPGRSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MP2RAGESimulator.html">MP2RAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.InversionRecoverySimulator.html">InversionRecoverySimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MultiEchoSimulator.html">MultiEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.DoubleAngleSimulator.html">DoubleAngleSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.SpinEchoSimulator.html">SpinEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.LookLockerSimulator.html">LookLockerSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MOLLISimulator.html">MOLLISimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.IRbSSFPSimulator.html">IRbSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.HSFPSimulator.html">HSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MultiGradientEchoSimulator.html">MultiGradientEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.IRMultiGradientEchoSimulator.html">IRMultiGradientEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.DiffusionSimulator.html">DiffusionSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.LorentzianSimulator.html">LorentzianSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.ASLSimulator.html">ASLSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.FSESimulator.html">FSESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.HyperechoSimulator.html">HyperechoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.StimulatedEchoSimulator.html">StimulatedEchoSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MPRAGESimulator.html">MPRAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MPnRAGESimulator.html">MPnRAGESimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.MRFSimulator.html">MRFSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.FLASHSimulator.html">FLASHSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.TrueFISPSimulator.html">TrueFISPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.fmSSFPSimulator.html">fmSSFPSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.simulators.CESTSimulator.html">CESTSimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.bssfp_sim.html">bssfp_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.spgr_sim.html">spgr_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.fse_sim.html">fse_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mprage_sim.html">mprage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mp2rage_sim.html">mp2rage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mpnrage_sim.html">mpnrage_sim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.mrf_sim.html">mrf_sim</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/sequence.html">Sequences</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Operator.html">Operator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Excitation.html">Excitation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Refocusing.html">Refocusing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Inversion.html">Inversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Saturation.html">Saturation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SampledPulse.html">SampledPulse</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Readout.html">Readout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Delay.html">Delay</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Dephase.html">Dephase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Spoil.html">Spoil</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.bSSFPReadout.html">bSSFPReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SSFPFidReadout.html">SSFPFidReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SSFPEchoReadout.html">SSFPEchoReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SPGRReadout.html">SPGRReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.FSEReadout.html">FSEReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.rf_definition.html">rf_definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.ShimDefinition.html">ShimDefinition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.compose_spinor.html">compose_spinor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SequenceDescription.html">SequenceDescription</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.read_mrd_description.html">read_mrd_description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Operator.html">Operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Excitation.html">Excitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Refocusing.html">Refocusing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Inversion.html">Inversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Saturation.html">Saturation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SampledPulse.html">SampledPulse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Readout.html">Readout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Delay.html">Delay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Dephase.html">Dephase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Spoil.html">Spoil</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.bSSFPReadout.html">bSSFPReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SSFPFidReadout.html">SSFPFidReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SSFPEchoReadout.html">SSFPEchoReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SPGRReadout.html">SPGRReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.FSEReadout.html">FSEReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.rf_definition.html">rf_definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.ShimDefinition.html">ShimDefinition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.compose_spinor.html">compose_spinor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SequenceDescription.html">SequenceDescription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.read_mrd_description.html">read_mrd_description</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Estimator.html">Estimator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.DictionaryMatcher.html">DictionaryMatcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.LookupTable.html">LookupTable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.NonlinearLeastSquares.html">NonlinearLeastSquares</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.PERK.html">PERK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Estimator.html">Estimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.DictionaryMatcher.html">DictionaryMatcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.LookupTable.html">LookupTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.NonlinearLeastSquares.html">NonlinearLeastSquares</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.PERK.html">PERK</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/recon.html">Model-based reconstruction</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.ModelOperator.html">ModelOperator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.GaussNewton.html">GaussNewton</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.TrustRegion.html">TrustRegion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.direct.html">direct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.iterative.html">iterative</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Subspace.html">Subspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.ModelOperator.html">ModelOperator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.GaussNewton.html">GaussNewton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.TrustRegion.html">TrustRegion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.direct.html">direct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.iterative.html">iterative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Subspace.html">Subspace</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/optim.html">Sequence design</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.Bounded.html">Bounded</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.SequenceDesign.html">SequenceDesign</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.crlb.html">crlb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.Bounded.html">Bounded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.SequenceDesign.html">SequenceDesign</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.crlb.html">crlb</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/execution.html">Running a simulation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.execution.html">execution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.offload.html">offload</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../torchsim.utils.b1rms.html">b1rms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.execution.html">execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.offload.html">offload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blochsim.utils.b1rms.html">b1rms</a></li>
 </ul>
 </details></li>
 </ul>
@@ -368,7 +375,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim" target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -385,7 +392,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim/edit/main/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.rst" target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim/edit/main/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.rst" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -402,7 +409,7 @@
       
       
       
-      <li><a href="https://github.com/pulserver/torchsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/03-sequence-optimization/02-joint-relaxometry.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pulserver/blochsim/issues/new?title=Issue%20on%20page%20%2Fgenerated/autoexamples/03-sequence-optimization/02-joint-relaxometry.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -558,20 +565,20 @@ both parameters. The cost is a Cramer-Rao bound: the lowest variance an
 unbiased estimate can have, given the derivative of each signal with respect to
 every parameter estimated.</p>
 <div class="colab-button">
-            <a href="https://colab.research.google.com/github/pulserver/torchsim/blob/gh-pages/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb" target="_blank">
+            <a href="https://colab.research.google.com/github/pulserver/blochsim/blob/gh-pages/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb" target="_blank">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg"
                 alt="Open In Colab"/>
             </a>
         </div>
         <p>The two closed-form sequences being designed, the three pieces a design is
-stated in, and <a class="reference internal" href="../../torchsim.crlb.html#torchsim.crlb" title="torchsim.crlb"><code class="xref py py-func docutils literal notranslate"><span class="pre">crlb()</span></code></a>, which is the cost.</p>
+stated in, and <a class="reference internal" href="../../blochsim.crlb.html#blochsim.crlb" title="blochsim.crlb"><code class="xref py py-func docutils literal notranslate"><span class="pre">crlb()</span></code></a>, which is the cost.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="w">
 </span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w">
 </span><span class="w">
-</span><span class="kn">import</span><span class="w"> </span><span class="nn">torchsim</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="nn">.</span><span class="nn">optim</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.Bounded.html#torchsim.Bounded" title="torchsim.Bounded"><span class="n">Bounded</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.SequenceDesign.html#torchsim.SequenceDesign" title="torchsim.SequenceDesign"><span class="n">SequenceDesign</span></a><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="nn">.</span><span class="nn">simulators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.SPGRSimulator.html#torchsim.simulators.SPGRSimulator" title="torchsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">blochsim</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="nn">.</span><span class="nn">optim</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.Bounded.html#blochsim.Bounded" title="blochsim.Bounded"><span class="n">Bounded</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.SequenceDesign.html#blochsim.SequenceDesign" title="blochsim.SequenceDesign"><span class="n">SequenceDesign</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="nn">.</span><span class="nn">simulators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.SPGRSimulator.html#blochsim.simulators.SPGRSimulator" title="blochsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="w">
 </span></pre></div></div>
 <section id="sequences">
 <h2>Sequences<a class="headerlink" href="#sequences" title="Link to this heading">#</a></h2>
@@ -585,8 +592,8 @@ and called exactly as a state-machine sequence would be.</p>
 </span><span class="c1"># Noise standard deviation, as a fraction of the fully relaxed magnetization.</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a> <span class="o">=</span> <span class="mf">0.005</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.SPGRSimulator.html#torchsim.simulators.SPGRSimulator" title="torchsim.simulators.SPGRSimulator"><span class="n">spgr</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.SPGRSimulator.html#torchsim.simulators.SPGRSimulator" title="torchsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">T1</span><span class="o">=</span><span class="n">T1_MS</span><span class="p">,</span> <span class="n">T2star</span><span class="o">=</span><span class="n">T2_MS</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">B0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span><span class="w">
-</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">ssfp</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">T1</span><span class="o">=</span><span class="n">T1_MS</span><span class="p">,</span> <span class="n">T2</span><span class="o">=</span><span class="n">T2_MS</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">B0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.SPGRSimulator.html#blochsim.simulators.SPGRSimulator" title="blochsim.simulators.SPGRSimulator"><span class="n">spgr</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.SPGRSimulator.html#blochsim.simulators.SPGRSimulator" title="blochsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">T1</span><span class="o">=</span><span class="n">T1_MS</span><span class="p">,</span> <span class="n">T2star</span><span class="o">=</span><span class="n">T2_MS</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">B0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">ssfp</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">T1</span><span class="o">=</span><span class="n">T1_MS</span><span class="p">,</span> <span class="n">T2</span><span class="o">=</span><span class="n">T2_MS</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">B0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 </section>
 <section id="cost">
@@ -600,10 +607,10 @@ Each block is blind to something and the Fisher matrix adds them up.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">JOINT</span></a> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">M0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">B0</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="w">
-</span><span class="k">def</span><span class="w"> </span><span class="nf">rows</span><span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">simulator</span></a><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.SequenceDesign.html#torchsim.SequenceDesign" title="torchsim.SequenceDesign"><span class="n">design</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">rows</span><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">simulator</span></a><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.SequenceDesign.html#blochsim.SequenceDesign" title="blochsim.SequenceDesign"><span class="n">design</span></a><span class="p">)</span><span class="p">:</span><span class="w">
 </span><span class="w">    </span><span class="sd">&quot;&quot;&quot;The Jacobian rows for every joint parameter, zero where the block is blind.&quot;&quot;&quot;</span><span class="w">
-</span>    <span class="n">present</span> <span class="o">=</span> <span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">JOINT</span></a> <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">exposes</span><span class="p">]</span><span class="w">
-</span>    <span class="n">_</span><span class="p">,</span> <span class="n">jacobian</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">present</span><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.SequenceDesign.html#torchsim.SequenceDesign" title="torchsim.SequenceDesign"><span class="n">design</span></a><span class="p">)</span><span class="w">
+</span>    <span class="n">present</span> <span class="o">=</span> <span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">JOINT</span></a> <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">exposes</span><span class="p">]</span><span class="w">
+</span>    <span class="n">_</span><span class="p">,</span> <span class="n">jacobian</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">present</span><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.SequenceDesign.html#blochsim.SequenceDesign" title="blochsim.SequenceDesign"><span class="n">design</span></a><span class="p">)</span><span class="w">
 </span>    <span class="n">placed</span> <span class="o">=</span> <span class="n">jacobian</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">(</span><span class="n">jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">JOINT</span></a><span class="p">)</span><span class="p">,</span> <span class="n">jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span>    <span class="n">where</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">JOINT</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">)</span> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <span class="n">present</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span>    <span class="k">return</span> <span class="n">placed</span><span class="o">.</span><span class="n">index_copy</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">jacobian</span><span class="p">)</span><span class="w">
@@ -612,9 +619,9 @@ Each block is blind to something and the Fisher matrix adds them up.</p>
 </span><span class="k">def</span><span class="w"> </span><span class="nf">bounds</span><span class="p">(</span><span class="n">spgr_flip</span><span class="p">,</span> <span class="n">ssfp_flip</span><span class="p">)</span><span class="p">:</span><span class="w">
 </span><span class="w">    </span><span class="sd">&quot;&quot;&quot;The Cramer-Rao bound on each joint parameter, for each design tissue.&quot;&quot;&quot;</span><span class="w">
 </span>    <span class="n">together</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="w">
-</span>        <span class="p">(</span><span class="n">rows</span><span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.SPGRSimulator.html#torchsim.simulators.SPGRSimulator" title="torchsim.simulators.SPGRSimulator"><span class="n">spgr</span></a><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">spgr_flip</span><span class="p">)</span><span class="p">,</span> <span class="n">rows</span><span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">ssfp</span></a><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">ssfp_flip</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="w">
+</span>        <span class="p">(</span><span class="n">rows</span><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.SPGRSimulator.html#blochsim.simulators.SPGRSimulator" title="blochsim.simulators.SPGRSimulator"><span class="n">spgr</span></a><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">spgr_flip</span><span class="p">)</span><span class="p">,</span> <span class="n">rows</span><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">ssfp</span></a><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">ssfp_flip</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
-</span>    <span class="k">return</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-function reference internal" href="../../torchsim.crlb.html#torchsim.crlb" title="torchsim.crlb"><span class="n">torchsim</span><span class="o">.</span><span class="n">crlb</span></a><span class="p">(</span><span class="n">together</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w">
+</span>    <span class="k">return</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-function reference internal" href="../../blochsim.crlb.html#blochsim.crlb" title="blochsim.crlb"><span class="n">blochsim</span><span class="o">.</span><span class="n">crlb</span></a><span class="p">(</span><span class="n">together</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <p>Dividing each bound by its own parameter squared makes the terms
 dimensionless, so a 100 ms T2 and a 1000 ms T1 are weighted by how well they
@@ -634,14 +641,14 @@ what the scanner will play and are enforced exactly.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">spgr_start</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span><span class="n">ssfp_start</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.SequenceDesign.html#torchsim.SequenceDesign" title="torchsim.SequenceDesign"><span class="n">design</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.SequenceDesign.html#torchsim.SequenceDesign" title="torchsim.SequenceDesign"><span class="n">SequenceDesign</span></a><span class="p">(</span><span class="w">
+</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.SequenceDesign.html#blochsim.SequenceDesign" title="blochsim.SequenceDesign"><span class="n">design</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.SequenceDesign.html#blochsim.SequenceDesign" title="blochsim.SequenceDesign"><span class="n">SequenceDesign</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">precision</span><span class="p">,</span><span class="w">
-</span>    <span class="n">spgr_flip</span><span class="o">=</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.Bounded.html#torchsim.Bounded" title="torchsim.Bounded"><span class="n">Bounded</span></a><span class="p">(</span><span class="n">spgr_start</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="n">ssfp_flip</span><span class="o">=</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.Bounded.html#torchsim.Bounded" title="torchsim.Bounded"><span class="n">Bounded</span></a><span class="p">(</span><span class="n">ssfp_start</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">spgr_flip</span><span class="o">=</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.Bounded.html#blochsim.Bounded" title="blochsim.Bounded"><span class="n">Bounded</span></a><span class="p">(</span><span class="n">spgr_start</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">ssfp_flip</span><span class="o">=</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.Bounded.html#blochsim.Bounded" title="blochsim.Bounded"><span class="n">Bounded</span></a><span class="p">(</span><span class="n">ssfp_start</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">start</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span><span class="w">
-</span><span class="n">result</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-method reference internal" href="../../torchsim.SequenceDesign.html#torchsim.SequenceDesign.minimize" title="torchsim.SequenceDesign.minimize"><span class="n">design</span><span class="o">.</span><span class="n">minimize</span></a><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><span class="n">result</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-method reference internal" href="../../blochsim.SequenceDesign.html#blochsim.SequenceDesign.minimize" title="blochsim.SequenceDesign.minimize"><span class="n">design</span><span class="o">.</span><span class="n">minimize</span></a><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">design_time</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">start</span></a><span class="w">
 </span><span class="w">
 </span><span class="n">spgr_designed</span> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">result</span><span class="o">.</span><span class="n">parameters</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">spgr_flip</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
@@ -659,7 +666,7 @@ designed in 4.8 s
 <h2>Optimized schedule<a class="headerlink" href="#optimized-schedule" title="Link to this heading">#</a></h2>
 <p>What the scanner is handed: eight scans, four spoiled and four balanced, each
 differing only in flip angle. Before and after.</p>
-<img src="../../../_images/sphx_glr_02-joint-relaxometry_001.png" srcset="../../../_images/sphx_glr_02-joint-relaxometry_001.png" alt="SPGR block, bSSFP block" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fa72d1a2720&gt;
+<img src="../../../_images/sphx_glr_02-joint-relaxometry_001.png" srcset="../../../_images/sphx_glr_02-joint-relaxometry_001.png" alt="SPGR block, bSSFP block" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f5085c4af90&gt;
 </pre></div>
 </div>
 </section>
@@ -685,22 +692,22 @@ against the truth rather than against each other.</p>
 </pre></div>
 </div>
 <p>The two blocks are one experiment and are fitted as one: a
-<a class="reference internal" href="../../torchsim.model.Simulator.html#torchsim.model.Simulator" title="torchsim.model.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></a> that plays each and concatenates what
+<a class="reference internal" href="../../blochsim.model.Simulator.html#blochsim.model.Simulator" title="blochsim.model.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></a> that plays each and concatenates what
 they record. The fit is the one thing held fixed between the protocols –
 the same nonlinear least squares over the same four unknowns, from the same
 guess.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="nn">.</span><span class="nn">estimators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.NonlinearLeastSquares.html#torchsim.NonlinearLeastSquares" title="torchsim.NonlinearLeastSquares"><span class="n">NonlinearLeastSquares</span></a><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchsim</span><span class="nn">.</span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchsim-model sphx-glr-backref-type-py-class reference internal" href="../../torchsim.model.Simulator.html#torchsim.model.Simulator" title="torchsim.model.Simulator"><span class="n">Simulator</span></a><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="nn">.</span><span class="nn">estimators</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.NonlinearLeastSquares.html#blochsim.NonlinearLeastSquares" title="blochsim.NonlinearLeastSquares"><span class="n">NonlinearLeastSquares</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">blochsim</span><span class="nn">.</span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-blochsim-model sphx-glr-backref-type-py-class reference internal" href="../../blochsim.model.Simulator.html#blochsim.model.Simulator" title="blochsim.model.Simulator"><span class="n">Simulator</span></a><span class="w">
 </span><span class="w">
 </span><span class="w">
-</span><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-torchsim-model sphx-glr-backref-type-py-class reference internal" href="../../torchsim.model.Simulator.html#torchsim.model.Simulator" title="torchsim.model.Simulator"><span class="nc">JointRelaxometry</span></a><span class="p">(</span><a class="sphx-glr-backref-module-torchsim-model sphx-glr-backref-type-py-class reference internal" href="../../torchsim.model.Simulator.html#torchsim.model.Simulator" title="torchsim.model.Simulator"><span class="n">Simulator</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-blochsim-model sphx-glr-backref-type-py-class reference internal" href="../../blochsim.model.Simulator.html#blochsim.model.Simulator" title="blochsim.model.Simulator"><span class="nc">JointRelaxometry</span></a><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-model sphx-glr-backref-type-py-class reference internal" href="../../blochsim.model.Simulator.html#blochsim.model.Simulator" title="blochsim.model.Simulator"><span class="n">Simulator</span></a><span class="p">)</span><span class="p">:</span><span class="w">
 </span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Both blocks at fixed flip angles, as one signal model.&quot;&quot;&quot;</span><span class="w">
 </span><span class="w">
 </span>    <span class="n">properties</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">M0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">B0</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spgr_flip</span><span class="p">,</span> <span class="n">ssfp_flip</span><span class="p">)</span><span class="p">:</span><span class="w">
-</span>        <span class="bp">self</span><span class="o">.</span><span class="n">spoiled</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.SPGRSimulator.html#torchsim.simulators.SPGRSimulator" title="torchsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">spgr_flip</span><span class="p">)</span><span class="w">
-</span>        <span class="bp">self</span><span class="o">.</span><span class="n">balanced</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">ssfp_flip</span><span class="p">)</span><span class="w">
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">spoiled</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.SPGRSimulator.html#blochsim.simulators.SPGRSimulator" title="blochsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">spgr_flip</span><span class="p">)</span><span class="w">
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">balanced</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">ssfp_flip</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="o">*</span><span class="o">*</span><span class="n">sequence</span><span class="p">)</span><span class="p">:</span><span class="w">
 </span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The two blocks, end to end along the contrast axis.&quot;&quot;&quot;</span><span class="w">
@@ -726,17 +733,17 @@ standard deviation the bound was computed with.</p>
 </span><span class="n">generator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="w">
-</span><span class="n">joint</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim-model sphx-glr-backref-type-py-class reference internal" href="../../torchsim.model.Simulator.html#torchsim.model.Simulator" title="torchsim.model.Simulator"><span class="n">JointRelaxometry</span></a><span class="p">(</span><span class="n">spgr_designed</span><span class="p">,</span> <span class="n">ssfp_designed</span><span class="p">)</span><span class="w">
+</span><span class="n">joint</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-model sphx-glr-backref-type-py-class reference internal" href="../../blochsim.model.Simulator.html#blochsim.model.Simulator" title="blochsim.model.Simulator"><span class="n">JointRelaxometry</span></a><span class="p">(</span><span class="n">spgr_designed</span><span class="p">,</span> <span class="n">ssfp_designed</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="n">measured</span> <span class="o">=</span> <span class="n">clean</span> <span class="o">+</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">complex</span><span class="p">(</span><span class="n">noise</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">noise</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.NonlinearLeastSquares.html#torchsim.NonlinearLeastSquares" title="torchsim.NonlinearLeastSquares"><span class="n">problem</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class reference internal" href="../../torchsim.NonlinearLeastSquares.html#torchsim.NonlinearLeastSquares" title="torchsim.NonlinearLeastSquares"><span class="n">NonlinearLeastSquares</span></a><span class="p">(</span><span class="w">
+</span><a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.NonlinearLeastSquares.html#blochsim.NonlinearLeastSquares" title="blochsim.NonlinearLeastSquares"><span class="n">problem</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class reference internal" href="../../blochsim.NonlinearLeastSquares.html#blochsim.NonlinearLeastSquares" title="blochsim.NonlinearLeastSquares"><span class="n">NonlinearLeastSquares</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">joint</span><span class="p">,</span><span class="w">
 </span>    <span class="n">bounds</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">UNKNOWN</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">M0</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">B0</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">UNKNOWN</span></a><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">maps</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../torchsim.NonlinearLeastSquares.html#torchsim.NonlinearLeastSquares" title="torchsim.NonlinearLeastSquares"><span class="n">problem</span></a><span class="p">(</span><span class="n">measured</span><span class="p">)</span>  <span class="c1"># {&quot;T1&quot;: ..., &quot;T2&quot;: ..., &quot;M0&quot;: ..., &quot;B0&quot;: ...}</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">maps</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.NonlinearLeastSquares.html#blochsim.NonlinearLeastSquares" title="blochsim.NonlinearLeastSquares"><span class="n">problem</span></a><span class="p">(</span><span class="n">measured</span><span class="p">)</span>  <span class="c1"># {&quot;T1&quot;: ..., &quot;T2&quot;: ..., &quot;M0&quot;: ..., &quot;B0&quot;: ...}</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>38980 joint fits in 3.9 s
 </pre></div>
@@ -749,14 +756,14 @@ which is what the measured error is read against.</p>
 </span>    <span class="n">at_voxel</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="w">
 </span>        <span class="n">sequence</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">T1</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <span class="n">M0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">B0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">*</span><span class="o">*</span><span class="p">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">:</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">}</span><span class="p">)</span><span class="w">
 </span>        <span class="k">for</span> <span class="n">sequence</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <span class="p">(</span><span class="w">
-</span>            <span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.SPGRSimulator.html#torchsim.simulators.SPGRSimulator" title="torchsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2star</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>            <span class="p">(</span><a class="sphx-glr-backref-module-torchsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../torchsim.simulators.bSSFPSimulator.html#torchsim.simulators.bSSFPSimulator" title="torchsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>            <span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.SPGRSimulator.html#blochsim.simulators.SPGRSimulator" title="blochsim.simulators.SPGRSimulator"><span class="n">SPGRSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2star</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>            <span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class reference internal" href="../../blochsim.simulators.bSSFPSimulator.html#blochsim.simulators.bSSFPSimulator" title="blochsim.simulators.bSSFPSimulator"><span class="n">bSSFPSimulator</span></a><span class="p">(</span><span class="n">TE</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span>        <span class="p">)</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="n">together</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="w">
 </span>        <span class="p">(</span><span class="n">rows</span><span class="p">(</span><span class="n">at_voxel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">spgr_flip</span><span class="p">)</span><span class="p">,</span> <span class="n">rows</span><span class="p">(</span><span class="n">at_voxel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="n">ssfp_flip</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
-</span>    <span class="n">bound</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchsim sphx-glr-backref-type-py-function reference internal" href="../../torchsim.crlb.html#torchsim.crlb" title="torchsim.crlb"><span class="n">torchsim</span><span class="o">.</span><span class="n">crlb</span></a><span class="p">(</span><span class="n">together</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w">
+</span>    <span class="n">bound</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim sphx-glr-backref-type-py-function reference internal" href="../../blochsim.crlb.html#blochsim.crlb" title="blochsim.crlb"><span class="n">blochsim</span><span class="o">.</span><span class="n">crlb</span></a><span class="p">(</span><span class="n">together</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">NOISE</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w">
 </span>    <span class="k">return</span> <span class="p">{</span><span class="w">
 </span>        <span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">bound</span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="p">)</span> <span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T1</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
 </span>        <span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">bound</span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="p">)</span> <span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">truth</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
@@ -793,10 +800,10 @@ estimation”, Magnetic Resonance in Medicine 79.1 (2018), pp. 234-245.
 <a class="reference external" href="https://doi.org/10.1002/mrm.26670">https://doi.org/10.1002/mrm.26670</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.477 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.348 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-03-sequence-optimization-02-joint-relaxometry-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo2.svg" style="width: 150px;" />
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo2.svg" style="width: 150px;" />
 </a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
@@ -881,7 +888,7 @@ estimation”, Magnetic Resonance in Medicine 79.1 (2018), pp. 234-245.
   <div class="footer-item">
     
 <p class="component-author">
-By TorchSim Contributors
+By BlochSim Contributors
 </p>
 
   </div>
@@ -891,7 +898,7 @@ By TorchSim Contributors
 
   <p class="copyright">
     
-      © Copyright 2024, TorchSim Contributors.
+      © Copyright 2024, BlochSim Contributors.
       <br/>
     
   </p>

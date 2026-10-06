@@ -7,7 +7,7 @@
   indexed by dephasing order.
 - RF pulses mix state families, gradients shift transverse orders, and
   relaxation/evolution acts between events.
-- TorchSim extends that state machine with off-resonance, diffusion, flow and
+- BlochSim extends that state machine with off-resonance, diffusion, flow and
   exchange while retaining the same sequence-level abstraction.
 ```
 
@@ -17,7 +17,7 @@ fingerprinting schedule: in each, what you sample is not one decaying
 magnetization but a sum over routes through the pulses and the gradients, each
 of which has spent a different amount of time transverse and a different amount
 parked along the field. The extended phase graph (EPG) is the accounting that
-keeps those routes straight, and it is what TorchSim evaluates. Weigel [^2] is
+keeps those routes straight, and it is what BlochSim evaluates. Weigel [^2] is
 the introduction to read alongside this one.
 
 The magnetization is decomposed into configuration states, and three operators
@@ -172,7 +172,7 @@ makes rephasing come out right and is the single place a shift is not just a
 memory move.
 ```
 
-In TorchSim the shift is what an operator such as `Dephase` plays, and one
+In BlochSim the shift is what an operator such as `Dephase` plays, and one
 shift is one crusher or one unbalanced readout gradient. Ideal spoiling --
 `Spoil` -- is the other option: discard every transverse order instead of
 winding it on, which is what a spoiled gradient echo assumes its spoiler and
@@ -208,11 +208,11 @@ crossing at that moment.
 
 ```{figure} /generated/figures/phase_graph.png
 :width: 100%
-:alt: A phase graph of a refocused train above the echo amplitudes TorchSim computes.
+:alt: A phase graph of a refocused train above the echo amplitudes BlochSim computes.
 
 Above, the phase graph of six refocusing pulses: solid lines are transverse
 pathways, dotted lines are magnetization parked along $z$ between
-pulses, dashed verticals are the pulses. Below, what TorchSim records at
+pulses, dashed verticals are the pulses. Below, what BlochSim records at
 those crossings. From the fourth pulse on, the sampled signal contains
 direct spin echoes and stimulated echoes at once -- pathways that spent one
 or more intervals longitudinal, and so were spared $T_2$ decay while
@@ -248,7 +248,7 @@ assuming the decay.
 A sequence populates a bounded set of orders: each shift moves the ladder by
 one, so after $n$ shifts nothing beyond order $n$ exists, and
 attenuation makes the far orders negligible long before that. You choose how
-many to carry with `states=` (or `nstates=` per call), and TorchSim sizes it
+many to carry with `states=` (or `nstates=` per call), and BlochSim sizes it
 from the winding the sequence declares when you do not.
 
 ```{figure} /generated/figures/truncation.png
@@ -292,7 +292,7 @@ once you know the gradient behind it.
 
 ## Second pool
 
-Tissue is not one proton pool. TorchSim carries the two extensions of the EPG
+Tissue is not one proton pool. BlochSim carries the two extensions of the EPG
 formalism that matter in practice, both from Malik et al [^3]: a **semisolid
 pool**
 that RF saturates through its absorption lineshape and that exchanges
@@ -327,7 +327,7 @@ orders to be interpreted with care. It treats an isochromat's off-resonance as
 a constant precession rather than as a distribution, so a spread of field
 across the voxel is not something the states carry.
 
-TorchSim applies that spread to the samples instead. `t2_prime_ms` sets a
+BlochSim applies that spread to the samples instead. `t2_prime_ms` sets a
 Lorentzian population of frequencies, half-width $1 / T_2'$ in angular
 frequency, whose average over the voxel is $e^{-|\tau| / T_2'}$ in the time
 $\tau$ a sample has gone
@@ -339,7 +339,7 @@ train does not, and needs a spread of `b0_hz` across voxels as before.
 
 Pulses are instantaneous rotations unless you say otherwise. A real
 slice-selective pulse acts under its gradient, so what it does depends on
-position within the slice; TorchSim can carry that exactly by integrating the
+position within the slice; BlochSim can carry that exactly by integrating the
 pulse ahead of time, which is the hybrid Bloch-EPG picture of Guenthner et al
 [^4] and is described in {doc}`implementation`.
 

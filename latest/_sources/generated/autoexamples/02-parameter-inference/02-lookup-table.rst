@@ -29,19 +29,19 @@ number of points to show which of the two is limited by it.
 With a single unknown a dictionary degenerates: the atoms lie on a curve rather
 than filling a space. Interpolating between the two nearest then costs nothing
 and takes the grid spacing out of the answer, which is what
-:class:`~torchsim.LookupTable` does.
+:class:`~blochsim.LookupTable` does.
 
 .. GENERATED FROM PYTHON SOURCE LINES 17-21
 
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim brainweb-dl cmap
+   !pip install blochsim brainweb-dl cmap
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-27
 
 The problem is stated over a simulator carrying the sequence and filled in
-by an estimator. :func:`~torchsim.execution` decides where that work runs,
+by an estimator. :func:`~blochsim.execution` decides where that work runs,
 and the timings below are taken inside it.
 
 
@@ -55,9 +55,9 @@ and the timings below are taken inside it.
     import numpy as np
     import torch
 
-    import torchsim
-    from torchsim.estimators import DictionaryMatcher, LookupTable
-    from torchsim.simulators import MP2RAGESimulator
+    import blochsim
+    from blochsim.estimators import DictionaryMatcher, LookupTable
+    from blochsim.simulators import MP2RAGESimulator
 
 
 
@@ -189,7 +189,7 @@ so the invertible range is a number rather than an assumption.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa71ffab260>]
+    [<matplotlib.legend.Legend object at 0x7f508d87b650>]
 
 
 
@@ -272,12 +272,12 @@ of three passes over the slice.
                 error     error      time      time
     -----------------------------------------------
          30     7.93%     0.88%     2.5ms     0.5ms
-         60     3.29%     0.75%     3.7ms     0.6ms
-        120     0.78%     0.71%     4.1ms     0.6ms
-        250     0.80%     0.71%     6.8ms     0.7ms
-        500     0.62%     0.71%    12.3ms     0.7ms
-       1000     0.66%     0.71%    23.4ms     0.7ms
-       2000     0.71%     0.71%    52.1ms     0.8ms
+         60     3.29%     0.75%     3.6ms     0.6ms
+        120     0.78%     0.71%     3.9ms     0.6ms
+        250     0.80%     0.71%     6.5ms     0.7ms
+        500     0.62%     0.71%    11.9ms     0.7ms
+       1000     0.66%     0.71%    22.7ms     0.7ms
+       2000     0.71%     0.71%    49.4ms     0.8ms
 
 
 
@@ -309,7 +309,7 @@ exactly; the table's advantage is that it was never told how fine.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fa727c41af0>
+    <matplotlib.legend.Legend object at 0x7f5085849130>
 
 
 
@@ -371,7 +371,7 @@ product per voxel.
     method                      train      map     model      peak      T1      M0
     ------------------------------------------------------------------------------
     lookup, 60 points           0.00s    0.6ms  0.00 MiB        --   0.75%   0.46%
-    match, 2000 atoms           0.00s   51.8ms  0.05 MiB        --   0.71%   0.45%
+    match, 2000 atoms           0.00s   51.9ms  0.05 MiB        --   0.71%   0.45%
 
 
 
@@ -405,7 +405,7 @@ product per voxel.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.333 seconds)
+   **Total running time of the script:** (0 minutes 2.299 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_02-lookup-table.py:
@@ -417,7 +417,7 @@ product per voxel.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/02-lookup-table.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/02-lookup-table.ipynb
         :alt: Launch binder
         :width: 150 px
 

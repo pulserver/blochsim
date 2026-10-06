@@ -33,7 +33,7 @@ the k-space is brought back and coil-combined. The undersampled series and the
 fully sampled one are the pair, with the ground-truth maps and the
 segmentation.
 
-Only the simulation is TorchSim's. The phantom, the coils and the encoding come
+Only the simulation is BlochSim's. The phantom, the coils and the encoding come
 from torchio, deepmriprep, SigPy and mri-nufft.
 
 .. GENERATED FROM PYTHON SOURCE LINES 22-26
@@ -41,11 +41,11 @@ from torchio, deepmriprep, SigPy and mri-nufft.
 .. colab-link::
    :needs_gpu: 1
 
-   !pip install torchsim torchio deepmriprep sigpy cmap mri-nufft[finufft,cufinufft]
+   !pip install blochsim torchio deepmriprep sigpy cmap mri-nufft[finufft,cufinufft]
 
 .. GENERATED FROM PYTHON SOURCE LINES 28-41
 
-Only one step of this pipeline is TorchSim's. Four other packages do the
+Only one step of this pipeline is BlochSim's. Four other packages do the
 rest, and each has exactly one job here:
 
 * ``torchio`` fetches a T1-weighted IXI subject and gives it as tensors,
@@ -79,7 +79,7 @@ rest, and each has exactly one job here:
 
 .. GENERATED FROM PYTHON SOURCE LINES 154-157
 
-TorchSim's part is the third step: one fingerprinting simulation per tissue
+BlochSim's part is the third step: one fingerprinting simulation per tissue
 class, rather than one per voxel.
 
 
@@ -94,7 +94,7 @@ class, rather than one per voxel.
     import numpy as np
     import torch
 
-    from torchsim.simulators import MRFSimulator
+    from blochsim.simulators import MRFSimulator
 
 
 
@@ -150,7 +150,7 @@ under the home directory.
 
 .. code-block:: Python
 
-    CACHE = Path.home() / ".cache" / "torchsim" / "ixi-tiny"
+    CACHE = Path.home() / ".cache" / "blochsim" / "ixi-tiny"
     subject = tio.datasets.IXITiny(str(CACHE), download=True)[0]
 
 
@@ -163,8 +163,8 @@ under the home directory.
 
  .. code-block:: none
 
-    Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmpw6w7_o99.zip
-    0it [00:00, ?it/s]      0%|          | 0/233926107 [00:02<?, ?it/s]      7%|▋         | 16646144/233926107 [00:02<00:01, 166454455.29it/s]     14%|█▍        | 33300480/233926107 [00:02<00:01, 151906983.62it/s]     19%|█▉        | 45162496/233926107 [00:02<00:01, 104300093.01it/s]     35%|███▍      | 81371136/233926107 [00:02<00:00, 186751068.42it/s]     45%|████▍     | 104865792/233926107 [00:02<00:00, 176207767.26it/s]     53%|█████▎    | 123109376/233926107 [00:02<00:00, 154977899.98it/s]     63%|██████▎   | 148463616/233926107 [00:02<00:00, 180512783.49it/s]     72%|███████▏  | 167567360/233926107 [00:03<00:00, 173924321.30it/s]     79%|███████▉  | 185671680/233926107 [00:03<00:00, 174622369.68it/s]     87%|████████▋ | 203636736/233926107 [00:03<00:00, 152159935.13it/s]     97%|█████████▋| 226639872/233926107 [00:03<00:00, 171926928.56it/s]    233930752it [00:03, 63887400.33it/s]                                
+    Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmp4dm9nwkb.zip
+    0it [00:00, ?it/s]      0%|          | 0/233926107 [00:01<?, ?it/s]      0%|          | 663552/233926107 [00:01<00:35, 6509139.49it/s]      3%|▎         | 7446528/233926107 [00:01<00:05, 41382859.07it/s]      8%|▊         | 19030016/233926107 [00:01<00:02, 74477589.35it/s]     15%|█▌        | 35889152/233926107 [00:01<00:01, 111151853.92it/s]     21%|██▏       | 50241536/233926107 [00:01<00:01, 122722208.99it/s]     27%|██▋       | 62922752/233926107 [00:02<00:02, 70736227.30it/s]      31%|███       | 72024064/233926107 [00:02<00:02, 73369559.45it/s]     35%|███▍      | 80838656/233926107 [00:02<00:02, 75994841.78it/s]     40%|███▉      | 93339648/233926107 [00:02<00:01, 88039461.42it/s]     45%|████▌     | 105529344/233926107 [00:02<00:01, 96851283.83it/s]     50%|█████     | 117915648/233926107 [00:02<00:01, 104163251.76it/s]     57%|█████▋    | 132431872/233926107 [00:02<00:00, 113463488.07it/s]     62%|██████▏   | 145063936/233926107 [00:02<00:00, 115137287.46it/s]     67%|██████▋   | 157679616/233926107 [00:02<00:00, 118256826.13it/s]     73%|███████▎  | 169787392/233926107 [00:03<00:00, 117767401.42it/s]     78%|███████▊  | 181764096/233926107 [00:03<00:00, 69114584.04it/s]      84%|████████▎ | 195624960/233926107 [00:03<00:00, 80729069.45it/s]     90%|████████▉ | 210223104/233926107 [00:03<00:00, 94650039.44it/s]     95%|█████████▍| 221814784/233926107 [00:03<00:00, 92687724.12it/s]     99%|█████████▉| 232562688/233926107 [00:04<00:00, 41934139.80it/s]    233930752it [00:04, 52037599.32it/s]                               
 
 
 
@@ -297,7 +297,7 @@ Simulation per class
 --------------------
 
 An inversion, then four hundred repetitions whose flip angle sweeps.
-:class:`~torchsim.simulators.MRFSimulator` takes arrays of tissue properties,
+:class:`~blochsim.simulators.MRFSimulator` takes arrays of tissue properties,
 so the whole table is one call: three extended phase graph runs rather than
 sixteen thousand.
 
@@ -403,8 +403,8 @@ twenty-one-fold undersampled, which is how MRF is run.
 
  .. code-block:: none
 
-    400 arms built in 3.8s
-    forward NUFFT 3.7s -> (400, 8, 768)
+    400 arms built in 3.7s
+    forward NUFFT 3.6s -> (400, 8, 768)
 
 
 
@@ -459,7 +459,7 @@ here because the maps are known. A real pipeline would estimate them.
 
  .. code-block:: none
 
-    adjoint and combine 3.9s
+    adjoint and combine 3.8s
 
 
 
@@ -605,7 +605,7 @@ parameter-inference notebooks do.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 11.952 seconds)
+   **Total running time of the script:** (2 minutes 5.416 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_05-misc_01-synthetic-data.py:
@@ -617,7 +617,7 @@ parameter-inference notebooks do.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/05-misc/01-synthetic-data.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/05-misc/01-synthetic-data.ipynb
         :alt: Launch binder
         :width: 150 px
 

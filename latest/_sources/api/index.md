@@ -1,6 +1,6 @@
 # API
 
-TorchSim is organized around one idea: a **signal model** is the only thing a
+BlochSim is organized around one idea: a **signal model** is the only thing a
 sequence has to supply, and everything else -- differentiation, execution
 across devices, estimation, reconstruction, design -- is written once against
 that interface.
@@ -13,7 +13,7 @@ The pages below follow the subpackages.
   order they are played in.
 
 {doc}`simulators`
-: The sequences that ship with TorchSim, as classes and as one-call
+: The sequences that ship with BlochSim, as classes and as one-call
   functional wrappers.
 
 {doc}`sequence`

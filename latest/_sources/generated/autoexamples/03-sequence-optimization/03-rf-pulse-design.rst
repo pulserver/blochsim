@@ -39,7 +39,7 @@ with it. Here a 90 degree excitation is reshaped so that it stays as close to
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim
+   !pip install blochsim
 
 .. GENERATED FROM PYTHON SOURCE LINES 24-57
 
@@ -51,7 +51,7 @@ with it. Here a 90 degree excitation is reshaped so that it stays as close to
 
     import torch
 
-    from torchsim import SequenceDesign, compose_spinor
+    from blochsim import SequenceDesign, compose_spinor
 
 
 
@@ -167,7 +167,7 @@ Optimized pulse
 ---------------
 
 The real and imaginary parts of every sample are the designed parameters,
-free of limits: the scanner's peak B1 would be a :class:`~torchsim.Bounded`
+free of limits: the scanner's peak B1 would be a :class:`~blochsim.Bounded`
 on them.
 
 
@@ -233,7 +233,7 @@ all where B1 is low, while outside it the leakage stays at the sinc's level:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.934 seconds)
+   **Total running time of the script:** (0 minutes 8.476 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_03-rf-pulse-design.py:
@@ -245,7 +245,7 @@ all where B1 is low, while outside it the leakage stays at the sinc's level:
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/03-rf-pulse-design.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/03-sequence-optimization/03-rf-pulse-design.ipynb
         :alt: Launch binder
         :width: 150 px
 

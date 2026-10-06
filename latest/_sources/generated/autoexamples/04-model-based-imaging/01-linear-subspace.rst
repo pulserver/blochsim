@@ -38,7 +38,7 @@ shortens the unknown and ties the echoes together.
 .. colab-link::
    :needs_gpu: 1
 
-   !pip install torchsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
+   !pip install blochsim brainweb-dl cmap mri-nufft[finufft,cufinufft] deepinv
 
 .. GENERATED FROM PYTHON SOURCE LINES 25-30
 
@@ -68,14 +68,14 @@ library imports read.
 
 .. GENERATED FROM PYTHON SOURCE LINES 124-134
 
-The Fourier encoding is not TorchSim's and never will be. ``mri-nufft``
+The Fourier encoding is not BlochSim's and never will be. ``mri-nufft``
 supplies the radial trajectory and the non-uniform transform that plays it;
 ``deepinv`` supplies the linear solver a Gauss-Newton step hands its
 linearized problem to, and the :class:`~deepinv.physics.LinearPhysics` base
 class the encoding operator below is written against.
 
 That base class is the whole of the adapter: anything exposing ``A`` and
-``A_adjoint`` composes with what TorchSim supplies, so the operator built a
+``A_adjoint`` composes with what BlochSim supplies, so the operator built a
 few cells down is the only glue this integration needs.
 
 
@@ -98,8 +98,8 @@ few cells down is the only glue this integration needs.
 
 .. GENERATED FROM PYTHON SOURCE LINES 142-146
 
-From TorchSim: the sequence, the estimator the contrast-then-fit routes
-need, and :attr:`~torchsim.Subspace.modes`, which hands the temporal
+From BlochSim: the sequence, the estimator the contrast-then-fit routes
+need, and :attr:`~blochsim.Subspace.modes`, which hands the temporal
 basis to mri-nufft in the layout its subspace operator reads.
 
 
@@ -112,8 +112,8 @@ basis to mri-nufft in the layout its subspace operator reads.
     import numpy as np
     import torch
 
-    from torchsim.estimators import DictionaryMatcher
-    from torchsim.simulators import MultiEchoSimulator
+    from blochsim.estimators import DictionaryMatcher
+    from blochsim.simulators import MultiEchoSimulator
 
 
 
@@ -218,7 +218,7 @@ ninefold undersampled, which is where the routes disagree.
         """``(batch, echoes, x, y)`` images to k-space, one trajectory per echo.
 
         This is the whole of ``P F C`` for this experiment, and none of it is
-        TorchSim's: it wraps mri-nufft, which is what a real pipeline would do
+        BlochSim's: it wraps mri-nufft, which is what a real pipeline would do
         with its own trajectory, its own density compensation and its own coils.
         """
 
@@ -284,7 +284,7 @@ than any one does.
 Estimator and subspace basis
 ----------------------------
 
-One :class:`~torchsim.DictionaryMatcher` states the problem and serves every
+One :class:`~blochsim.DictionaryMatcher` states the problem and serves every
 route. Asking it for a rank fits a temporal basis to the training signals;
 that basis is what the subspace reconstruction is given, and the coefficients
 it returns come back to the same mapping. Three directions hold essentially
@@ -466,14 +466,14 @@ image problem. A model with several parameters has no small basis at all,
 because the basis must span the product of the ranges. Both cases put the
 model inside the operator, which is the nonlinear route.
 
-The rank is not a guess: :attr:`~torchsim.Subspace.retained` says what a
+The rank is not a guess: :attr:`~blochsim.Subspace.retained` says what a
 basis keeps before anything is projected through it.
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.011 seconds)
+   **Total running time of the script:** (0 minutes 1.967 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_01-linear-subspace.py:
@@ -485,7 +485,7 @@ basis keeps before anything is projected through it.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/04-model-based-imaging/01-linear-subspace.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/04-model-based-imaging/01-linear-subspace.ipynb
         :alt: Launch binder
         :width: 150 px
 

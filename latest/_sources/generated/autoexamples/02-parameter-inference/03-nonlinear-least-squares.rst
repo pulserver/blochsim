@@ -38,12 +38,12 @@ that it found the global minimum.
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim brainweb-dl cmap
+   !pip install blochsim brainweb-dl cmap
 
 .. GENERATED FROM PYTHON SOURCE LINES 25-29
 
 The problem is stated over a simulator carrying the sequence and filled in
-by an estimator. :func:`~torchsim.execution` decides where that work runs,
+by an estimator. :func:`~blochsim.execution` decides where that work runs,
 and the timings below are taken inside it.
 
 
@@ -57,9 +57,9 @@ and the timings below are taken inside it.
     import numpy as np
     import torch
 
-    import torchsim
-    from torchsim.estimators import DictionaryMatcher, NonlinearLeastSquares
-    from torchsim.simulators import MultiEchoSimulator
+    import blochsim
+    from blochsim.estimators import DictionaryMatcher, NonlinearLeastSquares
+    from blochsim.simulators import MultiEchoSimulator
 
 
 
@@ -270,12 +270,12 @@ card while the slice was mapped, and a dash on a machine with no card.
     method                           atoms   train     map     model      peak      T2
     ----------------------------------------------------------------------------------
     match, T2 only                     400    0.0s   0.01s   0.1 MiB        --   17.9%
-    match, T2 x 10 offsets            4000    0.0s   0.12s   0.5 MiB        --    1.8%
-    match, T2 x 20 offsets            8000    0.0s   0.23s   1.1 MiB        --    1.8%
-    match, T2 x 40 offsets           16000    0.0s   0.46s   2.1 MiB        --    1.8%
-    match, T2 x 80 offsets           32000    0.0s   1.05s   4.3 MiB        --    1.7%
+    match, T2 x 10 offsets            4000    0.0s   0.11s   0.5 MiB        --    1.8%
+    match, T2 x 20 offsets            8000    0.0s   0.22s   1.1 MiB        --    1.8%
+    match, T2 x 40 offsets           16000    0.0s   0.44s   2.1 MiB        --    1.8%
+    match, T2 x 80 offsets           32000    0.0s   1.01s   4.3 MiB        --    1.7%
     fit, T2 + M0, floor known           --    0.0s   0.60s   0.0 MiB        --    0.6%
-    fit, T2 + M0 + offset               --    0.0s   1.00s   0.0 MiB        --    1.8%
+    fit, T2 + M0 + offset               --    0.0s   0.99s   0.0 MiB        --    1.8%
 
 
 
@@ -317,7 +317,7 @@ already.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fa71faf4dd0>
+    <matplotlib.legend.Legend object at 0x7f508d9f25a0>
 
 
 
@@ -361,7 +361,7 @@ that must sum to one are written with one as the unknown and the other as
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 13.129 seconds)
+   **Total running time of the script:** (0 minutes 12.843 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_03-nonlinear-least-squares.py:
@@ -373,7 +373,7 @@ that must sum to one are written with one as the unknown and the other as
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares.ipynb
         :alt: Launch binder
         :width: 150 px
 

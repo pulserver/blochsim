@@ -22,17 +22,17 @@
 Basic Usage
 ===========
 
-The scope of this notebook is to showcase the basic functionalities of Torchsim,
+The scope of this notebook is to showcase the basic functionalities of Blochsim,
 including how to simulate a signal, calculating derivatives etc.
 
-This example uses a fast spin echo that ships with TorchSim.
+This example uses a fast spin echo that ships with BlochSim.
 
 .. GENERATED FROM PYTHON SOURCE LINES 13-17
 
 .. colab-link::
    :needs_gpu: 0
 
-   !pip install torchsim
+   !pip install blochsim
 
 .. GENERATED FROM PYTHON SOURCE LINES 17-112
 
@@ -45,8 +45,8 @@ This example uses a fast spin echo that ships with TorchSim.
     import numpy as np
     import torch
 
-    import torchsim
-    from torchsim.simulators import FSESimulator
+    import blochsim
+    from blochsim.simulators import FSESimulator
 
 
 
@@ -119,7 +119,7 @@ will affect the resulting signal evolution
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fa72f60ce00>
+    <matplotlib.legend.Legend object at 0x7f50953a06e0>
 
 
 
@@ -128,8 +128,8 @@ will affect the resulting signal evolution
 Derivative with respect to tissue parameters
 --------------------------------------------
 
-Torchsim allows to efficiently evaluate the derivative
-of the signal wrt input parameters, via :meth:`~torchsim.model.Simulator.jacobian`.
+Blochsim allows to efficiently evaluate the derivative
+of the signal wrt input parameters, via :meth:`~blochsim.model.Simulator.jacobian`.
 The desired derivatives can be specified by string:
 
 
@@ -242,7 +242,7 @@ to the bit.
 
 .. code-block:: Python
 
-    signal, dT2 = torchsim.fse_sim(
+    signal, dT2 = blochsim.fse_sim(
         flip=flip, ESP=ESP_MS, TR=3000.0, T1=T1_MS, T2=T2_MS, diff="T2"
     )
 
@@ -364,8 +364,8 @@ minutes or hours.
 
  .. code-block:: none
 
-      held             1.07 ms a call
-      rebuilt anew    14.17 ms a call
+      held             1.06 ms a call
+      rebuilt anew    14.25 ms a call
 
 
 
@@ -383,7 +383,7 @@ everything inside:
 
 .. code-block:: Python
 
-    with torchsim.execution("cpu"):
+    with blochsim.execution("cpu"):
         on_the_host = simulator.simulate(flip=flip)
 
     print(
@@ -416,7 +416,7 @@ thousand voxels is the case they exist for, and it is written like this:
 .. code-block:: Python
 
     if torch.cuda.is_available():
-        with torchsim.execution("cuda", stream=True, budget_bytes=1 << 28):
+        with blochsim.execution("cuda", stream=True, budget_bytes=1 << 28):
             streamed = simulator.simulate(flip=flip)
         agreement = float((streamed.cpu() - signal_ref).abs().max())
         print(f"  streamed through a card in 256 MiB chunks, agrees to {agreement:.1e}")
@@ -478,7 +478,7 @@ all in there. Nothing about the sequence has to be given again.
 .. GENERATED FROM PYTHON SOURCE LINES 382-386
 
 You do not have to read it. ``describe`` here only shows what a stream looks
-like; :meth:`~torchsim.SequenceDescription.plot` draws one, which is the way
+like; :meth:`~blochsim.SequenceDescription.plot` draws one, which is the way
 to check that a layout laid down what you meant.
 
 
@@ -510,7 +510,7 @@ to check that a layout laid down what you meant.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa72d1a3f20>]
+    [<matplotlib.legend.Legend object at 0x7f50952788f0>]
 
 
 
@@ -518,23 +518,23 @@ to check that a layout laid down what you meant.
 
 A description normally arrives; it is not typed. Writing one by hand once is
 worth it only to see that there is nothing else in it --
-:meth:`~torchsim.SequenceDescription.from_operators` lays them out.
+:meth:`~blochsim.SequenceDescription.from_operators` lays them out.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 463-482
 
 .. code-block:: Python
 
-    by_hand = torchsim.SequenceDescription.from_operators(
-        torchsim.Excitation(math.pi / 2, math.pi / 2),
+    by_hand = blochsim.SequenceDescription.from_operators(
+        blochsim.Excitation(math.pi / 2, math.pi / 2),
         *[
             part
             for _ in range(ECHOES)
             for part in (
-                torchsim.Delay(0.5 * ESP_MS * 1e-3),
-                torchsim.Refocusing(math.radians(60.0), 0.0),
-                torchsim.Delay(0.5 * ESP_MS * 1e-3),
-                torchsim.Readout(0.0),
+                blochsim.Delay(0.5 * ESP_MS * 1e-3),
+                blochsim.Refocusing(math.radians(60.0), 0.0),
+                blochsim.Delay(0.5 * ESP_MS * 1e-3),
+                blochsim.Readout(0.0),
             )
         ],
     )
@@ -559,7 +559,7 @@ worth it only to see that there is nothing else in it --
 
 .. GENERATED FROM PYTHON SOURCE LINES 483-498
 
-:meth:`~torchsim.model.Simulator.from_description` runs one, and the only
+:meth:`~blochsim.model.Simulator.from_description` runs one, and the only
 thing given to it is the tissue. The events are already concrete -- each
 carries the action word saying whether it winds, spoils or records -- so no
 layout is walked and no sequence parameter is inferred.
@@ -619,7 +619,7 @@ events and not from who wrote them:
 
 One thing to know when comparing it against the shipped simulator: a
 description carries the events, and a simulator may carry physics *around*
-them. :class:`~torchsim.simulators.FSESimulator` folds in the recovery
+them. :class:`~blochsim.simulators.FSESimulator` folds in the recovery
 between one train and the next in closed form, which is not an event and so
 is not in the stream. The shape of the train is the same; the driven
 equilibrium the shipped object adds does not come along.
@@ -641,7 +641,7 @@ equilibrium the shipped object adds does not come along.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fa72cfd04a0>]
+    [<matplotlib.legend.Legend object at 0x7f50949988f0>]
 
 
 
@@ -653,7 +653,7 @@ From a Pulseq file
 The stream a scanner sends is read off the Pulseq sequence it is running, so
 the same events can be read from the ``.seq`` file directly -- which is what
 to do when the scan has not been run yet. The file is parsed by pypulseq,
-which also computes its trajectory: ``pip install torchsim[pulseq]``.
+which also computes its trajectory: ``pip install blochsim[pulseq]``.
 
 The file states how many blocks one repetition holds, in its ``TRSize``
 definition, so nothing is searched for. What is read off the trajectory is
@@ -715,7 +715,7 @@ notebooks say what to write instead.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.917 seconds)
+   **Total running time of the script:** (0 minutes 8.652 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_01-getting-started.py:
@@ -727,7 +727,7 @@ notebooks say what to write instead.
     .. container:: binder-badge
 
       .. image:: images/binder_badge_logo.svg
-        :target: https://mybinder.org/v2/gh/pulserver/torchsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb
+        :target: https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/examples/generated/autoexamples/01-framework/01-getting-started.ipynb
         :alt: Launch binder
         :width: 150 px
 

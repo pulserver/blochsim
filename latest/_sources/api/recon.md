@@ -1,7 +1,7 @@
 # Model-based reconstruction
 
 ```{eval-rst}
-.. currentmodule:: torchsim
+.. currentmodule:: blochsim
 ```
 
 Solving for parameter maps straight from k-space, with the signal model inside
