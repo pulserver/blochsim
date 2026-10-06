@@ -63,6 +63,11 @@ blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)
 option(BLOCHSIM_HOST_KERNELS "Compile the GPU kernels for the host, for the tests" ON)
 if(BLOCHSIM_HOST_KERNELS)
     blochsim_add_kernel(_gpu_host src/blochsim/_gpu_host.cpp)
+    if(MSVC)
+        # Every kernel's tile instantiations in one object, and ``#pragma
+        # unroll``, which only nvcc reads.
+        target_compile_options(_gpu_host PRIVATE /bigobj /wd4068)
+    endif()
 endif()
 
 # The GPU kernels compiled ahead of time for the card, wherever a CUDA
