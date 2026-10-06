@@ -233,7 +233,7 @@ all where B1 is low, while outside it the leakage stays at the sinc's level:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.797 seconds)
+   **Total running time of the script:** (0 minutes 8.934 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_03-rf-pulse-design.py:
