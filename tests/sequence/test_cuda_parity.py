@@ -573,7 +573,7 @@ def test_one_half_of_the_off_axis_turn_matches_the_cpu_kernel(given):
     after each echo winds unlike the crushers, which keeps off-resonance in
     the states rather than on the samples.
     """
-    from torchsim.sequence import (
+    from blochsim.sequence import (
         AdcRole,
         EpgEngine,
         EventAction,
