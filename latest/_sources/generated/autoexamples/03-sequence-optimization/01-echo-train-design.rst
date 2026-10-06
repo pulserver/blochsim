@@ -587,7 +587,7 @@ Starting from the prescription the abstract reports: a 45 echo train at
 
  .. code-block:: none
 
-    a whole protocol designed in 0.74 s, 18.6 ms per iteration
+    a whole protocol designed in 0.45 s, 11.2 ms per iteration
 
 
 
@@ -651,7 +651,7 @@ would leave.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fbfd69f0fe0>, <matplotlib.legend.Legend object at 0x7fbfdc1898e0>, <matplotlib.legend.Legend object at 0x7fbfd6f19400>]
+    [<matplotlib.legend.Legend object at 0x7fb5f0ac4cb0>, <matplotlib.legend.Legend object at 0x7fb5f0a81670>, <matplotlib.legend.Legend object at 0x7fb5f0aa2e70>]
 
 
 
@@ -674,7 +674,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.395 seconds)
+   **Total running time of the script:** (0 minutes 2.444 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_01-echo-train-design.py:

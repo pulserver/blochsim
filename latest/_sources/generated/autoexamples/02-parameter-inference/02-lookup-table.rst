@@ -189,7 +189,7 @@ so the invertible range is a number rather than an assumption.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7fbfd6ad7c50>]
+    [<matplotlib.legend.Legend object at 0x7fb5e244cce0>]
 
 
 
@@ -271,13 +271,13 @@ of three passes over the slice.
      points     match     table     match     table
                 error     error      time      time
     -----------------------------------------------
-         30     7.93%     0.88%     2.2ms     0.4ms
-         60     3.29%     0.75%     3.2ms     0.5ms
-        120     0.78%     0.71%     3.6ms     0.5ms
-        250     0.80%     0.71%     6.3ms     0.6ms
-        500     0.62%     0.71%    13.3ms     0.6ms
-       1000     0.66%     0.71%    24.4ms     0.7ms
-       2000     0.71%     0.71%    58.7ms     0.8ms
+         30     7.93%     0.88%     2.4ms     0.5ms
+         60     3.29%     0.75%     3.6ms     0.8ms
+        120     0.78%     0.71%     3.9ms     0.6ms
+        250     0.80%     0.71%     6.5ms     0.6ms
+        500     0.62%     0.71%    11.9ms     0.7ms
+       1000     0.66%     0.71%    22.8ms     0.8ms
+       2000     0.71%     0.71%    54.3ms     0.8ms
 
 
 
@@ -309,7 +309,7 @@ exactly; the table's advantage is that it was never told how fine.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fbfd6f06000>
+    <matplotlib.legend.Legend object at 0x7fb5f040ccb0>
 
 
 
@@ -370,8 +370,8 @@ product per voxel.
 
     method                      train      map     model      peak      T1      M0
     ------------------------------------------------------------------------------
-    lookup, 60 points           0.00s    0.5ms  0.00 MiB        --   0.75%   0.46%
-    match, 2000 atoms           0.00s   59.2ms  0.05 MiB        --   0.71%   0.45%
+    lookup, 60 points           0.00s    0.6ms  0.00 MiB        --   0.75%   0.46%
+    match, 2000 atoms           0.00s   54.0ms  0.05 MiB        --   0.71%   0.45%
 
 
 
@@ -405,7 +405,7 @@ product per voxel.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.222 seconds)
+   **Total running time of the script:** (0 minutes 2.303 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_02-lookup-table.py:
