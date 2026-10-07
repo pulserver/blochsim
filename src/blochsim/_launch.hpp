@@ -30,7 +30,7 @@ inline PyObject* kernel_table(PyObject*, PyObject*) {
         return nullptr;
     }
     for (const auto& info : bsk::KERNELS) {
-        PyObject* entry = Py_BuildValue("(ss)", info.params, info.kinds);
+        PyObject* entry = Py_BuildValue("(ssi)", info.params, info.kinds, info.lanes);
         if (entry == nullptr || PyDict_SetItemString(table, info.name, entry) < 0) {
             Py_XDECREF(entry);
             Py_DECREF(table);
@@ -47,6 +47,8 @@ struct Launch {
     int block[2] = {1, 1};
     // The length of z, which a program holds in each thread.
     int z = 1;
+    // The rows each thread holds on a card.
+    int lanes = 1;
     bsk::Arguments arguments{};
 };
 
@@ -101,9 +103,10 @@ inline bool read_launch(PyObject* name, PyObject* grid, PyObject* args, Launch& 
     launch.block[0] = info.x < 0 ? 1 : static_cast<int>(launch.arguments.a[info.x].i);
     launch.block[1] = info.y < 0 ? 1 : static_cast<int>(launch.arguments.a[info.y].i);
     launch.z = info.z < 0 ? 1 : static_cast<int>(launch.arguments.a[info.z].i);
-    if (launch.block[0] < 1 || launch.block[1] < 1 || launch.block[0] * launch.block[1] > 1024) {
+    launch.lanes = info.lanes;
+    if (launch.block[0] < 1 || launch.block[1] < 1 || launch.block[0] * launch.block[1] > 1024 * launch.lanes) {
         PyErr_Format(PyExc_ValueError, "%s: a block of %d by %d threads is more than a card runs",
-                     info.name, launch.block[0], launch.block[1]);
+                     info.name, launch.block[0], launch.block[1] / launch.lanes);
         return false;
     }
     if (launch.z < 1 || launch.z > bsk::MAX_Z) {

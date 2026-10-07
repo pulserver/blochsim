@@ -68,9 +68,12 @@ program at a time over host tensors; `tests/sequence/test_host_kernels.py` and
 `test_many_pools_host.py` hold them to the C++ kernels, which is how the GPU
 path is verified on a machine with no card.
 
-**A block is at most 1024 threads.** A tile is an element per thread, so an
-EPG launch with more than 1024 state orders, or a pooled one whose orders by
-pools pass 1024, is refused with the kernel's name rather than launched.
+**A block is at most 1024 threads.** A tile holds one state order per thread,
+so an EPG launch with more than 1024 state orders, or a pooled one whose orders
+by pools pass 1024, is refused with the kernel's name rather than launched. The
+problems a program carries are another matter: a thread holds `Y_LANES` of
+them in registers, set per kernel in `src/blochsim/_lanes.hpp`, so that one
+reading of each event serves all of them.
 
 **`--cov` is on by default** through `addopts`, so a bare `pytest` writes
 `coverage.xml`. It is ignored, not tracked.

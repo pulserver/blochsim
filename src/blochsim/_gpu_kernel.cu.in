@@ -7,6 +7,9 @@
 // whenever a block fits it.
 #define BLOCHSIM_SIMT 1
 
+#include "_lanes.hpp"
+#define BLOCHSIM_Y_LANES BLOCHSIM_LANES_@NAME@
+
 #include "_kernels.hpp"
 
 __global__ void __launch_bounds__(256) kernel@NAME@_256(bsk::Arguments arguments, int z) {

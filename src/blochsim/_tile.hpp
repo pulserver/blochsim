@@ -12,8 +12,11 @@
 // and a store or an atomic of it is made once rather than once per thread.
 // Values that vary along neither are plain C++ scalars, uniform over the block.
 //
-// Under ``BLOCHSIM_SIMT`` (the CUDA build) a tile is one element per thread,
-// and the operations across a row are warp shuffles or shared memory. Without
+// Under ``BLOCHSIM_SIMT`` (the CUDA build) a tile is one element per thread
+// along x and z, and ``Y_LANES`` rows of y per thread: a thread holds rows
+// ``threadIdx.y * Y_LANES`` onward in registers, so the work a program does
+// once per row -- reading an event, branching on it -- is shared by those rows.
+// The operations across a row are warp shuffles or shared memory. Without
 // it, a tile is the whole array, so the same kernel source runs on the host one
 // program at a time: that is the build the tests run without a card.
 #pragma once
@@ -44,11 +47,17 @@ namespace bsk {
 
 extern __shared__ unsigned long long shared_words[];
 
+// Rows of y each thread holds, set per kernel by _lanes.hpp.
+#ifndef BLOCHSIM_Y_LANES
+#define BLOCHSIM_Y_LANES 1
+#endif
+constexpr int Y_LANES = BLOCHSIM_Y_LANES;
+
 // The length of z, set once by a kernel's entry.
 __shared__ int z_width;
 
 BSK_HD int width_x() { return static_cast<int>(blockDim.x); }
-BSK_HD int width_y() { return static_cast<int>(blockDim.y); }
+BSK_HD int width_y() { return static_cast<int>(blockDim.y) * Y_LANES; }
 BSK_HD int width_z() { return z_width; }
 
 __device__ __forceinline__ void enter(int nz) {
@@ -116,35 +125,48 @@ constexpr bool any_tile = ((axes_of<A> != 0) || ...);
 template <class T, int AX>
 struct V {
     static_assert(AX > 0 && AX < 8 && AX != 5 && AX != 7, "a tile varies along x or z, y, or both");
-    static constexpr int lanes = (AX & 4) ? MAX_Z : 1;
+    // A thread's rows of y, each holding its lanes of z.
+    static constexpr int rows = (AX & 2) ? Y_LANES : 1;
+    static constexpr int depth = (AX & 4) ? MAX_Z : 1;
+    static constexpr int lanes = rows * depth;
     T v[lanes];
 
     V() = default;
 
     template <class U, std::enable_if_t<std::is_arithmetic_v<U> || std::is_pointer_v<U>, int> = 0>
     BSK_HD V(U scalar) {
-        for (int z = 0; z < lanes; ++z) v[z] = static_cast<T>(scalar);
+        for (int i = 0; i < lanes; ++i) v[i] = static_cast<T>(scalar);
     }
 
     template <class U, int BX, std::enable_if_t<(BX | AX) == AX, int> = 0>
     BSK_HD V(const V<U, BX>& other) {
-        for (int z = 0; z < lanes; ++z) v[z] = static_cast<T>(other.v[(BX & 4) ? z : 0]);
+        if constexpr (rows == 1) {
+            for (int z = 0; z < depth; ++z) v[z] = static_cast<T>(other.v[(BX & 4) ? z : 0]);
+        } else {
+#pragma unroll
+            for (int y = 0; y < rows; ++y) {
+                for (int z = 0; z < depth; ++z) {
+                    v[y * depth + z] = static_cast<T>(
+                        other.v[((BX & 2) ? y : 0) * V<U, BX>::depth + ((BX & 4) ? z : 0)]);
+                }
+            }
+        }
     }
 };
 
-// The element a thread holds at ``z``.
+// The element a thread holds in its row ``y`` at ``z``.
 template <class A>
-BSK_HD decltype(auto) element(const A& a, int z = 0) {
+BSK_HD decltype(auto) element(const A& a, int y = 0, int z = 0) {
     if constexpr (axes_of<A> == 0) {
         return a;
-    } else if constexpr ((axes_of<A> & 4) != 0) {
-        return (a.v[z]);
     } else {
-        return (a.v[0]);
+        using Tile = std::decay_t<A>;
+        return (a.v[((axes_of<A> & 2) ? y : 0) * Tile::depth + ((axes_of<A> & 4) ? z : 0)]);
     }
 }
 
-// Lanes of z past its length are left unset, so nothing reads memory for them.
+// Every row a thread holds; lanes of z past its length are left unset, so
+// nothing reads memory for them.
 template <class F, class... A>
 BSK_HD auto zip(F f, const A&... a) {
     constexpr int AX = (0 | ... | axes_of<A>);
@@ -153,15 +175,33 @@ BSK_HD auto zip(F f, const A&... a) {
     } else {
         using R = decltype(f(element(a)...));
         V<R, AX> out;
-        if constexpr ((AX & 4) != 0) {
-            const int nz = width_z();
-            for (int z = 0; z < MAX_Z; ++z) {
-                if (z < nz) {
-                    out.v[z] = f(element(a, z)...);
+        if constexpr (V<R, AX>::rows == 1) {
+            // One row: straight-line code, which is what most of a kernel is
+            // and what the compiler should not have to unroll its way back to.
+            if constexpr ((AX & 4) != 0) {
+                const int nz = width_z();
+                for (int z = 0; z < MAX_Z; ++z) {
+                    if (z < nz) {
+                        out.v[z] = f(element(a, 0, z)...);
+                    }
                 }
+            } else {
+                out.v[0] = f(element(a)...);
             }
         } else {
-            out.v[0] = f(element(a)...);
+#pragma unroll
+            for (int y = 0; y < V<R, AX>::rows; ++y) {
+                if constexpr ((AX & 4) != 0) {
+                    const int nz = width_z();
+                    for (int z = 0; z < MAX_Z; ++z) {
+                        if (z < nz) {
+                            out.v[y * MAX_Z + z] = f(element(a, y, z)...);
+                        }
+                    }
+                } else {
+                    out.v[y] = f(element(a, y)...);
+                }
+            }
         }
         return out;
     }
@@ -501,7 +541,10 @@ BSK_HD V<std::int32_t, 1> arange_x() {
 BSK_HD V<std::int32_t, 2> arange_y() {
 #if defined(BLOCHSIM_SIMT)
     V<std::int32_t, 2> out;
-    out.v[0] = static_cast<std::int32_t>(threadIdx.y);
+#pragma unroll
+    for (int y = 0; y < Y_LANES; ++y) {
+        out.v[y] = static_cast<std::int32_t>(threadIdx.y) * Y_LANES + y;
+    }
     return out;
 #else
     V<std::int32_t, 2> out;
@@ -572,25 +615,42 @@ BSK_HD void each_written(F f) {
     if (!writes<AX>()) {
         return;
     }
-    if constexpr ((AX & 4) != 0) {
-        const int nz = width_z();
-        for (int z = 0; z < MAX_Z; ++z) {
-            if (z < nz) {
-                f(z);
+    constexpr int rows = (AX & 2) ? Y_LANES : 1;
+    if constexpr (rows == 1) {
+        if constexpr ((AX & 4) != 0) {
+            const int nz = width_z();
+            for (int z = 0; z < MAX_Z; ++z) {
+                if (z < nz) {
+                    f(0, z);
+                }
             }
+        } else {
+            f(0, 0);
         }
     } else {
-        f(0);
+#pragma unroll
+        for (int y = 0; y < rows; ++y) {
+            if constexpr ((AX & 4) != 0) {
+                const int nz = width_z();
+                for (int z = 0; z < MAX_Z; ++z) {
+                    if (z < nz) {
+                        f(y, z);
+                    }
+                }
+            } else {
+                f(y, 0);
+            }
+        }
     }
 }
 
 template <class P, class T, class M>
 BSK_HD void st(const P& pointer, const T& value, const M& mask) {
     constexpr int AX = axes_of<P> | axes_of<M>;
-    each_written<AX>([&](int z) {
-        if (element(mask, z)) {
-            auto p = element(pointer, z);
-            *p = static_cast<std::remove_pointer_t<decltype(p)>>(element(value, z));
+    each_written<AX>([&](int y, int z) {
+        if (element(mask, y, z)) {
+            auto p = element(pointer, y, z);
+            *p = static_cast<std::remove_pointer_t<decltype(p)>>(element(value, y, z));
         }
     });
 }
@@ -598,10 +658,10 @@ BSK_HD void st(const P& pointer, const T& value, const M& mask) {
 template <class P, class T, class M>
 BSK_HD void atomic_add(const P& pointer, const T& value, const M& mask) {
     constexpr int AX = axes_of<P> | axes_of<M>;
-    each_written<AX>([&](int z) {
-        if (element(mask, z)) {
-            auto p = element(pointer, z);
-            atomicAdd(p, static_cast<std::remove_pointer_t<decltype(p)>>(element(value, z)));
+    each_written<AX>([&](int y, int z) {
+        if (element(mask, y, z)) {
+            auto p = element(pointer, y, z);
+            atomicAdd(p, static_cast<std::remove_pointer_t<decltype(p)>>(element(value, y, z)));
         }
     });
 }
@@ -737,18 +797,6 @@ struct Max {
     BSK_HD X operator()(X a, X b) const { return s_max(a, b); }
 };
 
-// A value with an axis taken out of AX, held where the reduction left it.
-template <int AX, class T>
-BSK_HD auto reduced(const T* lanes) {
-    if constexpr (AX == 0) {
-        return lanes[0];
-    } else {
-        V<T, AX> out;
-        for (int z = 0; z < V<T, AX>::lanes; ++z) out.v[z] = lanes[z];
-        return out;
-    }
-}
-
 template <class Op, class T, int AX>
 BSK_HD auto reduce_x(const V<T, AX>& a, Op op) {
     if constexpr ((AX & 1) == 0) {
@@ -756,8 +804,15 @@ BSK_HD auto reduce_x(const V<T, AX>& a, Op op) {
     } else {
         constexpr int RX = AX & ~1;
 #if defined(BLOCHSIM_SIMT)
-        T total = reduce_row(a.v[0], op);
-        return reduced<RX>(&total);
+        // x and z are never both in a tile, so each row is one lane.
+        if constexpr (RX == 0) {
+            return reduce_row(a.v[0], op);
+        } else {
+            V<T, RX> out;
+#pragma unroll
+            for (int y = 0; y < V<T, AX>::rows; ++y) out.v[y] = reduce_row(a.v[y], op);
+            return out;
+        }
 #else
         if constexpr (RX == 0) {
             T total = a.at(0, 0);
@@ -783,9 +838,22 @@ BSK_HD auto reduce_y(const V<T, AX>& a, Op op) {
     } else {
         constexpr int RX = AX & ~2;
 #if defined(BLOCHSIM_SIMT)
-        T totals[V<T, AX>::lanes];
-        for (int z = 0; z < V<T, AX>::lanes; ++z) totals[z] = reduce_column(a.v[z], op);
-        return reduced<RX>(totals);
+        // A thread's own rows first, then across the rows of threads.
+        constexpr int depth = V<T, AX>::depth;
+        T totals[depth];
+        for (int z = 0; z < depth; ++z) {
+            T total = a.v[z];
+#pragma unroll
+            for (int y = 1; y < V<T, AX>::rows; ++y) total = op(total, a.v[y * depth + z]);
+            totals[z] = reduce_column(total, op);
+        }
+        if constexpr (RX == 0) {
+            return totals[0];
+        } else {
+            V<T, RX> out;
+            for (int z = 0; z < depth; ++z) out.v[z] = totals[z];
+            return out;
+        }
 #else
         if constexpr (RX == 0) {
             T total = a.at(0, 0);
@@ -813,14 +881,26 @@ BSK_HD auto reduce_z(const V<T, AX>& a, Op op) {
     } else {
         constexpr int RX = AX & ~4;
 #if defined(BLOCHSIM_SIMT)
-        T total = a.v[0];
         const int nz = width_z();
-        for (int z = 1; z < MAX_Z; ++z) {
-            if (z < nz) {
-                total = op(total, a.v[z]);
+        T totals[V<T, AX>::rows];
+#pragma unroll
+        for (int y = 0; y < V<T, AX>::rows; ++y) {
+            T total = a.v[y * MAX_Z];
+            for (int z = 1; z < MAX_Z; ++z) {
+                if (z < nz) {
+                    total = op(total, a.v[y * MAX_Z + z]);
+                }
             }
+            totals[y] = total;
         }
-        return reduced<RX>(&total);
+        if constexpr (RX == 0) {
+            return totals[0];
+        } else {
+            V<T, RX> out;
+#pragma unroll
+            for (int y = 0; y < V<T, AX>::rows; ++y) out.v[y] = totals[y];
+            return out;
+        }
 #else
         if constexpr (RX == 0) {
             T total = a.at(0, 0, 0);
@@ -883,8 +963,12 @@ template <class T, int AX, class I>
 BSK_HD auto gather_x(const V<T, AX>& values, const I& index) {
     static_assert(AX & 1, "a gather along x reads a value that varies along x");
 #if defined(BLOCHSIM_SIMT)
-    V<T, AX | axes_of<I>> out;
-    out.v[0] = gather_row(values.v[0], static_cast<int>(element(index)));
+    using Out = V<T, AX | axes_of<I>>;
+    Out out;
+#pragma unroll
+    for (int y = 0; y < Out::rows; ++y) {
+        out.v[y] = gather_row(element(values, y), static_cast<int>(element(index, y)));
+    }
     return out;
 #else
     constexpr int RX = AX | axes_of<I>;
@@ -911,6 +995,12 @@ BSK_HD auto times(const O& op_in, const P& planes_in, bool transposed) {
     const V<T, 3> planes(planes_in);
     V<T, 3> out(T(0));
 #if defined(BLOCHSIM_SIMT)
+    // Only the pooled kernels take this product, and they hold one row to a
+    // thread; every kernel's file compiles their bodies, none other runs them.
+    if constexpr (Y_LANES != 1) {
+        __trap();
+        return out;
+    }
     // The planes, then the operator, through shared memory: a thread reads the
     // column of planes beneath its state and the operator's entries it needs.
     T* words = reinterpret_cast<T*>(shared_words);
@@ -957,6 +1047,11 @@ BSK_HD auto outer(const L& left_in, const R& right_in) {
     const V<T, 3> right(right_in);
     V<T, 6> out(T(0));
 #if defined(BLOCHSIM_SIMT)
+    // As ``times``: the pooled kernels alone, one row to a thread.
+    if constexpr (Y_LANES != 1) {
+        __trap();
+        return out;
+    }
     T* words = reinterpret_cast<T*>(shared_words);
     const int nx = width_x();
     const int ny = width_y();

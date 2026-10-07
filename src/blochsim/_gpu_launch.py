@@ -39,9 +39,14 @@ def _module(device_type: str) -> Any:
 
 
 @cache
+def _entry(name: str) -> tuple[tuple[str, ...], str, int]:
+    params, kinds, lanes = _module("cuda" if available() else "cpu").kernels()[name]
+    return tuple(params.split(",")), kinds, lanes
+
+
 def _signature(name: str) -> tuple[tuple[str, ...], str]:
-    params, kinds = _module("cuda" if available() else "cpu").kernels()[name]
-    return tuple(params.split(",")), kinds
+    names, kinds, _ = _entry(name)
+    return names, kinds
 
 
 @cache
@@ -59,6 +64,11 @@ class Kernel:
 
     def __init__(self, name: str) -> None:
         self.name = name
+
+    @property
+    def lanes(self) -> int:
+        """Rows of a program's y axis each thread holds on a card."""
+        return _entry(self.name)[2]
 
     def __getitem__(self, grid: tuple[int, ...]) -> Any:
         def run(*args: Any, **kwargs: Any) -> None:

@@ -284,8 +284,9 @@ def _three_pool_table(
     return table
 
 
-# Elements of the state tile one program carries, one to a thread.
-_TILE_ELEMENTS = 64
+# Threads of one program: a warp, its lanes along the states and, where the
+# states are fewer, across rows of problems.
+_PROGRAM_THREADS = 32
 
 
 def _atom_stride(*tuples: tuple[torch.Tensor, ...]) -> int:
@@ -306,11 +307,13 @@ def _atom_stride(*tuples: tuple[torch.Tensor, ...]) -> int:
     )
 
 
-def _problems_per_program(block_states: int) -> int:
+def _problems_per_program(block_states: int, kernel: Kernel) -> int:
     """How many independent problems to carry on one program's lane axis.
 
     A warp's lanes cost about the same whether they are used or not, so packing
-    several problems into one program is close to free.
+    several problems into one program is close to free. Each thread then holds
+    ``kernel.lanes`` problems of its row in registers, and the work it does once
+    an event -- reading it, branching on it -- serves all of them.
 
     It depends on the state count alone, and deliberately not on how many
     problems the launch has. A run cut into chunks would otherwise compile a
@@ -321,8 +324,8 @@ def _problems_per_program(block_states: int) -> int:
 
     The result sizes a block of threads, so it must be a power of two.
     """
-    widest = max(1, _TILE_ELEMENTS // block_states)
-    return 1 << (widest.bit_length() - 1)
+    rows = max(1, _PROGRAM_THREADS // block_states)
+    return (1 << (rows.bit_length() - 1)) * kernel.lanes
 
 
 def _output_shape(
@@ -469,7 +472,7 @@ def simulate_into(
     pools = _pool_flag(lineshape, exchanging)
     block_states = next_power_of_2(state_count)
     total = train_count * atom_count
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_real_kernel if real_axis == 1 else _epg_kernel)
     grid = (cdiv(total, problems),)
     # A kernel argument has to be a tensor even where the branch reading it is
     # compiled out, so an unprofiled launch passes one it already has.
@@ -720,7 +723,7 @@ def simulate_jvp_into(
     shims = _shim_count(tissue)
     block_states = next_power_of_2(state_count)
     total = train_count * atom_count
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_real_jvp_kernel if real_axis == 1 else _epg_jvp_kernel)
     grid = (cdiv(total, problems),)
 
     if real_axis == 1:
@@ -976,7 +979,7 @@ def simulate_vjp(
         for _ in range(2)
     ]
 
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_vjp_kernel)
     for base in range(0, total, wave):
         span = min(wave, total - base)
         if pool_bars is not None:
@@ -1125,7 +1128,7 @@ def simulate_real_vjp(
         (wave, event_count * 3 * state_count), dtype=torch.float32, device=device
     )
 
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_real_vjp_kernel)
     for base in range(0, total, wave):
         span = min(wave, total - base)
         _epg_real_vjp_kernel[(cdiv(span, problems),)](
@@ -1412,7 +1415,7 @@ def simulate_vjp_into(
     grad_real.copy_(grad_output.real.reshape(-1))
     grad_imag.copy_(grad_output.imag.reshape(-1))
 
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_vjp_kernel)
     for base in range(0, total, buffers.wave):
         span = min(buffers.wave, total - base)
         # The trajectory is written by one launch and walked back by the
@@ -1529,7 +1532,7 @@ def simulate_real_vjp_into(
     grad_imag = buffers.cotangent[1][:size]
     grad_imag.copy_(grad_output.resolve_conj().imag.reshape(-1))
 
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_real_vjp_kernel)
     for base in range(0, total, buffers.wave):
         span = min(buffers.wave, total - base)
         _epg_real_vjp_kernel[(cdiv(span, problems),)](
@@ -1684,7 +1687,7 @@ def simulate_vjp_jvp_into(
             wave * row_count * 36, dtype=torch.float32, device=t1.device
         )
 
-    problems = _problems_per_program(block_states)
+    problems = _problems_per_program(block_states, _epg_real_vjp_jvp_kernel if real else _epg_vjp_jvp_kernel)
     for base in range(0, total, wave):
         span = min(wave, total - base)
         if pool_bars is not None:

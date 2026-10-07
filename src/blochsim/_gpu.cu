@@ -46,6 +46,12 @@ PyObject* launch(PyObject*, PyObject* args) {
     if (!blochsim_launch::read_launch(name, grid, values, request)) {
         return nullptr;
     }
+    // A thread holds ``lanes`` of a program's rows, so the rows fill whole threads.
+    if (request.block[1] % request.lanes != 0) {
+        PyErr_Format(PyExc_ValueError, "%s: %d rows do not fill threads of %d",
+                     bsk::KERNELS[request.kernel].name, request.block[1], request.lanes);
+        return nullptr;
+    }
     if (request.grid[0] > 2147483647LL || request.grid[1] > 65535) {
         PyErr_SetString(PyExc_ValueError, "the grid is larger than a launch can hold");
         return nullptr;
@@ -63,7 +69,7 @@ PyObject* launch(PyObject*, PyObject* args) {
         return cuda_error(status, "selecting the device");
     }
     const dim3 blocks(static_cast<unsigned>(request.grid[0]), static_cast<unsigned>(request.grid[1]));
-    const dim3 threads(static_cast<unsigned>(request.block[0]), static_cast<unsigned>(request.block[1]));
+    const dim3 threads(static_cast<unsigned>(request.block[0]), static_cast<unsigned>(request.block[1] / request.lanes));
     // A row's reduction and gather go through one word per thread, and a
     // product with an operator over pools through as many again.
     const std::size_t shared =
