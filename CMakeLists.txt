@@ -151,6 +151,22 @@ if(BLOCHSIM_CUDA)
         CONTENT "// Written by CMake from _specializations.json: X(index, kernel, \"switch=value,...\").\n#define BLOCHSIM_FOR_EACH_SPECIAL(X) \\\n${_blochsim_special_table}\n"
         @ONLY)
 
+    # The EPG kernels written for their layouts (_layout.hpp): a unit per
+    # kernel and pool layout, so they compile side by side.
+    list(APPEND _blochsim_gpu_sources src/blochsim/_layout.cu src/blochsim/_layout_real.cu)
+    foreach(KIND IN ITEMS forward jvp)
+        if(KIND STREQUAL "forward")
+            set(TYPE "float")
+        else()
+            set(TYPE "num::Dual")
+        endif()
+        foreach(POOLS RANGE 3)
+            set(_source "${CMAKE_CURRENT_BINARY_DIR}/layout/complex_${KIND}_${POOLS}.cu")
+            configure_file(src/blochsim/_layout_complex.cu.in "${_source}" @ONLY)
+            list(APPEND _blochsim_gpu_sources "${_source}")
+        endforeach()
+    endforeach()
+
     python_add_library(_gpu MODULE
         USE_SABI ${BLOCHSIM_ABI3_VERSION}
         WITH_SOABI

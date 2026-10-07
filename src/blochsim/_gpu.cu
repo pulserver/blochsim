@@ -10,6 +10,7 @@
 #define BLOCHSIM_TABLE_ONLY 1
 
 #include "_launch.hpp"
+#include "_layout.hpp"
 #include "_special.hpp"
 #include "_special_table.hpp"
 
@@ -87,6 +88,9 @@ const std::vector<std::vector<Special>>& specials() {
 // Whether a launch may run a specialized kernel, and how many have.
 bool specializing = true;
 unsigned long long specialized_launches = 0;
+// Whether a launch may run its kernel's layout (_layout.hpp), and how many have.
+bool laying_out = true;
+unsigned long long layout_launches = 0;
 
 // The specialized kernel whose fixed switches this launch matches, if any.
 const void* matching(const blochsim_launch::Launch& request) {
@@ -144,6 +148,20 @@ PyObject* launch(PyObject*, PyObject* args) {
     }
     if (status != cudaSuccess) {
         return cuda_error(status, "selecting the device");
+    }
+    if (laying_out) {
+        const int laid = blochsim_layout::launch(request.kernel, request.arguments,
+                                                 reinterpret_cast<cudaStream_t>(stream));
+        if (laid >= 0) {
+            ++layout_launches;
+            if (previous != device) {
+                cudaSetDevice(previous);
+            }
+            if (laid != cudaSuccess) {
+                return cuda_error(static_cast<cudaError_t>(laid), bsk::KERNELS[request.kernel].name);
+            }
+            Py_RETURN_NONE;
+        }
     }
     const dim3 blocks(static_cast<unsigned>(request.grid[0]), static_cast<unsigned>(request.grid[1]));
     const dim3 threads(static_cast<unsigned>(request.block[0]), static_cast<unsigned>(request.block[1] / request.lanes));
@@ -207,6 +225,20 @@ PyObject* specialized_launch_count(PyObject*, PyObject*) {
     return PyLong_FromUnsignedLongLong(specialized_launches);
 }
 
+PyObject* use_layouts(PyObject*, PyObject* args) {
+    int on = 1;
+    if (!PyArg_ParseTuple(args, "p", &on)) {
+        return nullptr;
+    }
+    const bool previous = laying_out;
+    laying_out = on != 0;
+    return PyBool_FromLong(previous);
+}
+
+PyObject* layout_launch_count(PyObject*, PyObject*) {
+    return PyLong_FromUnsignedLongLong(layout_launches);
+}
+
 PyMethodDef METHODS[] = {
     {"kernels", blochsim_launch::kernel_table, METH_NOARGS,
      "Each kernel's parameter names and kinds."},
@@ -218,6 +250,10 @@ PyMethodDef METHODS[] = {
      "Whether launches may run specialized kernels; returns the previous setting."},
     {"specialized_launches", specialized_launch_count, METH_NOARGS,
      "How many launches have run a specialized kernel."},
+    {"use_layouts", use_layouts, METH_VARARGS,
+     "Whether launches may run their kernel's layout; returns the previous setting."},
+    {"layout_launches", layout_launch_count, METH_NOARGS,
+     "How many launches have run a kernel's layout."},
     {nullptr, nullptr, 0, nullptr},
 };
 

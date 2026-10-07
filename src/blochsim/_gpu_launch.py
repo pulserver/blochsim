@@ -87,17 +87,25 @@ def specialized_launches() -> int:
     return _module("cuda").specialized_launches() if available() else 0
 
 
+def layout_launches() -> int:
+    """How many launches on a card have run a kernel written for its layout."""
+    return _module("cuda").layout_launches() if available() else 0
+
+
 @contextmanager
 def generic_kernels() -> Iterator[None]:
-    """Run every launch inside on the kernels compiled for all combinations."""
+    """Run every launch inside on the tile kernels compiled for all combinations."""
     if not available():
         yield
         return
-    previous = _module("cuda").use_specializations(False)
+    module = _module("cuda")
+    special = module.use_specializations(False)
+    layouts = module.use_layouts(False)
     try:
         yield
     finally:
-        _module("cuda").use_specializations(previous)
+        module.use_specializations(special)
+        module.use_layouts(layouts)
 
 
 class Kernel:

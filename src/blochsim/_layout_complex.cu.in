@@ -1,0 +1,52 @@
+// Written by CMake from _layout_complex.cu.in: the complex @KIND@ kernel
+// for @POOLS@ in its layouts.
+#include "_layout.hpp"
+
+namespace blochsim_layout {
+namespace {
+
+template <class T, int POOLS, int MODE, int RF, bool MAPS, int Y, bool ONE_TRAIN>
+__global__ void __launch_bounds__(32 * WARPS) complex_kernel(epg::Params p) {
+    epg::complex_loop<T, POOLS, MODE, RF, MAPS, Y, ONE_TRAIN>(p);
+}
+
+template <class T, int POOLS, int MODE, int Y>
+int launch_mode(const epg::Params& p, int rf, cudaStream_t stream) {
+    const int groups = 32 / p.width;
+    const long long problems = static_cast<long long>(p.train_count) * p.atom_count;
+    const long long per_block = static_cast<long long>(WARPS) * groups * Y;
+    const unsigned grid = static_cast<unsigned>((problems + per_block - 1) / per_block);
+    const bool maps = p.transmit || p.off_axis || p.density || p.inverting;
+#define BLOCHSIM_GO(R, MP)                                                                          \
+    if (p.single_train) complex_kernel<T, POOLS, MODE, R, MP, Y, true><<<grid, 32 * WARPS, 0, stream>>>(p); \
+    else complex_kernel<T, POOLS, MODE, R, MP, Y, false><<<grid, 32 * WARPS, 0, stream>>>(p)
+    if (rf == epg::DYNAMIC) {
+        if (maps) { BLOCHSIM_GO(epg::DYNAMIC, true); } else { BLOCHSIM_GO(epg::DYNAMIC, false); }
+    } else if (rf == epg::PROFILE) {
+        if (maps) { BLOCHSIM_GO(epg::PROFILE, true); } else { BLOCHSIM_GO(epg::PROFILE, false); }
+    } else {
+        if (maps) { BLOCHSIM_GO(epg::HARD, true); } else { BLOCHSIM_GO(epg::HARD, false); }
+    }
+#undef BLOCHSIM_GO
+    return static_cast<int>(cudaGetLastError());
+}
+
+}  // namespace
+
+int complex_@KIND@_@POOLS@(const epg::Params& p, int rf, int mode, cudaStream_t stream) {
+    using T = @TYPE@;
+    constexpr int POOLS = @POOLS@;
+    // Problems a thread holds: a dual number is two registers, and a pool
+    // layout's operators are held beside the states.
+    constexpr int Y = num::is_dual<T>::value ? (POOLS ? 1 : 2) : (POOLS ? 2 : 4);
+    if constexpr (POOLS == 3) {
+        if (mode == epg::TABLE) return launch_mode<T, 3, epg::TABLE, Y>(p, rf, stream);
+        if (mode == epg::NARROW) return launch_mode<T, 3, epg::NARROW, Y>(p, rf, stream);
+        return launch_mode<T, 3, epg::ROOTS, Y>(p, rf, stream);
+    } else {
+        (void)mode;
+        return launch_mode<T, POOLS, epg::NARROW, Y>(p, rf, stream);
+    }
+}
+
+}  // namespace blochsim_layout

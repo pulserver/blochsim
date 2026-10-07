@@ -1,7 +1,7 @@
-"""Whether a kernel compiled for its switches computes what the general one does.
+"""Whether a kernel compiled for its switches or its layout computes what the general one does.
 
-A specialized kernel that quietly did not run agrees perfectly, so every case
-also asserts that one did.
+A kernel that quietly did not run agrees perfectly, so every case also asserts
+that one did.
 """
 
 from __future__ import annotations
@@ -75,6 +75,10 @@ def _gradient(phase: float) -> torch.Tensor:
     return tissue["t2_ms"].grad
 
 
+def _fast_launches() -> int:
+    return _gpu_launch.specialized_launches() + _gpu_launch.layout_launches()
+
+
 CASES = {
     "real forward": lambda: _forward(torch.pi / 2),
     "complex forward": lambda: _forward(0.0),
@@ -88,18 +92,18 @@ CASES = {
 def test_a_specialized_kernel_computes_what_the_general_one_does(case) -> None:
     with _gpu_launch.generic_kernels():
         general = CASES[case]()
-    before = _gpu_launch.specialized_launches()
+    before = _fast_launches()
     special = CASES[case]()
 
-    assert _gpu_launch.specialized_launches() > before
+    assert _fast_launches() > before
     error = (special - general).abs().max()
     scale = general.abs().max()
     assert float(error / scale) < 1e-5, f"{float(error):.3e} against {float(scale):.3e}"
 
 
 def test_the_general_kernels_run_where_asked() -> None:
-    before = _gpu_launch.specialized_launches()
+    before = _fast_launches()
     with _gpu_launch.generic_kernels():
         _forward(torch.pi / 2)
 
-    assert _gpu_launch.specialized_launches() == before
+    assert _fast_launches() == before
