@@ -153,10 +153,10 @@ PyObject* launch(PyObject*, PyObject* args) {
         sizeof(unsigned long long) * (threads.x * threads.y + bsk::MAX_Z * bsk::MAX_Z);
     void* parameters[] = {&request.arguments, &request.z};
     const int bounded = threads.x * threads.y > 256 ? 1 : 0;
-    // A specialized kernel is compiled for 256 threads; a wider block runs the
-    // kernel compiled for every combination.
+    // A specialized kernel is compiled for 256 threads and for rows a warp
+    // wide; a wider block or row runs the kernel compiled for every combination.
     const void* function = KERNEL_FUNCTIONS[request.kernel][bounded];
-    if (specializing && !bounded) {
+    if (specializing && !bounded && threads.x <= 32) {
         if (const void* special = matching(request)) {
             function = special;
             ++specialized_launches;

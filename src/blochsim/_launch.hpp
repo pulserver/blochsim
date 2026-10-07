@@ -93,6 +93,14 @@ inline bool read_launch(PyObject* name, PyObject* grid, PyObject* args, Launch& 
                 break;
             default:
                 arg.i = PyLong_AsLongLong(item);
+                // The EPG kernels index in 32 bits, as Triton did for an
+                // argument that fit; one that does not is refused, not cut.
+                if (!PyErr_Occurred() && (arg.i > 2147483647LL || arg.i < -2147483648LL)) {
+                    PyErr_Format(PyExc_ValueError,
+                                 "%s: argument %zd is %lld, past what a kernel indexes with",
+                                 info.name, i, static_cast<long long>(arg.i));
+                    return false;
+                }
                 break;
         }
         if (PyErr_Occurred()) {

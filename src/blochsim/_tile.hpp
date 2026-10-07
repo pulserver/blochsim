@@ -39,6 +39,11 @@
 
 namespace bsk {
 
+// The integers the EPG kernels index with: 32 bits, as Triton passed every
+// integer argument that fit. An offset that can pass 2^31 is cast to 64 bits
+// where it is formed, and the launcher refuses an argument that does not fit.
+using index_t = std::int32_t;
+
 // ---------------------------------------------------------------------------
 // The launch a program belongs to.
 // ---------------------------------------------------------------------------
@@ -66,9 +71,8 @@ __device__ __forceinline__ void enter(int nz) {
     }
     __syncthreads();
 }
-BSK_HD std::int64_t program_id(int axis) {
-    return axis == 0 ? static_cast<std::int64_t>(blockIdx.x)
-                     : static_cast<std::int64_t>(blockIdx.y);
+BSK_HD index_t program_id(int axis) {
+    return axis == 0 ? static_cast<index_t>(blockIdx.x) : static_cast<index_t>(blockIdx.y);
 }
 
 #else
@@ -85,7 +89,7 @@ inline thread_local HostProgram program;
 inline int width_x() { return program.nx; }
 inline int width_y() { return program.ny; }
 inline int width_z() { return program.nz; }
-inline std::int64_t program_id(int axis) { return program.pid[axis]; }
+inline index_t program_id(int axis) { return static_cast<index_t>(program.pid[axis]); }
 
 #endif
 
@@ -489,14 +493,46 @@ BSK_HD auto s_max(X x, Y y) {
     }
 }
 
+// A function too costly to take once per row where a thread's rows all hold
+// the same argument -- a pulse's flip, a shared interval -- as they do where
+// a value read once per event is spread over the problems. The test is a few
+// compares; the result is the same either way, bit for bit.
+template <class F, class A>
+BSK_HD auto once_if_shared(F f, const A& a) {
+#if defined(BLOCHSIM_SIMT)
+    if constexpr (axes_of<A> != 0) {
+        using Tile = std::decay_t<A>;
+        if constexpr (Tile::rows > 1 && Tile::depth == 1) {
+            bool shared = true;
+#pragma unroll
+            for (int y = 1; y < Tile::rows; ++y) {
+                shared = shared && a.v[y] == a.v[0];
+            }
+            if (shared) {
+                using R = decltype(f(a.v[0]));
+                return V<R, axes_of<A>>(f(a.v[0]));
+            }
+        }
+    }
+#endif
+    return zip(f, a);
+}
+
+#define BSK_COSTLY_UNARY(name)                                                 \
+    template <class A>                                                         \
+    BSK_HD auto name(const A& a) {                                             \
+        return once_if_shared([](auto x) { return s_##name(x); }, a);          \
+    }
+BSK_COSTLY_UNARY(exp)
+BSK_COSTLY_UNARY(cos)
+BSK_COSTLY_UNARY(sin)
+#undef BSK_COSTLY_UNARY
+
 #define BSK_UNARY(name)                                                        \
     template <class A>                                                         \
     BSK_HD auto name(const A& a) {                                             \
         return zip([](auto x) { return s_##name(x); }, a);                     \
     }
-BSK_UNARY(exp)
-BSK_UNARY(cos)
-BSK_UNARY(sin)
 BSK_UNARY(sqrt)
 BSK_UNARY(floor)
 BSK_UNARY(rint)
@@ -736,6 +772,20 @@ BSK_HD T shuffle(T value, int lane, int width) {
 
 // Every thread of the block runs these together: a kernel's control flow
 // depends on nothing a single thread holds.
+//
+// A row wider than a warp goes through shared memory, in a function of its
+// own: inlined, the compiler predicates its barriers and accesses rather than
+// branching past them, and every row a warp wide pays for them.
+template <class T, class Op>
+__device__ __noinline__ T reduce_wide_row(T value, Op op);
+
+template <class T>
+__device__ __noinline__ T gather_wide_row(T value, int lane);
+
+// A kernel compiled with BLOCHSIM_ROWS_IN_A_WARP is launched only on rows a
+// warp wide or narrower, so its gathers and reductions are shuffles with no
+// test: the test splits the code between them, and the indices and masks each
+// recomputes can no longer be shared.
 template <class T, class Op>
 BSK_HD T reduce_row(T value, Op op) {
     const int nx = width_x();
@@ -743,9 +793,19 @@ BSK_HD T reduce_row(T value, Op op) {
     for (int offset = width >> 1; offset > 0; offset >>= 1) {
         value = op(value, shuffle_xor(value, offset, width));
     }
+#if defined(BLOCHSIM_ROWS_IN_A_WARP)
+    return value;
+#else
     if (nx <= 32) {
         return value;
     }
+    return reduce_wide_row(value, op);
+#endif
+}
+
+template <class T, class Op>
+__device__ __noinline__ T reduce_wide_row(T value, Op op) {
+    const int nx = width_x();
     T* words = reinterpret_cast<T*>(shared_words);
     const int warps = nx >> 5;
     __syncthreads();
@@ -762,6 +822,19 @@ BSK_HD T reduce_row(T value, Op op) {
 
 template <class T, class Op>
 BSK_HD T reduce_column(T value, Op op) {
+    const int nx = width_x();
+    const int ny = static_cast<int>(blockDim.y);
+    if (ny == 1) {
+        return value;
+    }
+    if (nx * ny <= 32) {
+        // One warp: a column's rows sit nx lanes apart, and nx and ny are
+        // powers of two.
+        for (int offset = nx; offset < nx * ny; offset <<= 1) {
+            value = op(value, shuffle_xor(value, offset, 32));
+        }
+        return value;
+    }
     T* words = reinterpret_cast<T*>(shared_words);
     __syncthreads();
     words[threadIdx.y * blockDim.x + threadIdx.x] = value;
@@ -776,9 +849,19 @@ BSK_HD T reduce_column(T value, Op op) {
 template <class T>
 BSK_HD T gather_row(T value, int lane) {
     const int nx = width_x();
+#if defined(BLOCHSIM_ROWS_IN_A_WARP)
+    return shuffle(value, lane, nx);
+#else
     if (nx <= 32) {
         return shuffle(value, lane, nx);
     }
+    return gather_wide_row(value, lane);
+#endif
+}
+
+template <class T>
+__device__ __noinline__ T gather_wide_row(T value, int lane) {
+    const int nx = width_x();
     T* words = reinterpret_cast<T*>(shared_words);
     __syncthreads();
     words[threadIdx.y * nx + threadIdx.x] = value;

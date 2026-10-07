@@ -983,7 +983,7 @@ BSK_HD auto _three_pool_pieces_jvp_in_precision(const T0& r1_free, const T1& d_r
     d_sum_square = d_square;
     factorial = Work(1.0);
     #pragma unroll
-    for (std::int64_t order = 1; order < 16; order += 1) {
+    for (bsk::index_t order = 1; order < 16; order += 1) {
         auto next_flat = (square * determinant);
         auto d_next_flat = ((d_square * determinant) + (square * d_determinant));
         auto next_linear = (flat - (square * minors));
@@ -1359,7 +1359,7 @@ BSK_HD auto _three_pool_step_adjoint_jvp_in_precision(const T0& r1_free, const T
     d_slope_v_square = (Work(0.0) * a00);
     factorial = Work(1.0);
     #pragma unroll
-    for (std::int64_t order = 1; order < 16; order += 1) {
+    for (bsk::index_t order = 1; order < 16; order += 1) {
         auto next_flat = (square * determinant);
         auto d_next_flat = ((d_square * determinant) + (square * d_determinant));
         auto next_linear = (flat - (square * minors));
@@ -2384,7 +2384,7 @@ BSK_HD auto _washout_jvp(const T0& rate, const T1& rate_tangent, const T2& dt, c
     return bsk::make_tup(bsk::where(live, (1.0f - fraction), 0.0f), bsk::where(live, (-((rate_tangent * dt) + (rate * dt_tangent))), 0.0f));
 }
 
-BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* exchange_rate, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* saturation, float* rf_frequency, float* profile, std::int32_t* profile_index, float* lineshape, float* pairs, std::int32_t* pair_index, float* pair_direction, float* grad_pair_value, float* grad_pair_tangent, float* dot_t1, float* dot_t2, float* dot_m0, float* dot_b1, float* dot_b1_phase, float* dot_b0, float* dot_inversion_efficiency, float* dot_diffusion, float* dot_velocity, float* dot_bound_fraction, float* dot_exchange_rate, float* dot_t1_bound, float* dot_pool_b_fraction, float* dot_pool_b_exchange, float* dot_t1_pool_b, float* dot_t2_pool_b, float* dot_pool_b_shift, float* dot_duration, float* dot_flip, float* dot_phase, std::int32_t* duration_row, float* pool_table, float* pool_bars, float* pool_durations, std::int64_t row_count, float* grad_output_real, float* grad_output_imag, float* grad_tissue_value, float* grad_tissue_tangent, float* grad_flip_value, float* grad_flip_tangent, float* grad_phase_value, float* grad_phase_tangent, float* grad_duration_value, float* grad_duration_tangent, float* trajectory_vr, float* trajectory_vi, float* trajectory_tr, float* trajectory_ti, std::int64_t problem_base, std::int64_t problem_end, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, float flow_scale, float washout_scale, float profile_step, float lineshape_step, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shim_rows, std::int64_t shimmed, std::int64_t locations, std::int64_t profiled, std::int64_t profile_bins, std::int64_t dynamic, std::int64_t directed, std::int64_t off_axis, std::int64_t moving, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t broadened, std::int64_t lineshape_bins, std::int64_t pools, std::int64_t narrow, std::int64_t tabulated, std::int64_t recording, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* exchange_rate, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* saturation, float* rf_frequency, float* profile, std::int32_t* profile_index, float* lineshape, float* pairs, std::int32_t* pair_index, float* pair_direction, float* grad_pair_value, float* grad_pair_tangent, float* dot_t1, float* dot_t2, float* dot_m0, float* dot_b1, float* dot_b1_phase, float* dot_b0, float* dot_inversion_efficiency, float* dot_diffusion, float* dot_velocity, float* dot_bound_fraction, float* dot_exchange_rate, float* dot_t1_bound, float* dot_pool_b_fraction, float* dot_pool_b_exchange, float* dot_t1_pool_b, float* dot_t2_pool_b, float* dot_pool_b_shift, float* dot_duration, float* dot_flip, float* dot_phase, std::int32_t* duration_row, float* pool_table, float* pool_bars, float* pool_durations, bsk::index_t row_count, float* grad_output_real, float* grad_output_imag, float* grad_tissue_value, float* grad_tissue_tangent, float* grad_flip_value, float* grad_flip_tangent, float* grad_phase_value, float* grad_phase_tangent, float* grad_duration_value, float* grad_duration_tangent, float* trajectory_vr, float* trajectory_vi, float* trajectory_tr, float* trajectory_ti, bsk::index_t problem_base, bsk::index_t problem_end, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, float flow_scale, float washout_scale, float profile_step, float lineshape_step, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shim_rows, bsk::index_t shimmed, bsk::index_t locations, bsk::index_t profiled, bsk::index_t profile_bins, bsk::index_t dynamic, bsk::index_t directed, bsk::index_t off_axis, bsk::index_t moving, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t broadened, bsk::index_t lineshape_bins, bsk::index_t pools, bsk::index_t narrow, bsk::index_t tabulated, bsk::index_t recording, bsk::index_t block_states, bsk::index_t problems) {
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> a11{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> a12{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> a21{};
@@ -2497,9 +2497,9 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
     bsk::V<float, 2> d_exchange{};
     bsk::V<float, 2> d_flow{};
     bsk::V<float, 2> d_free{};
-    bsk::V<double, 2> d_grow_free{};
-    bsk::V<double, 2> d_grow_pool_b{};
-    bsk::V<double, 2> d_grow_semisolid{};
+    bsk::V<float, 2> d_grow_free{};
+    bsk::V<float, 2> d_grow_pool_b{};
+    bsk::V<float, 2> d_grow_semisolid{};
     bsk::V<float, 2> d_inv{};
     bsk::V<float, 2> d_m0{};
     bsk::V<float, 2> d_semisolid_exchange{};
@@ -2518,15 +2518,15 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
     bsk::V<float, 2> d_t32{};
     bsk::V<float, 2> d_t33{};
     bsk::V<float, 2> d_turn{};
-    bsk::V<double, 2> d_w11{};
-    bsk::V<double, 2> d_w12{};
-    bsk::V<double, 2> d_w13{};
-    bsk::V<double, 2> d_w21{};
-    bsk::V<double, 2> d_w22{};
-    bsk::V<double, 2> d_w23{};
-    bsk::V<double, 2> d_w31{};
-    bsk::V<double, 2> d_w32{};
-    bsk::V<double, 2> d_w33{};
+    bsk::V<float, 2> d_w11{};
+    bsk::V<float, 2> d_w12{};
+    bsk::V<float, 2> d_w13{};
+    bsk::V<float, 2> d_w21{};
+    bsk::V<float, 2> d_w22{};
+    bsk::V<float, 2> d_w23{};
+    bsk::V<float, 2> d_w31{};
+    bsk::V<float, 2> d_w32{};
+    bsk::V<float, 2> d_w33{};
     bsk::V<float, 2> d_washout{};
     bsk::V<float, 3> damp_pair_t{};
     bsk::V<float, 3> damp_pair_v{};
@@ -2621,9 +2621,9 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
     bsk::V<float, 2> grad_e1_v{};
     bsk::V<float, 2> grad_e2_t{};
     bsk::V<float, 2> grad_e2_v{};
-    bsk::V<double, 2> grow_free{};
-    bsk::V<double, 2> grow_pool_b{};
-    bsk::V<double, 2> grow_semisolid{};
+    bsk::V<float, 2> grow_free{};
+    bsk::V<float, 2> grow_pool_b{};
+    bsk::V<float, 2> grow_semisolid{};
     bsk::V<float*, 2> held{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> held_bar{};
     bsk::V<float, 2> held_semisolid{};
@@ -2963,16 +2963,16 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
     bsk::V<float, 3> utr{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> w0{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> w1{};
-    bsk::V<double, 2> w11{};
-    bsk::V<double, 2> w12{};
-    bsk::V<double, 2> w13{};
+    bsk::V<float, 2> w11{};
+    bsk::V<float, 2> w12{};
+    bsk::V<float, 2> w13{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>, bsk::V<float, 3>> w2{};
-    bsk::V<double, 2> w21{};
-    bsk::V<double, 2> w22{};
-    bsk::V<double, 2> w23{};
-    bsk::V<double, 2> w31{};
-    bsk::V<double, 2> w32{};
-    bsk::V<double, 2> w33{};
+    bsk::V<float, 2> w21{};
+    bsk::V<float, 2> w22{};
+    bsk::V<float, 2> w23{};
+    bsk::V<float, 2> w31{};
+    bsk::V<float, 2> w32{};
+    bsk::V<float, 2> w33{};
     bsk::V<float, 2> wash_t{};
     bsk::V<float, 2> wash_v{};
     bsk::V<float, 3> wbti{};
@@ -3217,7 +3217,7 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
     // and the two are launched separately: each compiles the sweep it is
     // asked for and no more.
     if (bsk::truth(recording)) {
-        for (std::int64_t event = 0; event < event_count; event += 1) {
+        for (bsk::index_t event = 0; event < event_count; event += 1) {
             slot = (trajectory + (event * record_stride));
             bsk::st((trajectory_vr + slot), pvr, state_mask);
             bsk::st((trajectory_vi + slot), pvi, state_mask);
@@ -3888,7 +3888,7 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
     g_b0t = zero;
     g_invv = zero;
     g_invt = zero;
-    for (std::int64_t reverse = 0; reverse < event_count; reverse += 1) {
+    for (bsk::index_t reverse = 0; reverse < event_count; reverse += 1) {
         event = ((event_count - 1) - reverse);
         slot = (trajectory + (event * record_stride));
         auto xpvr = bsk::ld((trajectory_vr + slot), state_mask, 0.0f);
@@ -5585,7 +5585,7 @@ BSK_HD void _epg_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, floa
         // by events whose interval directions differ -- so the second pass
         // takes that dependence alone, driven by the cotangents the walk
         // back weighted by each event's direction and read at a unit one.
-        for (std::int64_t row = 0; row < row_count; row += 1) {
+        for (bsk::index_t row = 0; row < row_count; row += 1) {
             held = (pool_bars + (((local * row_count) + row) * 36));
             auto row_dt = (bsk::ld((pool_durations + row)) + zero);
             auto nil = (0.0f * row_dt);
@@ -6208,7 +6208,7 @@ BSK_HD auto _three_pool_step_in_precision(const T0& r1_free, const T1& r1_pool_b
     sum_square = square;
     factorial = Work(1.0);
     #pragma unroll
-    for (std::int64_t order = 1; order < terms; order += 1) {
+    for (bsk::index_t order = 1; order < terms; order += 1) {
         auto next_flat = (square * determinant);
         auto next_linear = (flat - (square * minors));
         auto next_square = linear;
@@ -6436,7 +6436,7 @@ BSK_HD auto _washout(const T0& rate, const T1& dt) {
     return (1.0f - bsk::minimum((rate * dt), 1.0f));
 }
 
-BSK_HD void _epg_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* bound_exchange, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, float* phase_cos, float* phase_sin, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* saturation, float* rf_frequency, float* profile, std::int32_t* profile_index, float* lineshape, float* pairs, std::int32_t* pair_index, std::int32_t* duration_row, float* pool_table, float* output_real, float* output_imag, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, float flow_scale, float washout_scale, float profile_step, float lineshape_step, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shim_rows, std::int64_t shimmed, std::int64_t locations, std::int64_t profiled, std::int64_t profile_bins, std::int64_t dynamic, std::int64_t broadened, std::int64_t lineshape_bins, std::int64_t pools, std::int64_t narrow, std::int64_t tabulated, std::int64_t off_axis, std::int64_t moving, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* bound_exchange, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, float* phase_cos, float* phase_sin, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* saturation, float* rf_frequency, float* profile, std::int32_t* profile_index, float* lineshape, float* pairs, std::int32_t* pair_index, std::int32_t* duration_row, float* pool_table, float* output_real, float* output_imag, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, float flow_scale, float washout_scale, float profile_step, float lineshape_step, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shim_rows, bsk::index_t shimmed, bsk::index_t locations, bsk::index_t profiled, bsk::index_t profile_bins, bsk::index_t dynamic, bsk::index_t broadened, bsk::index_t lineshape_bins, bsk::index_t pools, bsk::index_t narrow, bsk::index_t tabulated, bsk::index_t off_axis, bsk::index_t moving, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> atom_b0{};
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_b1_phase{};
@@ -6623,7 +6623,7 @@ BSK_HD void _epg_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_ph
     }
     auto order = bsk::cast<float>(state);
     auto event_base = (train * event_count);
-    for (std::int64_t event = 0; event < event_count; event += 1) {
+    for (bsk::index_t event = 0; event < event_count; event += 1) {
         auto dt = _event_value(duration, event_base, event, active_atom, single_train);
         wout = 1.0f;
         if (bsk::truth(moving)) {
@@ -6979,7 +6979,7 @@ BSK_HD void _epg_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_ph
 // event that reads it supplies its own attenuation. Laid out
 // ``(rows, 9, voxels)`` -- entry-major over the voxel axis -- so the nine
 // loads an event makes are each coalesced.
-BSK_HD void _three_pool_table_kernel(float* t1, float* t1_pool_b, float* t1_bound, float* pool_b_exchange, float* bound_exchange, float* pool_b_fraction, float* bound_fraction, float* durations, std::int32_t* rows, float* table, std::int64_t voxel_count, std::int64_t BLOCK, std::int64_t narrow) {
+BSK_HD void _three_pool_table_kernel(float* t1, float* t1_pool_b, float* t1_bound, float* pool_b_exchange, float* bound_exchange, float* pool_b_fraction, float* bound_fraction, float* durations, std::int32_t* rows, float* table, bsk::index_t voxel_count, bsk::index_t BLOCK, bsk::index_t narrow) {
     auto row = bsk::ld((rows + bsk::program_id(0)));
     auto atom = ((bsk::program_id(1) * BLOCK) + bsk::arange_x());
     auto live = (atom < voxel_count);
@@ -7015,7 +7015,7 @@ BSK_HD void _three_pool_table_kernel(float* t1, float* t1_pool_b, float* t1_boun
 // the direction is ``A1 C d_dt``, which the reading event adds because
 // ``d_dt`` is its own and the row's is not. Laid out ``(rows, 18, voxels)``,
 // the tangent following the value.
-BSK_HD void _three_pool_table_jvp_kernel(float* t1, float* t1_pool_b, float* t1_bound, float* pool_b_exchange, float* bound_exchange, float* pool_b_fraction, float* bound_fraction, float* d_t1, float* d_t1_pool_b, float* d_t1_bound, float* d_pool_b_exchange, float* d_bound_exchange, float* d_pool_b_fraction, float* d_bound_fraction, float* durations, std::int32_t* rows, float* table, std::int64_t voxel_count, std::int64_t BLOCK, std::int64_t narrow) {
+BSK_HD void _three_pool_table_jvp_kernel(float* t1, float* t1_pool_b, float* t1_bound, float* pool_b_exchange, float* bound_exchange, float* pool_b_fraction, float* bound_fraction, float* d_t1, float* d_t1_pool_b, float* d_t1_bound, float* d_pool_b_exchange, float* d_bound_exchange, float* d_pool_b_fraction, float* d_bound_fraction, float* durations, std::int32_t* rows, float* table, bsk::index_t voxel_count, bsk::index_t BLOCK, bsk::index_t narrow) {
     auto row = bsk::ld((rows + bsk::program_id(0)));
     auto atom = ((bsk::program_id(1) * BLOCK) + bsk::arange_x());
     auto live = (atom < voxel_count);
@@ -7085,7 +7085,7 @@ BSK_HD auto _shift_real_adjoint(const T0& plus_bar, const T1& minus_bar, const T
     return bsk::make_tup(shifted_plus, shifted_minus);
 }
 
-BSK_HD void _epg_real_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* grad_output_imag, float* grad_tissue, float* grad_flip, float* grad_duration, float* trajectory_value, std::int64_t problem_base, std::int64_t problem_end, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shim_rows, std::int64_t shimmed, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_real_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* grad_output_imag, float* grad_tissue, float* grad_flip, float* grad_duration, float* trajectory_value, bsk::index_t problem_base, bsk::index_t problem_end, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shim_rows, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 3> adjoint_mv{};
     bsk::V<float, 3> adjoint_pv{};
     bsk::V<float, 3> alpha_bar_terms_value{};
@@ -7197,7 +7197,7 @@ BSK_HD void _epg_real_vjp_kernel(float* t1, float* t2, float* m0, float* b1, flo
     auto rate1_value = bsk::truediv(1000.0f, atom_t1);
     auto rate2_value = bsk::truediv(1000.0f, atom_t2);
     auto event_base = (train * event_count);
-    for (std::int64_t event = 0; event < event_count; event += 1) {
+    for (bsk::index_t event = 0; event < event_count; event += 1) {
         slot = (trajectory + (event * record_stride));
         bsk::st((trajectory_value + slot), plus_value, state_mask);
         bsk::st(((trajectory_value + slot) + minus_plane), minus_value, state_mask);
@@ -7280,7 +7280,7 @@ BSK_HD void _epg_real_vjp_kernel(float* t1, float* t2, float* m0, float* b1, flo
     grad_b1_value = zero;
     grad_inversion_value = zero;
     grad_damping_value = zero;
-    for (std::int64_t reverse = 0; reverse < event_count; reverse += 1) {
+    for (bsk::index_t reverse = 0; reverse < event_count; reverse += 1) {
         event = ((event_count - 1) - reverse);
         slot = (trajectory + (event * record_stride));
         auto entry_pv = bsk::ld((trajectory_value + slot), state_mask, 0.0f);
@@ -7536,7 +7536,7 @@ BSK_HD auto _rotate_flip_phase_jvp(const T0& cosine, const T1& dcosine, const T2
     return bsk::make_tup(rotated_pr, rotated_pi, rotated_mr, rotated_mi, rotated_zr, rotated_zi, rotated_dpr, rotated_dpi, rotated_dmr, rotated_dmi, rotated_dzr, rotated_dzi);
 }
 
-BSK_HD void _epg_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* exchange_rate, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* tangent_t1, float* tangent_t2, float* tangent_m0, float* tangent_b1, float* tangent_b1_phase, float* tangent_b0, float* tangent_inversion_efficiency, float* tangent_diffusion, float* tangent_velocity, float* tangent_bound_fraction, float* tangent_exchange_rate, float* tangent_t1_bound, float* tangent_pool_b_fraction, float* tangent_pool_b_exchange, float* tangent_t1_pool_b, float* tangent_t2_pool_b, float* tangent_pool_b_shift, float* tangent_duration, float* tangent_flip, float* tangent_phase, float* saturation, float* rf_frequency, float* profile, std::int32_t* profile_index, float* lineshape, float* pairs, std::int32_t* pair_index, float* pair_direction, std::int32_t* duration_row, float* pool_table, float* output_real, float* output_imag, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, float flow_scale, float washout_scale, float profile_step, float lineshape_step, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shim_rows, std::int64_t shimmed, std::int64_t locations, std::int64_t profiled, std::int64_t profile_bins, std::int64_t dynamic, std::int64_t broadened, std::int64_t lineshape_bins, std::int64_t pools, std::int64_t narrow, std::int64_t tabulated, std::int64_t off_axis, std::int64_t moving, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* exchange_rate, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* tangent_t1, float* tangent_t2, float* tangent_m0, float* tangent_b1, float* tangent_b1_phase, float* tangent_b0, float* tangent_inversion_efficiency, float* tangent_diffusion, float* tangent_velocity, float* tangent_bound_fraction, float* tangent_exchange_rate, float* tangent_t1_bound, float* tangent_pool_b_fraction, float* tangent_pool_b_exchange, float* tangent_t1_pool_b, float* tangent_t2_pool_b, float* tangent_pool_b_shift, float* tangent_duration, float* tangent_flip, float* tangent_phase, float* saturation, float* rf_frequency, float* profile, std::int32_t* profile_index, float* lineshape, float* pairs, std::int32_t* pair_index, float* pair_direction, std::int32_t* duration_row, float* pool_table, float* output_real, float* output_imag, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, float flow_scale, float washout_scale, float profile_step, float lineshape_step, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shim_rows, bsk::index_t shimmed, bsk::index_t locations, bsk::index_t profiled, bsk::index_t profile_bins, bsk::index_t dynamic, bsk::index_t broadened, bsk::index_t lineshape_bins, bsk::index_t pools, bsk::index_t narrow, bsk::index_t tabulated, bsk::index_t off_axis, bsk::index_t moving, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> atom_b0{};
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_b1_phase{};
@@ -7894,7 +7894,7 @@ BSK_HD void _epg_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
         dinversion = bsk::ld((tangent_inversion_efficiency + scalar_atom), active_atom, 0.0f);
     }
     auto event_base = (train * event_count);
-    for (std::int64_t event = 0; event < event_count; event += 1) {
+    for (bsk::index_t event = 0; event < event_count; event += 1) {
         auto event_dt = _event_value(duration, event_base, event, active_atom, single_train);
         auto ddt = _event_value(tangent_duration, event_base, event, active_atom, single_train);
         auto r1 = bsk::truediv(1000.0f, atom_t1);
@@ -8537,7 +8537,7 @@ BSK_HD void _epg_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     }
 }
 
-BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* dot_t1, float* dot_t2, float* dot_m0, float* dot_b1, float* dot_inversion_efficiency, float* dot_diffusion, float* dot_duration, float* dot_flip, float* grad_output_imag, float* grad_tissue_value, float* grad_tissue_tangent, float* grad_flip_value, float* grad_flip_tangent, float* grad_duration_value, float* grad_duration_tangent, float* trajectory_value, float* trajectory_tangent, std::int64_t problem_base, std::int64_t problem_end, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shim_rows, std::int64_t shimmed, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* dot_t1, float* dot_t2, float* dot_m0, float* dot_b1, float* dot_inversion_efficiency, float* dot_diffusion, float* dot_duration, float* dot_flip, float* grad_output_imag, float* grad_tissue_value, float* grad_tissue_tangent, float* grad_flip_value, float* grad_flip_tangent, float* grad_duration_value, float* grad_duration_tangent, float* trajectory_value, float* trajectory_tangent, bsk::index_t problem_base, bsk::index_t problem_end, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shim_rows, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 3> adjoint_mt{};
     bsk::V<float, 3> adjoint_mv{};
     bsk::V<float, 3> adjoint_pt{};
@@ -8726,7 +8726,7 @@ BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1,
     auto rate2_value = bsk::truediv(1000.0f, atom_t2);
     auto rate2_tangent = bsk::truediv((-1000.0f * atom_dot_t2), (atom_t2 * atom_t2));
     auto event_base = (train * event_count);
-    for (std::int64_t event = 0; event < event_count; event += 1) {
+    for (bsk::index_t event = 0; event < event_count; event += 1) {
         slot = (trajectory + (event * record_stride));
         bsk::st((trajectory_value + slot), plus_value, state_mask);
         bsk::st(((trajectory_value + slot) + minus_plane), minus_value, state_mask);
@@ -8877,7 +8877,7 @@ BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1,
     grad_inversion_tangent = zero;
     grad_damping_value = zero;
     grad_damping_tangent = zero;
-    for (std::int64_t reverse = 0; reverse < event_count; reverse += 1) {
+    for (bsk::index_t reverse = 0; reverse < event_count; reverse += 1) {
         event = ((event_count - 1) - reverse);
         slot = (trajectory + (event * record_stride));
         auto entry_pv = bsk::ld((trajectory_value + slot), state_mask, 0.0f);
@@ -9154,7 +9154,7 @@ BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1,
     bsk::atomic_add(((grad_tissue_tangent + ((7 + past_transmit) * atom_count)) + atom), grad_damping_tangent, active_atom);
 }
 
-BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* output_real, float* output_imag, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shimmed, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* output_real, float* output_imag, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> alpha{};
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_damping{};
@@ -9220,7 +9220,7 @@ BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* 
     // bookkeeping serve two of them. Two is where it stops paying: four was
     // measured slower, and the body is already large enough that widening it
     // costs registers.
-    for (std::int64_t event = 0; event < event_count; event += 1) {
+    for (bsk::index_t event = 0; event < event_count; event += 1) {
         // Read here rather than through the helper: one train gives a duration
         // the whole program shares, and the skip and the memo below both want
         // to compare it as the single number it is.
@@ -9500,7 +9500,7 @@ BSK_HD auto _three_pool_interval_adjoint(const T0& table, const T1& row, const T
     return bsk::make_tup(grad_dt, grad_att);
 }
 
-BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* exchange_rate, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* saturation, float* rf_frequency, float* lineshape, float* profile, std::int32_t* profile_index, float* pairs, std::int32_t* pair_index, std::int32_t* duration_row, float* pool_table, float* pool_bars, float* pool_durations, std::int64_t row_count, float* grad_pair, float* grad_output_real, float* grad_output_imag, float* grad_tissue, float* grad_flip, float* grad_phase, float* grad_duration, float* trajectory_r, float* trajectory_i, std::int64_t problem_base, std::int64_t problem_end, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, float flow_scale, float washout_scale, std::int64_t shim_rows, float profile_step, float lineshape_step, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shimmed, std::int64_t locations, std::int64_t profiled, std::int64_t profile_bins, std::int64_t dynamic, std::int64_t broadened, std::int64_t lineshape_bins, std::int64_t pools, std::int64_t narrow, std::int64_t tabulated, std::int64_t off_axis, std::int64_t moving, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t recording, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b1_phase, float* b0, float* inversion_efficiency, float* diffusion, float* velocity, float* bound_fraction, float* exchange_rate, float* t1_bound, float* pool_b_fraction, float* pool_b_exchange, float* t1_pool_b, float* t2_pool_b, float* pool_b_shift, float* duration, std::int32_t* kind, float* flip, float* phase, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* saturation, float* rf_frequency, float* lineshape, float* profile, std::int32_t* profile_index, float* pairs, std::int32_t* pair_index, std::int32_t* duration_row, float* pool_table, float* pool_bars, float* pool_durations, bsk::index_t row_count, float* grad_pair, float* grad_output_real, float* grad_output_imag, float* grad_tissue, float* grad_flip, float* grad_phase, float* grad_duration, float* trajectory_r, float* trajectory_i, bsk::index_t problem_base, bsk::index_t problem_end, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, float flow_scale, float washout_scale, bsk::index_t shim_rows, float profile_step, float lineshape_step, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t locations, bsk::index_t profiled, bsk::index_t profile_bins, bsk::index_t dynamic, bsk::index_t broadened, bsk::index_t lineshape_bins, bsk::index_t pools, bsk::index_t narrow, bsk::index_t tabulated, bsk::index_t off_axis, bsk::index_t moving, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t recording, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> _d11{};
     bsk::V<float, 2> _d12{};
     bsk::V<float, 2> _d21{};
@@ -9644,9 +9644,9 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     bsk::V<float, 2> grad_alpha_v{};
     bsk::V<float, 2> grad_angle_v{};
     bsk::V<float, 2> grad_e1_v{};
-    bsk::V<double, 2> grow_free{};
-    bsk::V<double, 2> grow_pool_b{};
-    bsk::V<double, 2> grow_semisolid{};
+    bsk::V<float, 2> grow_free{};
+    bsk::V<float, 2> grow_pool_b{};
+    bsk::V<float, 2> grow_semisolid{};
     bsk::V<float, 3> h11i{};
     bsk::V<float, 3> h11r{};
     bsk::V<float, 3> h12i{};
@@ -9929,16 +9929,16 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     bsk::V<float, 3> vr_{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>> w0{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>> w1{};
-    bsk::V<double, 2> w11{};
-    bsk::V<double, 2> w12{};
-    bsk::V<double, 2> w13{};
+    bsk::V<float, 2> w11{};
+    bsk::V<float, 2> w12{};
+    bsk::V<float, 2> w13{};
     bsk::tup<bsk::V<float, 3>, bsk::V<float, 3>> w2{};
-    bsk::V<double, 2> w21{};
-    bsk::V<double, 2> w22{};
-    bsk::V<double, 2> w23{};
-    bsk::V<double, 2> w31{};
-    bsk::V<double, 2> w32{};
-    bsk::V<double, 2> w33{};
+    bsk::V<float, 2> w21{};
+    bsk::V<float, 2> w22{};
+    bsk::V<float, 2> w23{};
+    bsk::V<float, 2> w31{};
+    bsk::V<float, 2> w32{};
+    bsk::V<float, 2> w33{};
     bsk::V<float, 2> wash_v{};
     bsk::V<float, 3> wbvi{};
     bsk::V<float, 3> wbvr{};
@@ -10088,7 +10088,7 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     // and the two are launched separately: each compiles the sweep it is
     // asked for and no more.
     if (bsk::truth(recording)) {
-        for (std::int64_t event = 0; event < event_count; event += 1) {
+        for (bsk::index_t event = 0; event < event_count; event += 1) {
             slot = (trajectory + (event * record_stride));
             bsk::st((trajectory_r + slot), pvr, state_mask);
             bsk::st((trajectory_i + slot), pvi, state_mask);
@@ -10567,7 +10567,7 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     ubvi = empty;
     wbvr = empty;
     wbvi = empty;
-    for (std::int64_t reverse = 0; reverse < event_count; reverse += 1) {
+    for (bsk::index_t reverse = 0; reverse < event_count; reverse += 1) {
         event = ((event_count - 1) - reverse);
         slot = (trajectory + (event * record_stride));
         auto xpvr = bsk::ld((trajectory_r + slot), state_mask, 0.0f);
@@ -11833,7 +11833,7 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
         // walk back pooled the cotangents the eigenvalues are pushed through,
         // and the closed form is linear in them, so the pieces of the sum are
         // the sum of the pieces.
-        for (std::int64_t row = 0; row < row_count; row += 1) {
+        for (bsk::index_t row = 0; row < row_count; row += 1) {
             held = (pool_bars + (((local * row_count) + row) * 12));
             auto row_dt = (bsk::ld((pool_durations + row)) + zero);
             auto one_att = bsk::select(bsk::truth(moving), _washout(atom_washout, row_dt), (1.0f + (0.0f * row_dt)));
@@ -12008,7 +12008,7 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     });
 }
 
-BSK_HD void _epg_real_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* tangent_t1, float* tangent_t2, float* tangent_m0, float* tangent_b1, float* tangent_inversion_efficiency, float* tangent_diffusion, float* tangent_duration, float* tangent_flip, float* output_real, float* output_imag, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shimmed, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
+BSK_HD void _epg_real_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* tangent_t1, float* tangent_t2, float* tangent_m0, float* tangent_b1, float* tangent_inversion_efficiency, float* tangent_diffusion, float* tangent_duration, float* tangent_flip, float* output_real, float* output_imag, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_damping{};
     bsk::V<float, 2> atom_inversion{};
@@ -12096,7 +12096,7 @@ BSK_HD void _epg_real_jvp_kernel(float* t1, float* t2, float* m0, float* b1, flo
     // bookkeeping serve two of them. Two is where it stops paying: four was
     // measured slower, and the body is already large enough that widening it
     // costs registers.
-    for (std::int64_t event = 0; event < event_count; event += 1) {
+    for (bsk::index_t event = 0; event < event_count; event += 1) {
         auto dt = _event_value(duration, event_base, event, active_atom, single_train);
         auto dot_dt = _event_value(tangent_duration, event_base, event, active_atom, single_train);
         // An event of no duration relaxes nothing, and carries no tangent along

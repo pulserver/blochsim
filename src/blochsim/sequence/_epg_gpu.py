@@ -284,9 +284,10 @@ def _three_pool_table(
     return table
 
 
-# Threads of one program: a warp, its lanes along the states and, where the
-# states are fewer, across rows of problems.
-_PROGRAM_THREADS = 32
+# Threads of one program: two warps, their lanes along the states and, where
+# the states are fewer, across rows of problems. A program of one warp caps a
+# card at as many warps as it runs blocks, short of what the registers allow.
+_PROGRAM_THREADS = 64
 
 
 def _atom_stride(*tuples: tuple[torch.Tensor, ...]) -> int:

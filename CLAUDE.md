@@ -88,7 +88,14 @@ list; `_gpu_launch.generic_kernels()` runs a block on the general kernels, which
 is how `tests/sequence/test_specialized_kernels.py` holds the two to each other.
 Each entry is another compile of its kernel, so the list is most of a CUDA
 build's time; `--config-settings=cmake.define.BLOCHSIM_SPECIALIZE=OFF` builds
-the general kernels alone.
+the general kernels alone. A specialized kernel is compiled for rows of at most
+32 state orders, so its shifts are shuffles with no test; a wider launch runs
+the general one.
+
+**The EPG kernels index in 32 bits** (`bsk::index_t`), as Triton did for every
+integer argument that fit. An offset that can pass 2^31 is cast to 64 bits
+where it is formed, as the Triton source cast it, and the launcher refuses an
+integer argument that does not fit rather than truncating it.
 
 **`--cov` is on by default** through `addopts`, so a bare `pytest` writes
 `coverage.xml`. It is ignored, not tracked.

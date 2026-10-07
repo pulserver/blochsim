@@ -2,6 +2,8 @@
 // writes one of these per entry of _specializations.json: @INDEX@ is the
 // entry, @KERNEL@ the kernel, and the switches it fixes follow ``Call``.
 #define BLOCHSIM_SIMT 1
+// Launched only on rows a warp wide or narrower; see _tile.hpp.
+#define BLOCHSIM_ROWS_IN_A_WARP 1
 
 #include "_lanes.hpp"
 #define BLOCHSIM_Y_LANES BLOCHSIM_LANES_@KERNEL@
