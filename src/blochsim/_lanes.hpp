@@ -13,9 +13,9 @@
 #define BLOCHSIM_LANES__epg_vjp_jvp_kernel 1
 #define BLOCHSIM_LANES__epg_real_vjp_jvp_kernel 1
 #define BLOCHSIM_LANES__epg_real_vjp_kernel 1
-#define BLOCHSIM_LANES__epg_real_kernel 8
+#define BLOCHSIM_LANES__epg_real_kernel 4
 #define BLOCHSIM_LANES__epg_real_jvp_kernel 1
-#define BLOCHSIM_LANES__epg_kernel 1
+#define BLOCHSIM_LANES__epg_kernel 2
 #define BLOCHSIM_LANES__epg_jvp_kernel 1
 #define BLOCHSIM_LANES__pooled_kernel 1
 #define BLOCHSIM_LANES__pooled_adjoint_kernel 1

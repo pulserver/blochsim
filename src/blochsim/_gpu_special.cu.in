@@ -1,0 +1,27 @@
+// One kernel compiled for one combination of its feature switches. CMake
+// writes one of these per entry of _specializations.json: @INDEX@ is the
+// entry, @KERNEL@ the kernel, and the switches it fixes follow ``Call``.
+#define BLOCHSIM_SIMT 1
+
+#include "_lanes.hpp"
+#define BLOCHSIM_Y_LANES BLOCHSIM_LANES_@KERNEL@
+
+#include "_special.hpp"
+
+namespace {
+
+constexpr int KERNEL = bsk::kernel_index("@KERNEL@");
+#define BLOCHSIM_PARAM(name) bsk::param_index(KERNEL, #name)
+
+struct Call {
+    BSK_HD static void run(const bsk::Arg* a) { bsk::call@KERNEL@(a); }
+};
+
+using Special = bsk::Fixing<Call@FIXED@>;
+
+}  // namespace
+
+__global__ void __launch_bounds__(256) special@INDEX@(bsk::Arguments arguments, int z) {
+    bsk::enter(z);
+    Special::run(arguments.a);
+}

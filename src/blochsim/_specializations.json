@@ -1,0 +1,2406 @@
+{
+ "specializations": [
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 2,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 1,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 0,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 1,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 2,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 1,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 1,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 1,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 0,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 1,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 1,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 0,
+    "diffusing": 0,
+    "inverting": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_real_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "density": 1,
+    "diffusing": 1,
+    "inverting": 1,
+    "shimmed": 1,
+    "single_train": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_jvp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "directed": 0,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 0,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 0,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 0,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 1,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 1,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 2,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 2,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 2,
+    "profiled": 1,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 2,
+    "profiled": 1,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 0,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 1,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 0,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 1,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 0,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 0,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 0,
+    "diffusing": 0,
+    "dynamic": 0,
+    "inverting": 0,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 0,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 0
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 1,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 1,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 1,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 0,
+    "narrow": 1,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 0,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 0,
+    "transmit": 1
+   }
+  },
+  {
+   "kernel": "_epg_vjp_kernel",
+   "fixed": {
+    "atom_stride": 1,
+    "broadened": 1,
+    "density": 1,
+    "diffusing": 1,
+    "dynamic": 0,
+    "inverting": 1,
+    "moving": 1,
+    "narrow": 0,
+    "off_axis": 1,
+    "pools": 3,
+    "profiled": 0,
+    "recording": 1,
+    "shimmed": 0,
+    "single_train": 1,
+    "tabulated": 1,
+    "transmit": 1
+   }
+  }
+ ]
+}

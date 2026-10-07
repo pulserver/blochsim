@@ -11,6 +11,8 @@ from __future__ import annotations
 
 __all__: list[str] = []
 
+from collections.abc import Iterator
+from contextlib import contextmanager
 from functools import cache
 from typing import Any
 
@@ -57,6 +59,45 @@ def available() -> bool:
     except ImportError:
         return False
     return True
+
+
+def specializations() -> list[tuple[str, dict[str, int]]]:
+    """Each kernel compiled for one combination of its switches, and the switches.
+
+    Empty where this installation carries no kernels for a card.
+    """
+    if not available():
+        return []
+    return [
+        (
+            kernel,
+            {
+                name: int(value)
+                for name, value in (
+                    pair.split("=") for pair in fixed.split(",") if pair
+                )
+            },
+        )
+        for kernel, fixed in _module("cuda").specializations()
+    ]
+
+
+def specialized_launches() -> int:
+    """How many launches on a card have run a specialized kernel."""
+    return _module("cuda").specialized_launches() if available() else 0
+
+
+@contextmanager
+def generic_kernels() -> Iterator[None]:
+    """Run every launch inside on the kernels compiled for all combinations."""
+    if not available():
+        yield
+        return
+    previous = _module("cuda").use_specializations(False)
+    try:
+        yield
+    finally:
+        _module("cuda").use_specializations(previous)
 
 
 class Kernel:

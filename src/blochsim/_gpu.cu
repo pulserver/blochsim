@@ -10,14 +10,25 @@
 #define BLOCHSIM_TABLE_ONLY 1
 
 #include "_launch.hpp"
+#include "_special.hpp"
+#include "_special_table.hpp"
 
 #include <cuda_runtime.h>
+
+#include <string>
+#include <utility>
+#include <vector>
 
 #define BLOCHSIM_DEVICE_ENTRY(name)                                \
     __global__ void kernel##name##_256(bsk::Arguments arguments, int z); \
     __global__ void kernel##name##_1024(bsk::Arguments arguments, int z);
 BLOCHSIM_FOR_EACH_KERNEL(BLOCHSIM_DEVICE_ENTRY)
 #undef BLOCHSIM_DEVICE_ENTRY
+
+#define BLOCHSIM_SPECIAL_DECLARATION(index, kernel, fixed) \
+    __global__ void special##index(bsk::Arguments arguments, int z);
+BLOCHSIM_FOR_EACH_SPECIAL(BLOCHSIM_SPECIAL_DECLARATION)
+#undef BLOCHSIM_SPECIAL_DECLARATION
 
 namespace {
 
@@ -27,6 +38,72 @@ namespace {
      reinterpret_cast<const void*>(&kernel##name##_1024)},
 const void* const KERNEL_FUNCTIONS[][2] = {BLOCHSIM_FOR_EACH_KERNEL(BLOCHSIM_DEVICE_POINTER)};
 #undef BLOCHSIM_DEVICE_POINTER
+
+// The kernels compiled for one combination of their switches, as CMake listed
+// them, and parsed once into the arguments each fixes.
+struct SpecialSource {
+    const char* kernel;
+    const char* fixed;
+    const void* function;
+};
+
+#define BLOCHSIM_SPECIAL_SOURCE(index, kernel, fixed) \
+    {#kernel, fixed, reinterpret_cast<const void*>(&special##index)},
+const SpecialSource SPECIAL_SOURCES[] = {
+    BLOCHSIM_FOR_EACH_SPECIAL(BLOCHSIM_SPECIAL_SOURCE){nullptr, nullptr, nullptr}};
+#undef BLOCHSIM_SPECIAL_SOURCE
+
+struct Special {
+    std::vector<std::pair<int, long long>> fixed;
+    const void* function;
+};
+
+const std::vector<std::vector<Special>>& specials() {
+    static const std::vector<std::vector<Special>> table = [] {
+        std::vector<std::vector<Special>> out(sizeof(bsk::KERNELS) / sizeof(bsk::KERNELS[0]));
+        for (const SpecialSource& source : SPECIAL_SOURCES) {
+            if (source.kernel == nullptr) {
+                break;
+            }
+            const int kernel = blochsim_launch::find_kernel(source.kernel);
+            Special special{{}, source.function};
+            const std::string text = source.fixed;
+            std::size_t start = 0;
+            while (start < text.size()) {
+                const std::size_t end = text.find(',', start);
+                const std::string pair = text.substr(start, end - start);
+                const std::size_t equals = pair.find('=');
+                special.fixed.emplace_back(bsk::param_index(kernel, pair.substr(0, equals).c_str()),
+                                           std::stoll(pair.substr(equals + 1)));
+                start = end + 1;
+            }
+            out[kernel].push_back(std::move(special));
+        }
+        return out;
+    }();
+    return table;
+}
+
+// Whether a launch may run a specialized kernel, and how many have.
+bool specializing = true;
+unsigned long long specialized_launches = 0;
+
+// The specialized kernel whose fixed switches this launch matches, if any.
+const void* matching(const blochsim_launch::Launch& request) {
+    for (const Special& special : specials()[request.kernel]) {
+        bool match = true;
+        for (const auto& [index, value] : special.fixed) {
+            if (request.arguments.a[index].i != value) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            return special.function;
+        }
+    }
+    return nullptr;
+}
 
 PyObject* cuda_error(cudaError_t status, const char* what) {
     PyErr_Format(PyExc_RuntimeError, "%s: %s", what, cudaGetErrorString(status));
@@ -76,8 +153,17 @@ PyObject* launch(PyObject*, PyObject* args) {
         sizeof(unsigned long long) * (threads.x * threads.y + bsk::MAX_Z * bsk::MAX_Z);
     void* parameters[] = {&request.arguments, &request.z};
     const int bounded = threads.x * threads.y > 256 ? 1 : 0;
-    status = cudaLaunchKernel(KERNEL_FUNCTIONS[request.kernel][bounded], blocks, threads, parameters,
-                              shared, reinterpret_cast<cudaStream_t>(stream));
+    // A specialized kernel is compiled for 256 threads; a wider block runs the
+    // kernel compiled for every combination.
+    const void* function = KERNEL_FUNCTIONS[request.kernel][bounded];
+    if (specializing && !bounded) {
+        if (const void* special = matching(request)) {
+            function = special;
+            ++specialized_launches;
+        }
+    }
+    status = cudaLaunchKernel(function, blocks, threads, parameters, shared,
+                              reinterpret_cast<cudaStream_t>(stream));
     if (previous != device) {
         cudaSetDevice(previous);
     }
@@ -87,11 +173,51 @@ PyObject* launch(PyObject*, PyObject* args) {
     Py_RETURN_NONE;
 }
 
+PyObject* specializations(PyObject*, PyObject*) {
+    PyObject* out = PyList_New(0);
+    if (out == nullptr) {
+        return nullptr;
+    }
+    for (const SpecialSource& source : SPECIAL_SOURCES) {
+        if (source.kernel == nullptr) {
+            break;
+        }
+        PyObject* entry = Py_BuildValue("(ss)", source.kernel, source.fixed);
+        if (entry == nullptr || PyList_Append(out, entry) < 0) {
+            Py_XDECREF(entry);
+            Py_DECREF(out);
+            return nullptr;
+        }
+        Py_DECREF(entry);
+    }
+    return out;
+}
+
+PyObject* use_specializations(PyObject*, PyObject* args) {
+    int on = 1;
+    if (!PyArg_ParseTuple(args, "p", &on)) {
+        return nullptr;
+    }
+    const bool previous = specializing;
+    specializing = on != 0;
+    return PyBool_FromLong(previous);
+}
+
+PyObject* specialized_launch_count(PyObject*, PyObject*) {
+    return PyLong_FromUnsignedLongLong(specialized_launches);
+}
+
 PyMethodDef METHODS[] = {
     {"kernels", blochsim_launch::kernel_table, METH_NOARGS,
      "Each kernel's parameter names and kinds."},
     {"launch", launch, METH_VARARGS,
      "Queue a kernel over a grid of programs on a device's stream."},
+    {"specializations", specializations, METH_NOARGS,
+     "Each specialized kernel, and the switches it was compiled for."},
+    {"use_specializations", use_specializations, METH_VARARGS,
+     "Whether launches may run specialized kernels; returns the previous setting."},
+    {"specialized_launches", specialized_launch_count, METH_NOARGS,
+     "How many launches have run a specialized kernel."},
     {nullptr, nullptr, 0, nullptr},
 };
 

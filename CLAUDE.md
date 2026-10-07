@@ -75,6 +75,21 @@ problems a program carries are another matter: a thread holds `Y_LANES` of
 them in registers, set per kernel in `src/blochsim/_lanes.hpp`, so that one
 reading of each event serves all of them.
 
+**A kernel runs compiled for its own switches where one is listed.** Every
+EPG kernel takes its feature switches as arguments, so as compiled once it
+carries the registers and code of every term it might evaluate. Each entry of
+`src/blochsim/_specializations.json` compiles the same kernel again with those
+switches as constants (`_special.hpp`): every function is inlined, a constant
+switch folds, and the terms it turns off are never generated. The launcher runs
+the entry a launch's switches match exactly, and the kernel compiled for all of
+them where none does, so the list decides speed and never correctness.
+`scripts/kernel_census.py` records the switches launches use and writes the
+list; `_gpu_launch.generic_kernels()` runs a block on the general kernels, which
+is how `tests/sequence/test_specialized_kernels.py` holds the two to each other.
+Each entry is another compile of its kernel, so the list is most of a CUDA
+build's time; `--config-settings=cmake.define.BLOCHSIM_SPECIALIZE=OFF` builds
+the general kernels alone.
+
 **`--cov` is on by default** through `addopts`, so a bare `pytest` writes
 `coverage.xml`. It is ignored, not tracked.
 

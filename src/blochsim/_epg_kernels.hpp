@@ -9154,21 +9154,7 @@ BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1,
     bsk::atomic_add(((grad_tissue_tangent + ((7 + past_transmit) * atom_count)) + atom), grad_damping_tangent, active_atom);
 }
 
-BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* output_real, float* output_imag, std::int64_t atom_count_wide, std::int64_t train_count_wide, std::int64_t event_count_wide, std::int64_t output_count_wide, std::int64_t state_count_wide, std::int64_t single_train_wide, std::int64_t atom_stride_wide, std::int64_t shimmed_wide, std::int64_t diffusing_wide, std::int64_t transmit_wide, std::int64_t density_wide, std::int64_t inverting_wide, std::int64_t block_states_wide, std::int64_t problems_wide) {
-    const std::int32_t atom_count = static_cast<std::int32_t>(atom_count_wide);
-    const std::int32_t train_count = static_cast<std::int32_t>(train_count_wide);
-    const std::int32_t event_count = static_cast<std::int32_t>(event_count_wide);
-    const std::int32_t output_count = static_cast<std::int32_t>(output_count_wide);
-    const std::int32_t state_count = static_cast<std::int32_t>(state_count_wide);
-    const std::int32_t single_train = static_cast<std::int32_t>(single_train_wide);
-    const std::int32_t atom_stride = static_cast<std::int32_t>(atom_stride_wide);
-    const std::int32_t shimmed = static_cast<std::int32_t>(shimmed_wide);
-    const std::int32_t diffusing = static_cast<std::int32_t>(diffusing_wide);
-    const std::int32_t transmit = static_cast<std::int32_t>(transmit_wide);
-    const std::int32_t density = static_cast<std::int32_t>(density_wide);
-    const std::int32_t inverting = static_cast<std::int32_t>(inverting_wide);
-    const std::int32_t block_states = static_cast<std::int32_t>(block_states_wide);
-    const std::int32_t problems = static_cast<std::int32_t>(problems_wide);
+BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* output_real, float* output_imag, std::int64_t atom_count, std::int64_t train_count, std::int64_t event_count, std::int64_t output_count, std::int64_t state_count, std::int64_t single_train, std::int64_t atom_stride, std::int64_t shimmed, std::int64_t diffusing, std::int64_t transmit, std::int64_t density, std::int64_t inverting, std::int64_t block_states, std::int64_t problems) {
     bsk::V<float, 2> alpha{};
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_damping{};
@@ -9185,7 +9171,7 @@ BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* 
     bsk::V<float, 3> plus{};
     bsk::V<float, 2> pulse_b1{};
     bsk::V<bool, 2> relaxes{};
-    auto problem = ((static_cast<std::int32_t>(bsk::program_id(0)) * problems) + bsk::arange_y());
+    auto problem = ((bsk::program_id(0) * problems) + bsk::arange_y());
     auto state = bsk::arange_x();
     auto active_atom = (problem < (train_count * atom_count));
     auto state_mask = bsk::band((state < state_count), active_atom);
@@ -9292,27 +9278,17 @@ BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* 
         if (bsk::truth((bsk::truth(is_rf) && bsk::truth(is_inversion)))) {
             longitudinal = ((-atom_inversion) * longitudinal);
         } else if (bsk::truth(is_rf)) {
-            decltype(bsk::cos(alpha)) cosine;
-            decltype(bsk::sin(alpha)) sine;
-            if (bsk::truth(single_train) && !bsk::truth(transmit)) {
-                // One train and no transmit field: every problem's pulse is
-                // the same angle, so its cosine and sine are taken once.
-                const float angle = bsk::ld(flip + event);
-                cosine = cosf(angle);
-                sine = sinf(angle);
-            } else {
-                alpha = _event_value(flip, event_base, event, active_atom, single_train);
-                pulse_b1 = atom_b1;
-                // One shim is the whole sequence's transmit field, loaded once
-                // above; several give each pulse the row of the shim it drives.
-                if (bsk::truth((bsk::truth(shimmed) && bsk::truth(transmit)))) {
-                    auto shim_row = (bsk::cast<std::int64_t>(bsk::ld((shim_index + event))) * atom_count);
-                    pulse_b1 = bsk::ld(((b1 + shim_row) + atom), active_atom, 1.0f);
-                }
-                alpha = (alpha * pulse_b1);
-                cosine = bsk::cos(alpha);
-                sine = bsk::sin(alpha);
+            alpha = _event_value(flip, event_base, event, active_atom, single_train);
+            pulse_b1 = atom_b1;
+            // One shim is the whole sequence's transmit field, loaded once
+            // above; several give each pulse the row of the shim it drives.
+            if (bsk::truth((bsk::truth(shimmed) && bsk::truth(transmit)))) {
+                auto shim_row = (bsk::cast<std::int64_t>(bsk::ld((shim_index + event))) * atom_count);
+                pulse_b1 = bsk::ld(((b1 + shim_row) + atom), active_atom, 1.0f);
             }
+            alpha = (alpha * pulse_b1);
+            auto cosine = bsk::cos(alpha);
+            auto sine = bsk::sin(alpha);
             auto cosine_half_sq = (0.5f * (1.0f + cosine));
             auto sine_half_sq = (0.5f * (1.0f - cosine));
             auto half_sine = (0.5f * sine);
