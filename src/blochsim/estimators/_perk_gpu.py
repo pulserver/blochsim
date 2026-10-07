@@ -23,7 +23,9 @@ import torch
 
 from .._gpu_launch import Kernel, cdiv
 
-#: Voxels per program, one per thread.
+#: Threads per program, and the voxels a program holds: ``THREADS`` and
+#: ``THREADS * VOXELS`` in ``_perk_kernels.hpp``.
+_THREADS = 64
 _BLOCK_VOXELS = 128
 
 _regress_kernel = Kernel("_regress_kernel")
@@ -71,7 +73,7 @@ def regress(
             features,
             parameters,
             math.sqrt(2.0 / features),
-            _BLOCK_VOXELS,
+            _THREADS,
         )
     return output
 
@@ -108,6 +110,6 @@ def regress_vjp(
             features,
             parameters,
             math.sqrt(2.0 / features),
-            _BLOCK_VOXELS,
+            _THREADS,
         )
     return output

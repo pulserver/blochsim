@@ -207,14 +207,18 @@ def test_a_single_voxel_goes_through_a_kernel_tiled_for_many(device) -> None:
     assert estimator(measured[:1]).shape == (1, 2)
 
 
-def test_the_gpu_kernels_are_the_fused_line_and_its_adjoint() -> None:
-    """The kernels the card runs, compiled for the host, against Torch.
+@pytest.mark.parametrize("device", DEVICES)
+def test_the_gpu_kernels_are_the_fused_line_and_its_adjoint(device) -> None:
+    """The kernels the card runs, on the card and compiled for the host,
+    against Torch.
 
     Feature, parameter and contrast counts that are not multiples of the
-    blocks the kernels walk them in, so every edge of the tiling is read.
+    blocks the kernels walk them in, and more voxels than one program holds,
+    so every edge of the tiling is read.
     """
     gpu = pytest.importorskip("blochsim.estimators._perk_gpu")
-    pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
+    if device == "cpu":
+        pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
     generator = torch.Generator().manual_seed(0)
     voxels, contrasts, features, parameters = 300, 37, 45, 17
     signals = torch.randn(voxels, contrasts, generator=generator)
@@ -238,10 +242,13 @@ def test_the_gpu_kernels_are_the_fused_line_and_its_adjoint() -> None:
     expected = line(x)
     (expected_gradient,) = torch.autograd.grad(expected, x, cotangent.double())
 
+    def on(*tensors: torch.Tensor) -> list[torch.Tensor]:
+        return [tensor.float().to(device) for tensor in tensors]
+
     estimated = gpu.regress(
-        signals, frequency, phase, feature_mean, weight, parameter_mean
-    )
-    gradient = gpu.regress_vjp(cotangent, signals, frequency, phase, weight)
+        *on(signals, frequency, phase, feature_mean, weight, parameter_mean)
+    ).cpu()
+    gradient = gpu.regress_vjp(*on(cotangent, signals, frequency, phase, weight)).cpu()
 
     torch.testing.assert_close(
         estimated.double(), expected.detach(), atol=1e-5, rtol=1e-5
