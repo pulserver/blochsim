@@ -43,6 +43,7 @@ from typing import Any
 import torch
 
 from .._bounds import bound_of, to_free, to_natural, widen
+from .._derivative import forward_mode
 from .._execution import PER_VOXEL_CROSSOVER, per_voxel
 
 #: What the amplitude occupies, when it is carried: real part then imaginary.
@@ -307,6 +308,7 @@ class ModelOperator(torch.nn.Module):
         torch.Tensor
             ``(..., contrasts)``, complex.
         """
+        forward_mode()
         return self._voxelwise(
             "jvp",
             (x, d),

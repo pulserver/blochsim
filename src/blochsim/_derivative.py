@@ -1,20 +1,48 @@
-"""Directional derivatives taken in reverse mode.
+"""Directional derivatives, and PyTorch's forward mode made ready quietly.
 
 PyTorch's forward mode loads, the first time it makes a dual tensor in a
 process, decompositions it registers through TorchScript. What the package
 works out about its own structure -- how a packing moves with its arguments,
 how a transition table moves with its flip -- is therefore taken in reverse
-mode, so that a simulation and its gradients compile nothing at run time.
+mode, so that a simulation and its gradients compile nothing at run time. The
+derivatives that are forward mode by nature -- a Jacobian, a linearised
+operator -- load those decompositions through :func:`forward_mode`, which
+keeps PyTorch's deprecation of ``torch.jit.script`` out of the output.
 """
 
 from __future__ import annotations
 
-__all__ = ["directional_derivatives"]
+__all__ = ["directional_derivatives", "forward_mode"]
 
+import importlib
+import os
+import warnings
 from collections.abc import Callable, Sequence
+from functools import cache
 from typing import Any
 
 import torch
+
+
+@cache
+def forward_mode() -> None:
+    """Load the decompositions PyTorch's forward mode registers, without its warning.
+
+    They are what PyTorch would load at its first dual tensor, under the switch
+    it reads for that: scripting them is PyTorch's own call, which warns that
+    ``torch.jit.script`` is deprecated. Loaded once, here, the warning is
+    silenced for that load alone.
+    """
+    if os.environ.get("PYTORCH_JIT", "1") != "1" or not __debug__:
+        return
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", message=r"`torch\.jit\.script`", category=DeprecationWarning
+        )
+        try:
+            importlib.import_module("torch._decomp.decompositions_for_jvp")
+        except ImportError:
+            return
 
 
 def directional_derivatives(
