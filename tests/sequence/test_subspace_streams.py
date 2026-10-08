@@ -111,12 +111,12 @@ def _pair(backend: str, tissue, events, recorded):
     if backend == "host":
         shape = (tissue, events, STATES, recorded)
         return _run_packed(*shape, 1), _run_packed(*shape, 1, real_axis=1)
-    from blochsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_gpu
 
     shape = dict(state_count=STATES, output_count=recorded)
     return (
-        _epg_triton.simulate(tissue, events, **shape),
-        _epg_triton.simulate(tissue, events, real_axis=1, **shape),
+        _epg_gpu.simulate(tissue, events, **shape),
+        _epg_gpu.simulate(tissue, events, real_axis=1, **shape),
     )
 
 

@@ -674,7 +674,7 @@ def pipeline():
     axis.text(
         boundary + 0.15,
         1.35,
-        "C++ or Triton, once per run",
+        "C++ or CUDA, once per run",
         color=LONGITUDINAL,
         fontsize=11,
     )

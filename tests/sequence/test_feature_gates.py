@@ -17,8 +17,10 @@ import torch
 from blochsim.sequence import (
     EpgEngine,
     TissueProperties,
+    _epg_gpu,
     fse_description,
 )
+from blochsim.sequence._epg_gpu import _feature_flags
 from blochsim.sequence._parameters import (
     TISSUE_NAMES,
     TISSUE_PARAMETERS,
@@ -26,14 +28,6 @@ from blochsim.sequence._parameters import (
     at_identity,
     features_of,
 )
-
-# The kernel module imports Triton at its top, and Triton is a dependency of
-# the CUDA build of PyTorch rather than of BlochSim. Everything below the guard
-# reaches it, so the two imports stay here rather than moving up with the rest.
-pytest.importorskip("triton")
-
-from blochsim.sequence import _epg_triton  # noqa: E402
-from blochsim.sequence._epg_triton import _feature_flags  # noqa: E402
 
 ECHOES = 8
 STATES = 8
@@ -235,7 +229,7 @@ def test_the_answer_does_not_depend_on_the_gate(
     """
     gated = _adjoint(crusher_rad, **properties)
     monkeypatch.setattr(
-        _epg_triton,
+        _epg_gpu,
         "_feature_flags",
         lambda features, geometry: _feature_flags(None, geometry),
     )

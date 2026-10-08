@@ -1,0 +1,66 @@
+// Written by CMake from _layout_pooled.cu.in: the many-pool kernels for
+// @POOLS@ pools in their layout.
+#include "_layout.hpp"
+
+namespace blochsim_layout {
+namespace {
+
+constexpr int SEGMENT = POOLED_SEGMENT;
+constexpr int N = @POOLS@;
+
+template <class T, int RF>
+__global__ void __launch_bounds__(32 * WARPS) forward_kernel(epg_pooled::Params p) {
+    epg_pooled::pooled_loop<T, N, RF>(p);
+}
+
+// One warp a program: its scratch is a warp's.
+template <class T, int RF>
+__global__ void __launch_bounds__(32) adjoint_kernel(epg_pooled::Params p, epg_pooled::Adjoint g) {
+    const long long scratch = epg_pooled::adjoint_scratch_floats(N, p.m, 32, SEGMENT, num::is_dual<T>::value);
+    epg_pooled::pooled_adjoint_loop<T, N, RF, SEGMENT>(p, g, g.scratch + blockIdx.x * scratch);
+}
+
+template <class T, int RF>
+int forward_rf(const epg_pooled::Params& p, cudaStream_t stream) {
+    const int per_block = WARPS * (32 / p.width);
+    const unsigned grid = static_cast<unsigned>((p.problems + per_block - 1) / per_block);
+    forward_kernel<T, RF><<<grid, 32 * WARPS, 0, stream>>>(p);
+    return static_cast<int>(cudaGetLastError());
+}
+
+template <class T, int RF>
+int adjoint_rf(const epg_pooled::Params& p, epg_pooled::Adjoint g, cudaStream_t stream) {
+    const int groups = 32 / p.width;
+    const unsigned grid = static_cast<unsigned>((p.problems + groups - 1) / groups);
+    g.kept = epg_pooled::adjoint_kept_floats(N, p.width, p.event_count, SEGMENT, num::is_dual<T>::value);
+    g.scratch = g.trajectory + p.problems * g.kept;
+    adjoint_kernel<T, RF><<<grid, 32, 0, stream>>>(p, g);
+    return static_cast<int>(cudaGetLastError());
+}
+
+template <class T>
+int forward_t(const epg_pooled::Params& p, int rf, cudaStream_t stream) {
+    if (rf == epg::DYNAMIC) return forward_rf<T, epg::DYNAMIC>(p, stream);
+    if (rf == epg::PROFILE) return forward_rf<T, epg::PROFILE>(p, stream);
+    return forward_rf<T, epg::HARD>(p, stream);
+}
+
+template <class T>
+int adjoint_t(const epg_pooled::Params& p, const epg_pooled::Adjoint& g, int rf, cudaStream_t stream) {
+    if (rf == epg::DYNAMIC) return adjoint_rf<T, epg::DYNAMIC>(p, g, stream);
+    if (rf == epg::PROFILE) return adjoint_rf<T, epg::PROFILE>(p, g, stream);
+    return adjoint_rf<T, epg::HARD>(p, g, stream);
+}
+
+}  // namespace
+
+int pooled_forward_@POOLS@(const epg_pooled::Params& p, int rf, bool dual, cudaStream_t stream) {
+    return dual ? forward_t<num::Dual>(p, rf, stream) : forward_t<float>(p, rf, stream);
+}
+
+int pooled_adjoint_@POOLS@(const epg_pooled::Params& p, const epg_pooled::Adjoint& g, int rf, bool dual,
+                           cudaStream_t stream) {
+    return dual ? adjoint_t<num::Dual>(p, g, rf, stream) : adjoint_t<float>(p, g, rf, stream);
+}
+
+}  // namespace blochsim_layout

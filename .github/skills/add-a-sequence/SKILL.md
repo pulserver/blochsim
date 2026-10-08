@@ -63,7 +63,7 @@ evaluates. Adding an effect is one line in a model's property declaration, plus
 the term itself in **both** kernels.
 
 The shared parameter ABI is `src/blochsim/sequence/_parameters.py`, read by the
-Python dispatch, the C++ extension and the Triton kernels. A parameter added
+Python dispatch, the C++ extension and the GPU kernels. A parameter added
 there is added in all three or in none.
 
 ## What the change has to arrive with

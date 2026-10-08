@@ -46,6 +46,7 @@ from typing import Any
 
 import torch
 
+from .._derivative import directional_derivatives
 from ._description import RfDefinition
 
 
@@ -616,7 +617,9 @@ def transition_table(
         # rather than shaping it.
         return a * torch.exp(0.5j * carried)[:, None].expand(wide), b
 
-    values, slopes = torch.func.jvp(integrate, (theta,), (torch.ones_like(theta),))
+    values, (slopes,) = directional_derivatives(
+        integrate, (theta,), ((torch.ones_like(theta),),)
+    )
     return TransitionTable(
         a=values[0].to(torch.complex64).contiguous(),
         b=values[1].to(torch.complex64).contiguous(),

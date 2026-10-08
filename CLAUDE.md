@@ -16,12 +16,14 @@ broken checkout (Windows without `core.symlinks`), not two documents.
 | `src/blochsim/sequence/` | The description an acquisition is assembled from — events, operators, builders — and the dispatch that turns one into a kernel launch. |
 | `src/blochsim/model/` | What a signal model *is*: the physics, the simulator that orders its events, and the binding that resolves a protocol's structure once and rebinds its values per call. |
 | `src/blochsim/_epg_cpu.cpp`, `_perk_cpu.cpp` | The CPU kernels. Every path the GPU has exists here too, and the two agree to float32 round-off. |
-| `src/blochsim/sequence/_epg_triton.py`, `estimators/_perk_triton.py` | The GPU kernels. |
+| `src/blochsim/_epg_kernels.hpp`, `_pools_kernels.hpp`, `_perk_kernels.hpp` | The GPU kernels, written over the tiles of `_tile.hpp`. `_kernels.hpp` is the table a launch reads: each kernel's parameters, and which of them size the block. |
+| `src/blochsim/_gpu.cu`, `_gpu_kernel.cu.in`, `_gpu_host.cpp`, `_gpu_launch.py` | The same kernels compiled ahead of time for the card (`_gpu`), and for the host (`_gpu_host`), which is how the suite checks them without one; and the launcher both answer to. |
+| `src/blochsim/sequence/_epg_gpu.py`, `_pools_gpu.py`, `estimators/_perk_gpu.py` | What a GPU launch is given: the tiling and the arguments. |
 | `src/blochsim/simulators/`, `estimators/`, `recon/`, `optim/` | The sequences that ship, and what is built on top of them. |
 | `tests/`, `examples/`, `docs/` | Mirrored by subpackage, executed by the gallery, built by Sphinx. |
 
 The shared parameter ABI — read by the Python dispatch, the C++ extension and
-the Triton kernels alike — is `src/blochsim/sequence/_parameters.py`. A
+the GPU kernels alike — is `src/blochsim/sequence/_parameters.py`. A
 parameter added there is added in all three places or in none.
 
 ## Commands
@@ -30,7 +32,6 @@ parameter added there is added in all three places or in none.
 pip install -e ".[dev]"     # the whole toolchain, and it compiles the kernels
 pytest tests/               # the suite, with coverage
 pytest tests/ -n auto       # across cores
-pytest tests/ -m interpreted   # the Triton paths, through Triton's CPU interpreter
 pre-commit install          # once per clone, or no hook runs on commit
 pre-commit run --all-files  # exactly what CI's Lint job runs
 bash scripts/build_docs.sh  # HTML into docs/build/html, examples executed
@@ -57,40 +58,47 @@ pip install -e ".[dev]" ; echo "exit: $?"
 python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 ```
 
-**Kernel compiles dominate a cold GPU run**, not the arithmetic. A suite that
-takes minutes on a card is mostly Triton compiling one specialization per
-feature combination it meets. Run the whole suite at natural boundaries, not
-after every edit.
+**The GPU kernels are compiled where a CUDA compiler is found.** CMake looks
+for `nvcc`, and `BLOCHSIM_CUDA=ON` or `OFF` (`--config-settings=cmake.define.BLOCHSIM_CUDA=ON`)
+overrides what it finds; `CMAKE_CUDA_ARCHITECTURES` picks the cards. A kernel
+compiles in a file of its own, twice -- bounded to 256 threads and to 1024 --
+so a build is minutes of `nvcc` spread over as many cores as Ninja is given.
+On Linux the same kernels are also compiled for the host (`_gpu_host`), one
+program at a time over host tensors; `tests/sequence/test_host_kernels.py` and
+`test_many_pools_host.py` hold them to the C++ kernels, which is how the GPU
+path is verified on a machine with no card.
 
-**Triton's cache keys on the source of the kernel file, not on its meaning.**
-Reformatting `_epg_triton.py`, or deleting a dead local from it, invalidates
-every specialization exactly as a new `tl.constexpr` would: the next full run
-on a card goes from minutes to the better part of an hour, almost all of it one
-MLIR pass. Know that before letting a formatter touch that file, and say which
-number you are quoting.
+**A block is at most 1024 threads.** A tile holds one state order per thread,
+so an EPG launch with more than 1024 state orders, or a pooled one whose orders
+by pools pass 1024, is refused with the kernel's name rather than launched. The
+problems a program carries are another matter: a thread holds `Y_LANES` of
+them in registers, set per kernel in `src/blochsim/_lanes.hpp`, so that one
+reading of each event serves all of them.
 
-**Most of what the cache holds is never loaded.** Each specialization is
-written out as its `.ttir`, `.ttgir`, `.llir` and `.ptx` beside the `.cubin`
-and the metadata a launch actually reads, and on a kernel this size the
-intermediate IR is the bulk of the bytes. `TRITON_STORE_BINARY_ONLY=1` writes
-the binary and its metadata alone; every compilation stage still runs, so
-neither the generated code nor the set of specializations changes.
-`TRITON_DISABLE_LINE_INFO=1` drops the source locations embedded in both,
-which costs line attribution under `ncu`. Set `TRITON_CACHE_DIR` to somewhere
-you keep and the compile is paid once per edit of the kernel file rather than
-once per checkout.
+**The EPG kernels are written for their layouts** (`_layout.hpp`), and a
+launch whose rows fit a warp runs them ahead of any tile kernel. A layout is
+what is compiled: the pools, how a pulse is formed, whether the tissue has
+per-voxel maps, the problems a thread holds, one train or several; every other
+switch is read at run time and steers whole blocks once per event, so one
+compile serves every combination of them. The loops are written once over a
+number type (`_layout_numbers.hpp`): at `float` they are the forward
+simulation, at `num::Dual` -- a value and its derivative along the direction
+-- the Jacobian-vector product. The adjoints are written the same way, so
+their derivative along a direction is the same source at `num::Dual`: the
+forward sweep keeps the state every few events and the reverse sweep replays
+each stretch from it, and an interval's gradient is contracted against its
+operator's derivatives -- taken along every tissue input at once by
+`num::Multi` -- only when the interval changes. Code that runs only when an
+interval changes is out of line and reads its switches at run time, which is
+what keeps a layout's compile to seconds. `_gpu_launch.generic_kernels()`
+turns the layouts off and `layout_launches()` counts them;
+`tests/sequence/test_layout_kernels.py` holds the two to each other. They
+exist only on the card: `_gpu_host` compiles the tile kernels, so the host
+lane holds those, not these, to the C++ kernels.
 
-Neither knob stops the `.source` file, which carries a location per operation
-and is most of an entry on a kernel this size; nothing reads it at launch.
-Nothing evicts either, and the cache keys on the text of the kernel file, so
-every edit orphans every entry made before it.
-`scripts/prune_triton_cache.py` reports both and, with `--apply`, drops them:
-the IR is free to drop, the stale entries recompile if you ask for them again.
-
-**The `interpreted` marker is deselected by default.** Those tests run a Triton
-kernel through Triton's CPU interpreter — no GPU, no compile, about a minute
-each. `TRITON_INTERPRET=1` does the same thing by hand for a script. It is how
-the GPU plumbing is verified on a machine with no card.
+**The EPG kernels index in 32 bits** (`bsk::index_t`). An offset that can
+pass 2^31 is cast to 64 bits where it is formed, and the launcher refuses an
+integer argument that does not fit rather than truncating it.
 
 **`--cov` is on by default** through `addopts`, so a bare `pytest` writes
 `coverage.xml`. It is ignored, not tracked.
@@ -129,7 +137,7 @@ written that way and each states its invariant in its module docstring. A test
 that only compares BlochSim to BlochSim proves the two agree, which was never
 in doubt.
 
-Whatever you change in one kernel, change in the other. The C++ and Triton
+Whatever you change in one kernel, change in the other. The C++ and GPU
 implementations are held to each other to float32 round-off, and a path that
 exists on one side and not the other is a bug in whichever side is missing it.
 
@@ -207,13 +215,30 @@ beside the list the version switcher reads.
 ## Packaging
 
 The build is `scikit-build-core` driving `CMakeLists.txt`; `setup.py` is a shim
-for tools that still shell out to it and configures nothing. Both kernels are
+for tools that still shell out to it and configures nothing. The kernels are
 plain CPython extensions against the **stable ABI** from 3.10 on: they call no
 PyTorch API and link no PyTorch library, which is why one `cp310-abi3` wheel
 per platform serves every supported interpreter and why that wheel is a couple
 of megabytes rather than the size of libtorch. Keep it that way — a `#include
-<torch/...>` in either `.cpp` ends all of that.
+<torch/...>` in any of them ends all of that.
 
-Wheels are built by cibuildwheel and published to PyPI by trusted publishing on
-a `v*.*.*` tag. `scripts/check_wheel.py` loads each compiled kernel by path,
-without importing the package, and is what every built wheel is tested with.
+The card's module is a package of its own per CUDA major version,
+`blochsim-cuda12` and `blochsim-cuda13` (`src/cuda/12`, `src/cuda/13`), which
+`pip install blochsim[cu12]` or `blochsim[cu13]` installs beside a torch of
+the same major version. Each is this CMake project with `BLOCHSIM_CUDA_PACKAGE`
+set, which builds `_gpu` alone into `blochsim_cudaNN/`; it links the CUDA
+runtime dynamically -- torch's nvidia wheel, found by rpath -- carries machine
+code for 7.5, 8.0 and 9.0 and PTX for 9.0, and pins the blochsim it was built
+with. `_gpu_launch` loads the build for torch's CUDA major version and refuses
+one for another major or another release, naming the extra to install; with
+none installed it takes the `_gpu` a source build leaves beside the package.
+
+```sh
+python -m build --wheel src/cuda/12   # with CUDA 12.6's nvcc as CUDACXX
+```
+
+Wheels are built by cibuildwheel, the CUDA packages in a manylinux container
+of their own, and published to PyPI by trusted publishing on a `v*.*.*` tag,
+each project from its own environment (`pypi`, `pypi-cuda12`, `pypi-cuda13`).
+`scripts/check_wheel.py` loads each compiled kernel by path, without importing
+the package, and is what every built wheel is tested with.

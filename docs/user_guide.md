@@ -109,9 +109,9 @@ pick the one your driver supports, and install from that index --
 pip install torch --index-url https://download.pytorch.org/whl/cu128
 ```
 
-The GPU kernels are written in Triton, which comes with the Linux CUDA
-wheels; you do not install it separately and you do not need the CUDA
-toolkit, only a driver new enough for the build you picked.
+The GPU kernels are compiled into the Linux x86-64 wheel of BlochSim; you do
+not need the CUDA toolkit, only a driver new enough for the build you
+picked. Built from source, they are compiled wherever CMake finds `nvcc`.
 :::
 
 :::{tab-item} Apple silicon
@@ -124,8 +124,8 @@ pip install torch
 ```
 
 The simulation runs on the CPU kernels. There is no Metal path: the
-fused state machine exists as C++ and as Triton, and Triton has no
-Apple backend.
+fused state machine exists as C++ for the CPU and as CUDA for NVIDIA
+cards.
 :::
 
 ::::
@@ -164,11 +164,11 @@ from blochsim.simulators import FSESimulator
 acquisition = FSESimulator(
     ESP=5.0,
     TR=3000.0,
-    T1=torch.tensor([830.0, 1330.0, 4000.0]),   # ms
+    T1=torch.tensor([830.0, 1330.0, 4000.0]),  # ms
     T2=torch.tensor([80.0, 110.0, 2000.0]),
 )
 signal = acquisition.simulate(flip=torch.full((48,), 60.0))
-print(signal.shape)                              # torch.Size([3, 48])
+print(signal.shape)  # torch.Size([3, 48])
 ```
 
 On a card, hand it tissue that already lives there and the whole run follows:
@@ -178,9 +178,8 @@ acquisition = acquisition.to("cuda")
 signal = acquisition.simulate(flip=torch.full((48,), 60.0, device="cuda"))
 ```
 
-The first GPU call pays for compiling the Triton kernel it needs -- tens of
-seconds, once per kernel per machine, cached afterwards. A first call that
-seems to hang is almost always that compile.
+The kernels are compiled ahead of time, so the first GPU call costs what
+any other does, apart from PyTorch initialising CUDA.
 
 ## Your first simulation
 

@@ -14,6 +14,7 @@ from typing import Any
 
 import torch
 
+from .. import _gpu_launch
 from .._execution import (
     Lane,
     _Choice,
@@ -1863,7 +1864,7 @@ def _backend_available(device: torch.device) -> bool:
         if device.type == "cpu":
             from blochsim import _epg_cpu  # noqa: F401
         else:
-            from . import _epg_triton  # noqa: F401
+            return _gpu_launch.available()
     except ImportError:
         return False
     return True
@@ -2874,7 +2875,7 @@ def _run_offloaded(
     features: frozenset[str] | None = None,
 ) -> torch.Tensor:
     """Stream a host-resident volume through the devices, chunk by chunk."""
-    from ._epg_triton import simulate_into
+    from ._epg_gpu import simulate_into
 
     train_count = _train_count(events)
     voxels = tissue[0].numel()
@@ -2937,7 +2938,7 @@ def _run_offloaded_jvp(
     Tissue seeds are per voxel and are chunked with it. Event seeds are shared
     by every voxel, so they are replicated once per device instead.
     """
-    from ._epg_triton import simulate_jvp_into
+    from ._epg_gpu import simulate_jvp_into
 
     train_count = _train_count(events)
     voxels = tissue[0].numel()
@@ -3007,7 +3008,7 @@ def _run_offloaded_vjp(
     pass holds -- so for one budget the chunks are wider, which is the second
     saving on top of the kernel being faster.
     """
-    from ._epg_triton import (
+    from ._epg_gpu import (
         GradientBuffers,
         simulate_real_vjp_into,
         simulate_vjp_into,
@@ -3112,7 +3113,7 @@ def _run_offloaded_vjp_jvp(
     Nothing in the loop reads a device result, which is what lets the host run
     ahead and keep the lanes fed.
     """
-    from ._epg_triton import AdjointBuffers, simulate_vjp_jvp_into
+    from ._epg_gpu import AdjointBuffers, simulate_vjp_jvp_into
 
     train_count = _train_count(events)
     voxels = tissue[0].numel()
@@ -3362,7 +3363,7 @@ def _run_packed(
             )
         return moved.to(tissue[0].device)
     if tissue[0].device.type == "cuda":
-        from ._epg_triton import simulate
+        from ._epg_gpu import simulate
 
         shards = _shard_bounds(_train_count(events))
         if shards:
@@ -3543,7 +3544,7 @@ def _run_packed_vjp(
             "adjoint", tissue, events, output_count, state_count, real_axis
         )
     ):
-        from ._epg_triton import simulate_real_vjp, simulate_vjp
+        from ._epg_gpu import simulate_real_vjp, simulate_vjp
 
         if real_axis == 1:
             return simulate_real_vjp(
@@ -3808,7 +3809,7 @@ def _run_packed_vjp_jvp(
         origin = tissue[0].device
         return tuple(tuple(value.to(origin) for value in side) for side in moved)
     if tissue[0].device.type == "cuda":
-        from ._epg_triton import simulate_vjp_jvp
+        from ._epg_gpu import simulate_vjp_jvp
 
         shards = _shard_bounds(_train_count(events))
         if shards:
@@ -4030,7 +4031,7 @@ def _run_packed_jvp(
             )
         return moved.to(tissue[0].device)
     if tissue[0].device.type == "cuda":
-        from ._epg_triton import simulate_jvp
+        from ._epg_gpu import simulate_jvp
 
         shards = _shard_bounds(_train_count(events))
         if shards:

@@ -1,7 +1,7 @@
 """The CUDA kernels against the CPU kernels they stand in for.
 
 The two share no code, so agreement across a batch of echo trains is what keeps
-the Triton grid indexing honest: a train axis dropped there reads one train's
+the GPU grid indexing honest: a train axis dropped there reads one train's
 flip angles for every train, which is a wrong answer rather than an error.
 """
 
@@ -228,13 +228,13 @@ def test_an_off_resonance_seed_keeps_the_complex_kernel_on_cuda():
     assert torch.equal(automatic, complex_kernel)
 
 
-@pytest.mark.parametrize("block_states", [4, 16])
-def test_the_packing_width_is_a_power_of_two(block_states):
-    """It indexes a ``tl.arange``, which rejects anything else."""
-    from blochsim.sequence._epg_triton import _problems_per_program
+@pytest.mark.parametrize("block_states", [4, 16, 64])
+def test_the_packing_width_fills_whole_threads(block_states):
+    """A program's rows are threads of ``lanes`` rows each, in a power of two."""
+    from blochsim.sequence._epg_gpu import _epg_real_kernel, _problems_per_program
 
-    width = _problems_per_program(block_states)
-    assert width >= 1
+    width = _problems_per_program(block_states, _epg_real_kernel)
+    assert width % _epg_real_kernel.lanes == 0
     assert width & (width - 1) == 0
 
 
@@ -246,9 +246,9 @@ def test_the_packing_width_ignores_how_many_problems_there_are(block_states):
     off the launch size would make a streamed volume answer differently from
     the same volume run whole.
     """
-    from blochsim.sequence._epg_triton import _problems_per_program
+    from blochsim.sequence._epg_gpu import _epg_kernel, _problems_per_program
 
-    assert _problems_per_program(block_states) >= 1
+    assert _problems_per_program(block_states, _epg_kernel) >= 1
 
 
 @pytest.mark.parametrize("atoms", [3, 16, 21])
@@ -362,10 +362,10 @@ def test_an_inversion_pulse_reaches_the_same_gradients(inversion):
 
 def test_a_trajectory_too_large_for_one_launch_is_split(monkeypatch):
     """The grid rounds up past a wave, onto rows the next launch owns."""
-    from blochsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_gpu
 
     expected = _second_order("cpu", 17, 5)
-    monkeypatch.setattr(_epg_triton, "_TRAJECTORY_BUDGET_BYTES", 40_000)
+    monkeypatch.setattr(_epg_gpu, "_TRAJECTORY_BUDGET_BYTES", 40_000)
     actual = _second_order("cuda", 17, 5)
 
     assert _worst_disagreement(expected, actual) < _tolerance(17)
@@ -496,10 +496,10 @@ def test_the_complex_second_order_kernel_matches_across_shapes(trains, atoms):
 
 def test_the_complex_trajectory_splits_into_waves(monkeypatch):
     """Twice the planes of the real one, so it reaches the budget sooner."""
-    from blochsim.sequence import _epg_triton
+    from blochsim.sequence import _epg_gpu
 
     expected = _complex_second_order("cpu", 17, 5)
-    monkeypatch.setattr(_epg_triton, "_TRAJECTORY_BUDGET_BYTES", 40_000)
+    monkeypatch.setattr(_epg_gpu, "_TRAJECTORY_BUDGET_BYTES", 40_000)
     actual = _complex_second_order("cuda", 17, 5)
 
     assert _worst_disagreement(expected, actual) < _tolerance(17)

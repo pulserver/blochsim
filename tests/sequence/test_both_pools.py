@@ -1462,54 +1462,24 @@ def _spread_over(columns):
     return torch.sqrt(torch.clamp(-2.0 * minors, min=0.0))
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA")
 def test_the_series_carries_the_answer_up_to_the_spread_it_is_trusted_to() -> None:
     """``NARROW_SPREAD`` is a measurement, so it is pinned as one.
 
     The series branch alone, in float32, against ``matrix_exp`` in double, at
     the widest spread the gate will let through. Above the bound it is expected
-    to fail -- which is what makes the bound a choice rather than a hope.
+    to fail -- which is what makes the bound a choice rather than a hope. The
+    table kernel forms the undamped operator, and is run on a card where there
+    is one and through the host build of the same source where there is not.
     """
-    import triton
-    import triton.language as tl
-
-    from blochsim.sequence._epg_triton import _three_pool_step
+    from blochsim._gpu_launch import Kernel, available
     from blochsim.sequence._parameters import NARROW_SPREAD
 
-    @triton.jit
-    def only_the_series(
-        a,
-        b,
-        c,
-        d,
-        e,
-        f,
-        g,
-        h,
-        i,
-        out,
-        n,
-        NARROW: tl.constexpr,
-        BLOCK: tl.constexpr,
-    ):
-        j = tl.arange(0, BLOCK)
-        mask = j < n
-        entries = _three_pool_step(
-            tl.load(a + j, mask=mask, other=1.0),
-            tl.load(b + j, mask=mask, other=1.0),
-            tl.load(c + j, mask=mask, other=1.0),
-            tl.load(d + j, mask=mask, other=1.0),
-            tl.load(e + j, mask=mask, other=1.0),
-            tl.load(f + j, mask=mask, other=0.1),
-            tl.load(g + j, mask=mask, other=0.1),
-            tl.load(h + j, mask=mask, other=0.005),
-            tl.load(i + j, mask=mask, other=1.0),
-            NARROW,
-        )
-        for entry in tl.static_range(12):
-            tl.store(out + entry * n + j, entries[entry], mask=mask)
-
+    device = "cuda" if torch.cuda.is_available() and available() else "cpu"
+    if device == "cpu":
+        pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
+    table_kernel = Kernel("_three_pool_table_kernel")
     voxels = 4096
+    block = 1024
     worst = {}
     for label, seconds in (("inside", 20e-3), ("at the bound", None), ("past", 1.0)):
         columns = _three_pool_columns(voxels, seconds=seconds or 1.0, seed=5)
@@ -1518,17 +1488,31 @@ def test_the_series_carries_the_answer_up_to_the_spread_it_is_trusted_to() -> No
             rate = float(_spread_over(columns).max())
             columns = _three_pool_columns(voxels, seconds=NARROW_SPREAD / rate, seed=5)
         reached = float(_spread_over(columns).max())
-        expected = _matrix_exp_oracle(columns)
+        r1a, r1b, r1c, exb, exc, fb, fc, dt, _att = columns
+        undamped = (r1a, r1b, r1c, exb, exc, fb, fc, dt, torch.ones_like(dt))
+        expected = _matrix_exp_oracle(undamped)[:, :9]
         scale = expected.abs().amax(dim=1, keepdim=True).clamp_min(1e-12)
-        out = torch.zeros(12 * voxels, device="cuda", dtype=torch.float32)
-        only_the_series[(1,)](
-            *[value.to("cuda", torch.float32) for value in columns],
+        out = torch.zeros((1, 9, voxels), device=device, dtype=torch.float32)
+
+        def ready(value):
+            return value.to(device, torch.float32).contiguous()
+
+        table_kernel[(1, -(-voxels // block))](
+            ready(1000.0 / r1a),
+            ready(1000.0 / r1b),
+            ready(1000.0 / r1c),
+            ready(exb),
+            ready(exc),
+            ready(fb),
+            ready(fc),
+            ready(dt[:1]),
+            torch.zeros(1, dtype=torch.int32, device=device),
             out,
             voxels,
-            NARROW=True,
-            BLOCK=triton.next_power_of_2(voxels),
+            BLOCK=block,
+            narrow=True,
         )
-        got = out.reshape(12, voxels).T.double().cpu()
+        got = out.reshape(9, voxels).T.double().cpu()
         worst[label] = (
             reached,
             float(((got - expected).abs() / scale).amax(dim=1).max()),
@@ -1597,7 +1581,7 @@ def test_the_series_branch_gives_the_answer_the_roots_give(state_count) -> None:
     The gate cannot be measured against the host: that comparison moves for
     reasons of its own. What it has to be held to is the branch it replaces.
     """
-    from blochsim.sequence import _accelerators, _epg_triton
+    from blochsim.sequence import _accelerators, _epg_gpu
 
     voxels = 256
     tissue, _, _ = _prepare_tissue(
@@ -1640,14 +1624,14 @@ def test_the_series_branch_gives_the_answer_the_roots_give(state_count) -> None:
     )
 
     def both_ways(run):
-        settled = _epg_triton.narrow_three_pool
+        settled = _epg_gpu.narrow_three_pool
         sides = []
         for forced in (True, False):
-            _epg_triton.narrow_three_pool = lambda *a, taken=forced, **k: taken
+            _epg_gpu.narrow_three_pool = lambda *a, taken=forced, **k: taken
             try:
                 sides.append(run())
             finally:
-                _epg_triton.narrow_three_pool = settled
+                _epg_gpu.narrow_three_pool = settled
         return sides
 
     def leaves(value):
@@ -1693,4 +1677,7 @@ def test_the_series_branch_gives_the_answer_the_roots_give(state_count) -> None:
             float((left - right).abs().max())
             for left, right in zip(narrow, roots, strict=True)
         )
-        assert worst / largest < 1e-5, (name, worst / largest)
+        # The roots branch moves by about 1e-5 of the largest value between
+        # correct compilations of itself -- one fused multiply-add more or
+        # less -- and the card's build differs from the CPU's by 2e-5.
+        assert worst / largest < 5e-5, (name, worst / largest)

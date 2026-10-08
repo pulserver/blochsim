@@ -48,14 +48,6 @@ jobs:
         if: runner.os == 'Linux'
         run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 
-      # Triton reaches a runner as a dependency of the CUDA build of PyTorch,
-      # which the CPU index above deliberately leaves out, and it exists for
-      # Linux alone. Installing it is what lets the kernel-gate tests run; on
-      # the other two platforms they skip themselves.
-      - name: Install Triton (Linux only)
-        if: runner.os == 'Linux'
-        run: python -m pip install triton
-
       # Not editable and not from a wheel: the C++ kernels are compiled here,
       # on this runner, with this compiler, which is the half of the package a
       # pure-Python job would never exercise. CMake and Ninja arrive as
@@ -69,13 +61,12 @@ jobs:
           import importlib.util, pathlib
           spec = importlib.util.find_spec("blochsim")
           root = pathlib.Path(next(iter(spec.submodule_search_locations)))
-          for kernel in sorted(root.glob("_*_cpu*")):
+          for kernel in sorted(root.glob("_*_cpu*")) + sorted(root.glob("_gpu*")):
               print(kernel.name, kernel.stat().st_size, "bytes")
 
-      # What a runner with no card runs: the C++ kernels and every layer above
-      # them. The GPU tests skip themselves on ``torch.cuda.is_available()``,
-      # and the ones that reach for Triton's CPU interpreter carry the
-      # ``interpreted`` marker, which ``addopts`` deselects.
+      # What a runner with no card runs: the C++ kernels, the GPU kernels
+      # compiled for the host, and every layer above them. The GPU tests skip
+      # themselves on ``torch.cuda.is_available()``.
       - name: Run the tests
         run: pytest tests/ -n auto
 

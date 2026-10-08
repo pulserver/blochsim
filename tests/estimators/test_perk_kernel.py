@@ -42,7 +42,7 @@ def composed(monkeypatch):
     """Force the plain Torch path, whatever backends are loaded."""
 
     def only_composed():
-        monkeypatch.setattr(_perk, "_TRITON", None)
+        monkeypatch.setattr(_perk, "_GPU", None)
         monkeypatch.setattr(_perk, "_NATIVE", None)
 
     return only_composed
@@ -94,7 +94,7 @@ def test_the_fused_path_is_the_one_that_ran(device, monkeypatch) -> None:
     """Agreement cannot tell a fused kernel from a fallback, so ask directly."""
     estimator, measured = _fitted(device)
     reached: list[str] = []
-    backend = _perk._TRITON if device == "cuda" else _perk._NATIVE
+    backend = _perk._GPU if device == "cuda" else _perk._NATIVE
     original = backend.regress
     monkeypatch.setattr(
         backend,
@@ -133,7 +133,7 @@ def test_the_adjoint_is_the_composed_gradient(device, monkeypatch) -> None:
     cotangent = torch.randn_like(estimator(fused_input))
     estimator(fused_input).backward(cotangent)
 
-    monkeypatch.setattr(_perk, "_TRITON", None)
+    monkeypatch.setattr(_perk, "_GPU", None)
     monkeypatch.setattr(_perk, "_NATIVE", None)
     plain_input = measured.clone().requires_grad_()
     estimator(plain_input).backward(cotangent)
@@ -147,7 +147,7 @@ def test_a_gradient_wanted_for_a_fitted_tensor_falls_back(device, monkeypatch) -
     path that differentiates everything -- and the route is what is asserted."""
     estimator, measured = _fitted(device)
     estimator.weight.requires_grad_(True)
-    backend = _perk._TRITON if device == "cuda" else _perk._NATIVE
+    backend = _perk._GPU if device == "cuda" else _perk._NATIVE
     monkeypatch.setattr(backend, "regress", lambda *args: pytest.fail("the kernel ran"))
 
     values = estimator(measured)
@@ -205,3 +205,54 @@ def test_a_single_voxel_goes_through_a_kernel_tiled_for_many(device) -> None:
     estimator, measured = _fitted(device)
 
     assert estimator(measured[:1]).shape == (1, 2)
+
+
+@pytest.mark.parametrize("device", DEVICES)
+def test_the_gpu_kernels_are_the_fused_line_and_its_adjoint(device) -> None:
+    """The kernels the card runs, on the card and compiled for the host,
+    against Torch.
+
+    Feature, parameter and contrast counts that are not multiples of the
+    blocks the kernels walk them in, and more voxels than one program holds,
+    so every edge of the tiling is read.
+    """
+    gpu = pytest.importorskip("blochsim.estimators._perk_gpu")
+    if device == "cpu":
+        pytest.importorskip("blochsim._gpu_host", reason="the host build is Linux only")
+    generator = torch.Generator().manual_seed(0)
+    voxels, contrasts, features, parameters = 300, 37, 45, 17
+    signals = torch.randn(voxels, contrasts, generator=generator)
+    frequency = torch.randn(features, contrasts, generator=generator) / 4
+    phase = 2 * math.pi * torch.rand(features, generator=generator)
+    feature_mean = torch.randn(features, generator=generator)
+    weight = torch.randn(parameters, features, generator=generator)
+    parameter_mean = torch.randn(parameters, generator=generator)
+    cotangent = torch.randn(voxels, parameters, generator=generator)
+    scale = math.sqrt(2.0 / features)
+
+    def line(x: torch.Tensor) -> torch.Tensor:
+        mapped = scale * torch.cos(x @ frequency.T + phase) - feature_mean
+        return parameter_mean + mapped @ weight.T
+
+    x = signals.double().requires_grad_()
+    with torch.no_grad():
+        frequency, phase = frequency.double(), phase.double()
+        feature_mean, weight = feature_mean.double(), weight.double()
+        parameter_mean = parameter_mean.double()
+    expected = line(x)
+    (expected_gradient,) = torch.autograd.grad(expected, x, cotangent.double())
+
+    def on(*tensors: torch.Tensor) -> list[torch.Tensor]:
+        return [tensor.float().to(device) for tensor in tensors]
+
+    estimated = gpu.regress(
+        *on(signals, frequency, phase, feature_mean, weight, parameter_mean)
+    ).cpu()
+    gradient = gpu.regress_vjp(*on(cotangent, signals, frequency, phase, weight)).cpu()
+
+    torch.testing.assert_close(
+        estimated.double(), expected.detach(), atol=1e-5, rtol=1e-5
+    )
+    torch.testing.assert_close(
+        gradient.double(), expected_gradient, atol=1e-5, rtol=1e-5
+    )
