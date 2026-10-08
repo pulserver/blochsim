@@ -310,7 +310,12 @@ struct Gradients {
 template <class T, int POOLS, int MODE>
 __device__ __noinline__ Gradients<T, POOLS> contract_interval(Geometry g, int relax_code, T dt, Inputs<T> in, float order,
                                                               int row, int atom, Met<T, POOLS> met) {
-    constexpr int KD = DIRECTIONS<POOLS>, CHUNK = 4;
+    // Directions taken per formation of the operator. The multi-valued
+    // operator is held on the stack, which the driver backs for every thread
+    // a card can hold: where its entries are wide -- three pools, or a dual
+    // -- one direction at a time keeps that stack small, and is no slower.
+    constexpr int KD = DIRECTIONS<POOLS>;
+    constexpr int CHUNK = num::is_dual<T>::value || POOLS == 3 ? 1 : 4;
     Gradients<T, POOLS> out;
 #pragma unroll
     for (int k = 0; k < KD; ++k) out.g[k] = 0.0f;
