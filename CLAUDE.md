@@ -96,9 +96,8 @@ turns the layouts off and `layout_launches()` counts them;
 exist only on the card: `_gpu_host` compiles the tile kernels, so the host
 lane holds those, not these, to the C++ kernels.
 
-**The EPG kernels index in 32 bits** (`bsk::index_t`), as Triton did for every
-integer argument that fit. An offset that can pass 2^31 is cast to 64 bits
-where it is formed, as the Triton source cast it, and the launcher refuses an
+**The EPG kernels index in 32 bits** (`bsk::index_t`). An offset that can
+pass 2^31 is cast to 64 bits where it is formed, and the launcher refuses an
 integer argument that does not fit rather than truncating it.
 
 **`--cov` is on by default** through `addopts`, so a bare `pytest` writes

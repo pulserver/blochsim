@@ -39,9 +39,9 @@
 
 namespace bsk {
 
-// The integers the EPG kernels index with: 32 bits, as Triton passed every
-// integer argument that fit. An offset that can pass 2^31 is cast to 64 bits
-// where it is formed, and the launcher refuses an argument that does not fit.
+// The integers the EPG kernels index with: 32 bits. An offset that can pass
+// 2^31 is cast to 64 bits where it is formed, and the launcher refuses an
+// argument that does not fit.
 using index_t = std::int32_t;
 
 // ---------------------------------------------------------------------------

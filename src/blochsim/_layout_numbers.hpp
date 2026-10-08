@@ -152,7 +152,7 @@ __device__ __forceinline__ DualT<F> exp_(DualT<F> x) {
     return {e, e * x.d};
 }
 
-// Division the way Triton's float32 ``/`` divides: approximate.
+// Float division, approximate: the fast reciprocal, two ulps at most.
 __device__ __forceinline__ float div_(float a, float b) { return __fdividef(a, b); }
 __device__ __forceinline__ double div_(double a, double b) { return a / b; }
 template <class F>
@@ -212,8 +212,8 @@ __device__ __forceinline__ Dual64 cos_(Dual64 x) {
     return {c, -s * x.d};
 }
 
-// Triton's _sincos: one Cody-Waite reduction by a quarter turn, the Cephes
-// polynomials either side of zero.
+// One Cody-Waite reduction by a quarter turn, then the Cephes polynomials
+// either side of zero.
 __device__ __forceinline__ void sincos_cw(float x, float& s, float& c) {
     const float quarter = rintf(x * 0.6366197723675814f);
     float r = fmaf(-quarter, 1.5703125f, x);

@@ -1,6 +1,6 @@
 """Whether BlochSim, sycomore and epgpy compute the same fingerprint.
 
-Three independent implementations of the same model -- a fused C++ or Triton
+Three independent implementations of the same model -- a fused C++ or CUDA
 state machine over a packed event stream, a C++ EPG library driven one tissue
 at a time from Python, and an operator-per-event NumPy library -- should agree
 to the precision the coarsest of them carries. This says by how much they do,
@@ -166,7 +166,7 @@ def main() -> None:
 
     if torch.cuda.is_available():
         # The two kernels are separate implementations of the same recursion,
-        # so this is a comparison of the C++ one against the Triton one rather
+        # so this is a comparison of the C++ one against the CUDA one rather
         # than a check that a tensor made the trip.
         on_cpu = blochsim_signal(T1, T2, flip, TR, arguments.states)
         on_card = blochsim_signal(T1, T2, flip, TR, arguments.states, device="cuda")

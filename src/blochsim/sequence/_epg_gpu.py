@@ -473,7 +473,9 @@ def simulate_into(
     pools = _pool_flag(lineshape, exchanging)
     block_states = next_power_of_2(state_count)
     total = train_count * atom_count
-    problems = _problems_per_program(block_states, _epg_real_kernel if real_axis == 1 else _epg_kernel)
+    problems = _problems_per_program(
+        block_states, _epg_real_kernel if real_axis == 1 else _epg_kernel
+    )
     grid = (cdiv(total, problems),)
     # A kernel argument has to be a tensor even where the branch reading it is
     # compiled out, so an unprofiled launch passes one it already has.
@@ -724,7 +726,9 @@ def simulate_jvp_into(
     shims = _shim_count(tissue)
     block_states = next_power_of_2(state_count)
     total = train_count * atom_count
-    problems = _problems_per_program(block_states, _epg_real_jvp_kernel if real_axis == 1 else _epg_jvp_kernel)
+    problems = _problems_per_program(
+        block_states, _epg_real_jvp_kernel if real_axis == 1 else _epg_jvp_kernel
+    )
     grid = (cdiv(total, problems),)
 
     if real_axis == 1:
@@ -1688,7 +1692,9 @@ def simulate_vjp_jvp_into(
             wave * row_count * 36, dtype=torch.float32, device=t1.device
         )
 
-    problems = _problems_per_program(block_states, _epg_real_vjp_jvp_kernel if real else _epg_vjp_jvp_kernel)
+    problems = _problems_per_program(
+        block_states, _epg_real_vjp_jvp_kernel if real else _epg_vjp_jvp_kernel
+    )
     for base in range(0, total, wave):
         span = min(wave, total - base)
         if pool_bars is not None:

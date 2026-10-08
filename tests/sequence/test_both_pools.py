@@ -1679,5 +1679,5 @@ def test_the_series_branch_gives_the_answer_the_roots_give(state_count) -> None:
         )
         # The roots branch moves by about 1e-5 of the largest value between
         # correct compilations of itself -- one fused multiply-add more or
-        # less -- and Triton's differs from the CUDA build's by 2e-5.
+        # less -- and the card's build differs from the CPU's by 2e-5.
         assert worst / largest < 5e-5, (name, worst / largest)

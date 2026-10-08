@@ -91,7 +91,7 @@ __device__ __forceinline__ float stored(T x) {
     }
 }
 
-// One pool through a hard pulse, in Triton's fused order.
+// One pool through a hard pulse, its phase folded into the rotation's entries.
 template <class T>
 __device__ __forceinline__ void rotate_flip_phase(T cosine, T sine, T cos_phi, T sin_phi, T cos_2phi,
                                                   T sin_2phi, T& fp_r, T& fp_i, T& fm_r, T& fm_i,
