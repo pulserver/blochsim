@@ -1,0 +1,50 @@
+// Written by CMake from _layout_complex_vjp.cu.in: the complex @KIND@ kernel
+// for @POOLS@ in its layouts.
+#include "_layout.hpp"
+
+namespace blochsim_layout {
+namespace {
+
+// Events a checkpoint covers: the reverse sweep replays that many from it.
+constexpr int SEGMENT = 4;
+
+template <class T, int POOLS, int RF, int Y, bool ONE_TRAIN>
+__global__ void __launch_bounds__(32 * WARPS) adjoint_kernel(epg_vjp::Params v) {
+    extern __shared__ unsigned char segment[];
+    epg_vjp::complex_vjp_loop<T, POOLS, RF, Y, SEGMENT, ONE_TRAIN>(v, reinterpret_cast<T*>(segment));
+}
+
+template <class T, int RF, int Y>
+int launch_rf(const epg_vjp::Params& v, cudaStream_t stream) {
+    constexpr int POOLS = @POOLS@;
+    const int groups = 32 / v.f.width;
+    const long long problems = v.problem_end - v.problem_base;
+    const long long per_block = static_cast<long long>(WARPS) * groups * Y;
+    const unsigned grid = static_cast<unsigned>((problems + per_block - 1) / per_block);
+    constexpr int PLANES = 2 * (POOLS >= 2 ? 2 : 1) + (POOLS == 3 ? 3 : (POOLS ? 2 : 1));
+    const size_t shared = static_cast<size_t>(SEGMENT) * PLANES * Y * 2 * 32 * WARPS * sizeof(T);
+    if (v.f.single_train) {
+        cudaFuncSetAttribute(adjoint_kernel<T, POOLS, RF, Y, true>, cudaFuncAttributeMaxDynamicSharedMemorySize,
+                             static_cast<int>(shared));
+        adjoint_kernel<T, POOLS, RF, Y, true><<<grid, 32 * WARPS, shared, stream>>>(v);
+    } else {
+        cudaFuncSetAttribute(adjoint_kernel<T, POOLS, RF, Y, false>, cudaFuncAttributeMaxDynamicSharedMemorySize,
+                             static_cast<int>(shared));
+        adjoint_kernel<T, POOLS, RF, Y, false><<<grid, 32 * WARPS, shared, stream>>>(v);
+    }
+    return static_cast<int>(cudaGetLastError());
+}
+
+}  // namespace
+
+int complex_@KIND@_@POOLS@(const epg_vjp::Params& v, int rf, cudaStream_t stream) {
+    using T = @TYPE@;
+    // Problems a thread holds: two for free water alone at float, one where
+    // a dual or a pool layout already fills the registers.
+    constexpr int Y = (@POOLS@ == 0 && !num::is_dual<T>::value) ? 2 : 1;
+    if (rf == epg::DYNAMIC) return launch_rf<T, epg::DYNAMIC, Y>(v, stream);
+    if (rf == epg::PROFILE) return launch_rf<T, epg::PROFILE, Y>(v, stream);
+    return launch_rf<T, epg::HARD, Y>(v, stream);
+}
+
+}  // namespace blochsim_layout

@@ -13,7 +13,9 @@
 
 #include "_kernels.hpp"
 #include "_layout_complex.hpp"
+#include "_layout_complex_vjp.hpp"
 #include "_layout_real.hpp"
+#include "_layout_real_vjp.hpp"
 
 namespace blochsim_layout {
 
@@ -32,6 +34,20 @@ BLOCHSIM_LAYOUT_COMPLEX(BLOCHSIM_LAYOUT_COMPLEX_DECLARATION)
 
 int real_forward(const layout_real::Params& p, cudaStream_t stream);
 int real_jvp(const layout_real::Params& p, cudaStream_t stream);
+
+// The adjoints: the forward sweep keeps a checkpoint every few events and
+// the reverse sweep replays each stretch from it, so a launch is one sweep
+// each way and the recording launch of the tile kernels' protocol does
+// nothing.
+#define BLOCHSIM_LAYOUT_ADJOINT(X) \
+    X(vjp, 0) X(vjp, 1) X(vjp, 2) X(vjp, 3) X(vjp_jvp, 0) X(vjp_jvp, 1) X(vjp_jvp, 2) X(vjp_jvp, 3)
+#define BLOCHSIM_LAYOUT_ADJOINT_DECLARATION(kind, pools) \
+    int complex_##kind##_##pools(const epg_vjp::Params& v, int rf, cudaStream_t stream);
+BLOCHSIM_LAYOUT_ADJOINT(BLOCHSIM_LAYOUT_ADJOINT_DECLARATION)
+#undef BLOCHSIM_LAYOUT_ADJOINT_DECLARATION
+
+int real_vjp(const layout_real_vjp::Params& p, cudaStream_t stream);
+int real_vjp_jvp(const layout_real_vjp::Params& p, cudaStream_t stream);
 
 // Programs of two warps each.
 constexpr int WARPS = 2;

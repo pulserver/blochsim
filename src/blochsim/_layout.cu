@@ -27,7 +27,8 @@ struct Reader {
     bool flag(const char* name) const { return a[at(name)].i != 0; }
 };
 
-epg::Params complex_params(const Reader& r) {
+// What the forward kernel and the adjoint read alike.
+epg::Params complex_params_common(const Reader& r) {
     epg::Params p{};
     p.t1 = r.floats("t1");
     p.t2 = r.floats("t2");
@@ -64,6 +65,33 @@ epg::Params complex_params(const Reader& r) {
     p.pair_index = r.ints("pair_index");
     p.duration_row = r.ints("duration_row");
     p.action = static_cast<const unsigned char*>(r.a[r.at("action")].p);
+    p.atom_count = static_cast<int>(r.integer("atom_count"));
+    p.train_count = static_cast<int>(r.integer("train_count"));
+    p.event_count = static_cast<int>(r.integer("event_count"));
+    p.output_count = static_cast<int>(r.integer("output_count"));
+    p.state_count = static_cast<int>(r.integer("state_count"));
+    p.width = static_cast<int>(r.integer("block_states"));
+    p.locations = static_cast<int>(r.integer("locations"));
+    p.profile_bins = static_cast<int>(r.integer("profile_bins"));
+    p.lineshape_bins = static_cast<int>(r.integer("lineshape_bins"));
+    p.flow_scale = r.real("flow_scale");
+    p.washout_scale = r.real("washout_scale");
+    p.profile_step = r.real("profile_step");
+    p.lineshape_step = r.real("lineshape_step");
+    p.single_train = r.flag("single_train");
+    p.atom_stride = r.flag("atom_stride");
+    p.shimmed = r.flag("shimmed");
+    p.off_axis = r.flag("off_axis");
+    p.moving = r.flag("moving");
+    p.diffusing = r.flag("diffusing");
+    p.transmit = r.flag("transmit");
+    p.density = r.flag("density");
+    p.inverting = r.flag("inverting");
+    return p;
+}
+
+epg::Params complex_params(const Reader& r) {
+    epg::Params p = complex_params_common(r);
     p.d_t1 = r.floats("tangent_t1");
     p.d_t2 = r.floats("tangent_t2");
     p.d_m0 = r.floats("tangent_m0");
@@ -87,28 +115,6 @@ epg::Params complex_params(const Reader& r) {
     p.pair_direction = r.floats("pair_direction");
     p.output_real = r.outputs("output_real");
     p.output_imag = r.outputs("output_imag");
-    p.atom_count = static_cast<int>(r.integer("atom_count"));
-    p.train_count = static_cast<int>(r.integer("train_count"));
-    p.event_count = static_cast<int>(r.integer("event_count"));
-    p.output_count = static_cast<int>(r.integer("output_count"));
-    p.state_count = static_cast<int>(r.integer("state_count"));
-    p.width = static_cast<int>(r.integer("block_states"));
-    p.locations = static_cast<int>(r.integer("locations"));
-    p.profile_bins = static_cast<int>(r.integer("profile_bins"));
-    p.lineshape_bins = static_cast<int>(r.integer("lineshape_bins"));
-    p.flow_scale = r.real("flow_scale");
-    p.washout_scale = r.real("washout_scale");
-    p.profile_step = r.real("profile_step");
-    p.lineshape_step = r.real("lineshape_step");
-    p.single_train = r.flag("single_train");
-    p.atom_stride = r.flag("atom_stride");
-    p.shimmed = r.flag("shimmed");
-    p.off_axis = r.flag("off_axis");
-    p.moving = r.flag("moving");
-    p.diffusing = r.flag("diffusing");
-    p.transmit = r.flag("transmit");
-    p.density = r.flag("density");
-    p.inverting = r.flag("inverting");
     return p;
 }
 
@@ -169,7 +175,147 @@ int complex_launch(bool jvp, const Reader& r, cudaStream_t stream) {
     }
 }
 
+// The complex adjoint's arguments, for one sweep or its derivative.
+epg_vjp::Params adjoint_params(bool dual, const Reader& r) {
+    epg_vjp::Params v{};
+    epg::Params& p = v.f;
+    p = complex_params_common(r);
+    p.d_t1 = r.floats("dot_t1");
+    p.d_t2 = r.floats("dot_t2");
+    p.d_m0 = r.floats("dot_m0");
+    p.d_b1 = r.floats("dot_b1");
+    p.d_b1_phase = r.floats("dot_b1_phase");
+    p.d_b0 = r.floats("dot_b0");
+    p.d_inversion_efficiency = r.floats("dot_inversion_efficiency");
+    p.d_diffusion = r.floats("dot_diffusion");
+    p.d_velocity = r.floats("dot_velocity");
+    p.d_bound_fraction = r.floats("dot_bound_fraction");
+    p.d_bound_exchange = r.floats("dot_exchange_rate");
+    p.d_t1_bound = r.floats("dot_t1_bound");
+    p.d_pool_b_fraction = r.floats("dot_pool_b_fraction");
+    p.d_pool_b_exchange = r.floats("dot_pool_b_exchange");
+    p.d_t1_pool_b = r.floats("dot_t1_pool_b");
+    p.d_t2_pool_b = r.floats("dot_t2_pool_b");
+    p.d_pool_b_shift = r.floats("dot_pool_b_shift");
+    p.d_duration = r.floats("dot_duration");
+    p.d_flip = r.floats("dot_flip");
+    p.d_phase = r.floats("dot_phase");
+    // A pair with no direction of its own along this sweep.
+    p.pair_direction = r.at("directed") >= 0 && r.flag("directed") ? r.floats("pair_direction") : nullptr;
+    v.grad_output_real = r.floats("grad_output_real");
+    v.grad_output_imag = r.floats("grad_output_imag");
+    auto out = [&](const char* name) { return r.at(name) < 0 ? nullptr : r.outputs(name); };
+    if (dual) {
+        v.grad_tissue = out("grad_tissue_value");
+        v.grad_tissue_t = out("grad_tissue_tangent");
+        v.grad_flip = out("grad_flip_value");
+        v.grad_flip_t = out("grad_flip_tangent");
+        v.grad_phase = out("grad_phase_value");
+        v.grad_phase_t = out("grad_phase_tangent");
+        v.grad_duration = out("grad_duration_value");
+        v.grad_duration_t = out("grad_duration_tangent");
+        v.grad_pair = out("grad_pair_value");
+        v.grad_pair_t = out("grad_pair_tangent");
+        v.trajectory_r = out("trajectory_vr");
+        v.trajectory_i = out("trajectory_vi");
+        v.trajectory_tr = out("trajectory_tr");
+        v.trajectory_ti = out("trajectory_ti");
+    } else {
+        v.grad_tissue = out("grad_tissue");
+        v.grad_flip = out("grad_flip");
+        v.grad_phase = out("grad_phase");
+        v.grad_duration = out("grad_duration");
+        v.grad_pair = out("grad_pair");
+        v.trajectory_r = out("trajectory_r");
+        v.trajectory_i = out("trajectory_i");
+    }
+    v.problem_base = static_cast<int>(r.integer("problem_base"));
+    v.problem_end = static_cast<int>(r.integer("problem_end"));
+    v.shim_rows = static_cast<int>(r.integer("shim_rows"));
+    v.mode = r.flag("tabulated") ? epg::TABLE : (r.flag("narrow") ? epg::NARROW : epg::ROOTS);
+    return v;
+}
+
+int adjoint_launch(bool dual, const Reader& r, cudaStream_t stream) {
+    // One launch walks both ways; the recording launch has nothing to do.
+    if (r.flag("recording")) return cudaSuccess;
+    const epg_vjp::Params v = adjoint_params(dual, r);
+    const int rf = r.flag("dynamic") ? epg::DYNAMIC : (r.flag("profiled") ? epg::PROFILE : epg::HARD);
+    switch (static_cast<int>(r.integer("pools")) + (dual ? 4 : 0)) {
+        case 0: return complex_vjp_0(v, rf, stream);
+        case 1: return complex_vjp_1(v, rf, stream);
+        case 2: return complex_vjp_2(v, rf, stream);
+        case 3: return complex_vjp_3(v, rf, stream);
+        case 4: return complex_vjp_jvp_0(v, rf, stream);
+        case 5: return complex_vjp_jvp_1(v, rf, stream);
+        case 6: return complex_vjp_jvp_2(v, rf, stream);
+        case 7: return complex_vjp_jvp_3(v, rf, stream);
+        default: return -1;
+    }
+}
+
+layout_real_vjp::Params real_adjoint_params(bool dual, const Reader& r) {
+    layout_real_vjp::Params p{};
+    p.t1 = r.floats("t1");
+    p.t2 = r.floats("t2");
+    p.m0 = r.floats("m0");
+    p.b1 = r.floats("b1");
+    p.inversion_efficiency = r.floats("inversion_efficiency");
+    p.diffusion = r.floats("diffusion");
+    p.duration = r.floats("duration");
+    p.flip = r.floats("flip");
+    p.d_t1 = r.floats("dot_t1");
+    p.d_t2 = r.floats("dot_t2");
+    p.d_m0 = r.floats("dot_m0");
+    p.d_b1 = r.floats("dot_b1");
+    p.d_inversion_efficiency = r.floats("dot_inversion_efficiency");
+    p.d_diffusion = r.floats("dot_diffusion");
+    p.d_duration = r.floats("dot_duration");
+    p.d_flip = r.floats("dot_flip");
+    p.kind = r.ints("kind");
+    p.output_index = r.ints("output_index");
+    p.shim_index = r.ints("shim_index");
+    p.action = static_cast<const unsigned char*>(r.a[r.at("action")].p);
+    p.grad_output_imag = r.floats("grad_output_imag");
+    if (dual) {
+        p.grad_tissue = r.outputs("grad_tissue_value");
+        p.grad_tissue_t = r.outputs("grad_tissue_tangent");
+        p.grad_flip = r.outputs("grad_flip_value");
+        p.grad_flip_t = r.outputs("grad_flip_tangent");
+        p.grad_duration = r.outputs("grad_duration_value");
+        p.grad_duration_t = r.outputs("grad_duration_tangent");
+        p.trajectory = r.outputs("trajectory_value");
+        p.trajectory_t = r.outputs("trajectory_tangent");
+    } else {
+        p.grad_tissue = r.outputs("grad_tissue");
+        p.grad_flip = r.outputs("grad_flip");
+        p.grad_duration = r.outputs("grad_duration");
+        p.trajectory = r.outputs("trajectory_value");
+    }
+    p.problem_base = static_cast<int>(r.integer("problem_base"));
+    p.problem_end = static_cast<int>(r.integer("problem_end"));
+    p.atom_count = static_cast<int>(r.integer("atom_count"));
+    p.train_count = static_cast<int>(r.integer("train_count"));
+    p.event_count = static_cast<int>(r.integer("event_count"));
+    p.output_count = static_cast<int>(r.integer("output_count"));
+    p.state_count = static_cast<int>(r.integer("state_count"));
+    p.width = static_cast<int>(r.integer("block_states"));
+    p.shim_rows = static_cast<int>(r.integer("shim_rows"));
+    p.single_train = r.flag("single_train");
+    p.atom_stride = r.flag("atom_stride");
+    p.shimmed = r.flag("shimmed");
+    p.diffusing = r.flag("diffusing");
+    p.transmit = r.flag("transmit");
+    p.density = r.flag("density");
+    p.inverting = r.flag("inverting");
+    return p;
+}
+
 const int COMPLEX = bsk::kernel_index("_epg_kernel");
+const int COMPLEX_VJP = bsk::kernel_index("_epg_vjp_kernel");
+const int COMPLEX_VJP_JVP = bsk::kernel_index("_epg_vjp_jvp_kernel");
+const int REAL_VJP = bsk::kernel_index("_epg_real_vjp_kernel");
+const int REAL_VJP_JVP = bsk::kernel_index("_epg_real_vjp_jvp_kernel");
 const int COMPLEX_JVP = bsk::kernel_index("_epg_jvp_kernel");
 const int REAL = bsk::kernel_index("_epg_real_kernel");
 const int REAL_JVP = bsk::kernel_index("_epg_real_jvp_kernel");
@@ -178,7 +324,8 @@ const int REAL_JVP = bsk::kernel_index("_epg_real_jvp_kernel");
 
 int launch(int kernel, const bsk::Arguments& arguments, cudaStream_t stream) {
     const Reader r{kernel, arguments.a};
-    if (kernel != COMPLEX && kernel != COMPLEX_JVP && kernel != REAL && kernel != REAL_JVP) {
+    const bool adjoint = kernel == COMPLEX_VJP || kernel == COMPLEX_VJP_JVP || kernel == REAL_VJP || kernel == REAL_VJP_JVP;
+    if (kernel != COMPLEX && kernel != COMPLEX_JVP && kernel != REAL && kernel != REAL_JVP && !adjoint) {
         return -1;
     }
     // A layout's rows are at most a warp wide.
@@ -187,6 +334,13 @@ int launch(int kernel, const bsk::Arguments& arguments, cudaStream_t stream) {
     }
     if (kernel == COMPLEX || kernel == COMPLEX_JVP) {
         return complex_launch(kernel == COMPLEX_JVP, r, stream);
+    }
+    if (kernel == COMPLEX_VJP || kernel == COMPLEX_VJP_JVP) {
+        return adjoint_launch(kernel == COMPLEX_VJP_JVP, r, stream);
+    }
+    if (kernel == REAL_VJP || kernel == REAL_VJP_JVP) {
+        const layout_real_vjp::Params p = real_adjoint_params(kernel == REAL_VJP_JVP, r);
+        return kernel == REAL_VJP ? real_vjp(p, stream) : real_vjp_jvp(p, stream);
     }
     const layout_real::Params p = real_params(r);
     return kernel == REAL ? real_forward(p, stream) : real_jvp(p, stream);

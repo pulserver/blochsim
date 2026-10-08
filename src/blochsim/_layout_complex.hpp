@@ -28,6 +28,7 @@ using num::min_;
 using num::same;
 using num::sincos_;
 using num::sqrt_;
+using num::primal;
 using num::value;
 
 constexpr float TWO_PI = 6.283185307179586f;
@@ -72,9 +73,11 @@ template <class T>
 __device__ __forceinline__ void event_phase(const Params& p, int at, T& c, T& s) {
     if constexpr (DUAL<T>) {
         sincos_(T{__ldg(p.phase + at), __ldg(p.d_phase + at)}, s, c);
-    } else {
+    } else if (p.phase_cos != nullptr) {
         c = p.phase_cos[at];
         s = p.phase_sin[at];
+    } else {
+        sincos_(__ldg(p.phase + at), s, c);
     }
 }
 
@@ -150,8 +153,8 @@ __device__ __forceinline__ void two_pool_step(T r1_free, T r1_bound, T exchange,
     const T l22 = (-kba - r1_bound) * dt;
     const T half_trace = 0.5f * (l11 + l22), half_gap = 0.5f * (l11 - l22);
     const T square = half_gap * half_gap + l12 * l21;
-    const bool turning = value(square) > 1e-12f;
-    const T root = turning ? sqrt_(square) : T(num::sqrt_approx(fmaxf(value(square), 0.0f)));
+    const bool turning = primal(square) > 1e-12f;
+    const T root = turning ? sqrt_(square) : T(num::sqrt_approx(fmaxf(primal(square), 0.0f)));
     const T upper = exp_(half_trace + root), lower = exp_(half_trace - root);
     const T cosine = 0.5f * (upper + lower);
     const T scale = turning ? div_(0.5f * (upper - lower), root)
@@ -193,6 +196,22 @@ __device__ __forceinline__ void complex_sqrt(num::Dual re, num::Dual im, num::Du
     ri = {vi, ti};
 }
 
+template <int K, class S>
+__device__ __forceinline__ void complex_sqrt(const num::Multi<K, S>& re, const num::Multi<K, S>& im, num::Multi<K, S>& rr,
+                                             num::Multi<K, S>& ri) {
+    S vr, vi;
+    complex_sqrt(re.v, im.v, vr, vi);
+    const S guard = 2.0f * (vr * vr + vi * vi);
+    const bool live = primal(guard) > 0.0f;
+    rr.v = vr;
+    ri.v = vi;
+#pragma unroll
+    for (int k = 0; k < K; ++k) {
+        rr.d[k] = live ? div_(re.d[k] * vr + im.d[k] * vi, guard) : S(0.0f);
+        ri.d[k] = live ? div_(im.d[k] * vr - re.d[k] * vi, guard) : S(0.0f);
+    }
+}
+
 template <class T>
 __device__ __forceinline__ void complex_exp(T re, T im, T& er, T& ei) {
     const T scale = exp_(re);
@@ -221,7 +240,7 @@ __device__ __forceinline__ void transverse_step(T r2_free, T r2_bound, T exchang
     complex_exp(trace_r - root_r, trace_i - root_i, lower_r, lower_i);
     const T cos_r = 0.5f * (upper_r + lower_r), cos_i = 0.5f * (upper_i + lower_i);
     T scale_r, scale_i;
-    if (value(square_r) * value(square_r) + value(square_i) * value(square_i) > 1e-24f) {
+    if (primal(square_r) * primal(square_r) + primal(square_i) * primal(square_i) > 1e-24f) {
         const T half_r = 0.5f * (upper_r - lower_r), half_i = 0.5f * (upper_i - lower_i);
         const T inverse = div_(T(1.0f), root_r * root_r + root_i * root_i);
         scale_r = (half_r * root_r + half_i * root_i) * inverse;
@@ -252,7 +271,7 @@ __device__ __forceinline__ void transverse_step(T r2_free, T r2_bound, T exchang
 template <class W>
 __device__ __forceinline__ W exp_difference(W lower, W upper, W exp_lower, W exp_upper) {
     const W half = 0.5 * (upper - lower);
-    if (fabs(value(half)) < 1e-4) {
+    if (fabs(primal(half)) < 1e-4) {
         const W square = half * half;
         return exp_lower * (1.0 + half + 0.5 * square) * (1.0 + square / 6.0);
     }
@@ -277,7 +296,7 @@ __device__ __forceinline__ void series_terms(W determinant, W minors, W& flat, W
         flat = next_flat;
         linear = next_linear;
         square = next_square;
-        using V = decltype(value(determinant));
+        using V = decltype(primal(determinant));
         constexpr double weight = inverse_factorial(K);
         sum_flat = sum_flat + V(weight) * flat;
         sum_linear = sum_linear + V(weight) * linear;
@@ -296,6 +315,10 @@ template <bool NARROW>
 struct WorkOf<num::Dual, NARROW> {
     using type = typename std::conditional<NARROW, num::Dual, num::Dual64>::type;
 };
+template <int K, class S, bool NARROW>
+struct WorkOf<num::Multi<K, S>, NARROW> {
+    using type = num::Multi<K, typename WorkOf<S, NARROW>::type>;
+};
 
 // expm((K - diag(R1)) dt) for free water (a), pool b and the semisolid pool
 // (c), which exchange with a and not with each other, times the attenuation:
@@ -307,7 +330,7 @@ __device__ __forceinline__ void three_pool_step(T r1_free, T r1_b, T r1_c, T exc
                                                 T fraction_b, T fraction_c, T dt, T attenuation, T* e,
                                                 T* grow) {
     using W = typename WorkOf<T, NARROW>::type;
-    using V = decltype(value(W()));
+    using V = decltype(primal(W()));
     constexpr int TERMS = NARROW ? 24 : 16;
     const W step = W(dt);
     const W free = W(1.0f - fraction_b - fraction_c);
@@ -325,7 +348,7 @@ __device__ __forceinline__ void three_pool_step(T r1_free, T r1_b, T r1_c, T exc
     const W determinant = s00 * s11 * s22 - a01 * (a10 * s22) + a02 * (-s11 * a20);
     W c[9];
     bool close = true;
-    if constexpr (!NARROW) close = -2.0 * value(minors) < 1.0;
+    if constexpr (!NARROW) close = -2.0 * primal(minors) < 1.0;
     if (close) {
         W flat = V(1), linear = V(0), square = V(0), sum_flat = V(1), sum_linear = V(0), sum_square = V(0);
         series_terms<W, 1, TERMS>(determinant, minors, flat, linear, square, sum_flat, sum_linear,
@@ -361,7 +384,7 @@ __device__ __forceinline__ void three_pool_step(T r1_free, T r1_b, T r1_c, T exc
             const W first = exp_difference(low, middle, leading, centre);
             const W span = high - low;
             const W second =
-                (exp_difference(middle, high, centre, trailing) - first) / (value(span) > 0.0 ? span : W(1.0));
+                (exp_difference(middle, high, centre, trailing) - first) / (primal(span) > 0.0 ? span : W(1.0));
             const W m00 = a00 - low, m11 = a11 - low, m22 = a22 - low;
             const W n00 = a00 - middle, n11 = a11 - middle, n22 = a22 - middle;
             const W p00 = m00 * n00 + a01 * a10 + a02 * a20, p01 = m00 * a01 + a01 * n11;
@@ -443,7 +466,7 @@ template <class T>
 __device__ __forceinline__ T lineshape_at(const float* lineshape, T offset_hz, int bins, float step) {
     const int last = bins - 1;
     const T scaled = min_(div_(abs_(offset_hz), T(step)), T(last + 0.0f));
-    const float lower = fminf(floorf(value(scaled)), last - 1.0f);
+    const float lower = fminf(floorf(primal(scaled)), last - 1.0f);
     T h10, h01, h11;
     const T h00 = hermite_weights(scaled, lower, step, h10, h01, h11);
     const float* base = lineshape + static_cast<int>(lower) * 2;
@@ -813,7 +836,7 @@ __device__ __forceinline__ void pulse(const Params& p, int event, int base, cons
                 const int row = profile_row + location[y];
                 const int last = p.profile_bins - 1;
                 const T scaled = min_(max_(div_(alpha, T(p.profile_step)), T(0.0f)), T(last + 0.0f));
-                const float lower = fminf(floorf(value(scaled)), last - 1.0f);
+                const float lower = fminf(floorf(primal(scaled)), last - 1.0f);
                 T h10, h01, h11;
                 const T h00 = hermite_weights(scaled, lower, p.profile_step, h10, h01, h11);
                 const float* base_row = p.profile + (row * p.profile_bins + static_cast<int>(lower)) * 8;

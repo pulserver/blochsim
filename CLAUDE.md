@@ -92,16 +92,20 @@ the general kernels alone. A specialized kernel is compiled for rows of at most
 32 state orders, so its shifts are shuffles with no test; a wider launch runs
 the general one.
 
-**The forward EPG kernels and their Jacobian-vector products are written for
-their layouts** (`_layout.hpp`), and a launch whose rows fit a warp runs them
-ahead of any tile kernel. A layout is what is compiled: the pools, how a
+**The EPG kernels are written for their layouts** (`_layout.hpp`), and a
+launch whose rows fit a warp runs them ahead of any tile kernel. A layout is what is compiled: the pools, how a
 pulse is formed, whether the tissue has per-voxel maps, the problems a thread
 holds, one train or several; every other switch is read at run time and
 steers whole blocks once per event, so one compile serves every combination
 of them. The loops are written once over a number type
 (`_layout_numbers.hpp`): at `float` they are the forward simulation, at
 `num::Dual` -- a value and its derivative along the direction -- the
-Jacobian-vector product. `_gpu_launch.generic_kernels()` turns layouts off
+Jacobian-vector product. The adjoints are written the same way, so their
+derivative along a direction is the same source at `num::Dual`: the forward
+sweep keeps the state every few events and the reverse sweep replays each
+stretch from it, and an interval's gradient is contracted against its
+operator's derivatives -- taken along every tissue input at once by
+`num::Multi` -- only when the interval changes. `_gpu_launch.generic_kernels()` turns layouts off
 with the specializations, and `layout_launches()` counts them. They exist only
 on the card: `_gpu_host` compiles the tile kernels, so the host lane holds
 those, not these, to the C++ kernels.
