@@ -61,32 +61,6 @@ def available() -> bool:
     return True
 
 
-def specializations() -> list[tuple[str, dict[str, int]]]:
-    """Each kernel compiled for one combination of its switches, and the switches.
-
-    Empty where this installation carries no kernels for a card.
-    """
-    if not available():
-        return []
-    return [
-        (
-            kernel,
-            {
-                name: int(value)
-                for name, value in (
-                    pair.split("=") for pair in fixed.split(",") if pair
-                )
-            },
-        )
-        for kernel, fixed in _module("cuda").specializations()
-    ]
-
-
-def specialized_launches() -> int:
-    """How many launches on a card have run a specialized kernel."""
-    return _module("cuda").specialized_launches() if available() else 0
-
-
 def layout_launches() -> int:
     """How many launches on a card have run a kernel written for its layout."""
     return _module("cuda").layout_launches() if available() else 0
@@ -94,17 +68,15 @@ def layout_launches() -> int:
 
 @contextmanager
 def generic_kernels() -> Iterator[None]:
-    """Run every launch inside on the tile kernels compiled for all combinations."""
+    """Run every launch inside on the tile kernels rather than on its layout."""
     if not available():
         yield
         return
     module = _module("cuda")
-    special = module.use_specializations(False)
     layouts = module.use_layouts(False)
     try:
         yield
     finally:
-        module.use_specializations(special)
         module.use_layouts(layouts)
 
 

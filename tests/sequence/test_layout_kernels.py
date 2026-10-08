@@ -1,6 +1,6 @@
-"""Whether a kernel compiled for its switches or its layout computes what the general one does.
+"""Whether a kernel written for its layout computes what the tile kernel does.
 
-A kernel that quietly did not run agrees perfectly, so every case also asserts
+A layout that quietly did not run agrees perfectly, so every case also asserts
 that one did.
 """
 
@@ -17,8 +17,8 @@ from blochsim.sequence import EpgEngine, exact_slice_profile, fse_description
 from blochsim.sequence._simulation import TissueProperties
 
 pytestmark = pytest.mark.skipif(
-    not torch.cuda.is_available() or not _gpu_launch.specializations(),
-    reason="needs a card and the specialized kernels",
+    not torch.cuda.is_available() or not _gpu_launch.available(),
+    reason="needs a card and the kernels compiled for it",
 )
 
 
@@ -75,10 +75,6 @@ def _gradient(phase: float) -> torch.Tensor:
     return tissue["t2_ms"].grad
 
 
-def _fast_launches() -> int:
-    return _gpu_launch.specialized_launches() + _gpu_launch.layout_launches()
-
-
 CASES = {
     "real forward": lambda: _forward(torch.pi / 2),
     "complex forward": lambda: _forward(0.0),
@@ -89,21 +85,21 @@ CASES = {
 
 
 @pytest.mark.parametrize("case", CASES)
-def test_a_specialized_kernel_computes_what_the_general_one_does(case) -> None:
+def test_a_layout_computes_what_the_tile_kernel_does(case) -> None:
     with _gpu_launch.generic_kernels():
-        general = CASES[case]()
-    before = _fast_launches()
-    special = CASES[case]()
+        tiled = CASES[case]()
+    before = _gpu_launch.layout_launches()
+    laid_out = CASES[case]()
 
-    assert _fast_launches() > before
-    error = (special - general).abs().max()
-    scale = general.abs().max()
+    assert _gpu_launch.layout_launches() > before
+    error = (laid_out - tiled).abs().max()
+    scale = tiled.abs().max()
     assert float(error / scale) < 1e-5, f"{float(error):.3e} against {float(scale):.3e}"
 
 
-def test_the_general_kernels_run_where_asked() -> None:
-    before = _fast_launches()
+def test_the_tile_kernels_run_where_asked() -> None:
+    before = _gpu_launch.layout_launches()
     with _gpu_launch.generic_kernels():
         _forward(torch.pi / 2)
 
-    assert _fast_launches() == before
+    assert _gpu_launch.layout_launches() == before

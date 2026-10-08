@@ -585,8 +585,84 @@ struct PoolOperators {
     T t[Y][NT], e[Y][NE], grow[Y][NG], factor_r[Y], factor_i[Y];
 };
 
-template <class T, int POOLS, int MODE, int Y, bool MOVING, bool DIFFUSING, bool OFF_AXIS, bool MAPS>
-__device__ __forceinline__ void pool_operators(const Params& p, const T* dts, const int* rows,
+// One problem's operators over one interval at this lane's order, out of
+// line: an interval is formed only when it changes, and one copy serves every
+// kernel of the layout. The switches are read at run time for the same
+// reason. Everything goes in and comes out by value.
+template <class T, int POOLS>
+struct OneOperator {
+    static constexpr int NT = POOLS >= 2 ? 8 : 2, NE = POOLS == 3 ? 9 : 4, NG = POOLS == 3 ? 3 : 2;
+    T t[NT], e[NE], grow[NG], factor_r, factor_i, damp_z, wout;
+};
+template <class T>
+struct OneTissue {
+    T r1, r2, b0, velocity, diffusion, fraction_b, exchange_b, r1_b, free, r2_b, shift_b, fraction_c, exchange_c, r1_c;
+};
+struct OperatorGeometry {
+    float flow_scale, washout_scale;
+    const float* pool_table;
+    int atom_count;
+};
+
+template <class T, int POOLS, int MODE>
+__device__ __noinline__ OneOperator<T, POOLS> one_operator(OperatorGeometry g, int relax_code, T dt, int row, int atom,
+                                                           float order, OneTissue<T> in, bool three_elsewhere) {
+    const bool moving = (relax_code & 4) != 0, diffusing = (relax_code & 2) != 0, off_axis = (relax_code & 1) != 0;
+    OneOperator<T, POOLS> out;
+    T wout = 1.0f, turn = 0.0f;
+    if (moving) {
+        wout = 1.0f - min_(abs_(in.velocity) * g.washout_scale * dt, T(1.0f));
+        turn = in.velocity * g.flow_scale * dt;
+    }
+    T damp_z = 1.0f, damp_t = 1.0f;
+    if (diffusing) {
+        const T b = in.diffusion * dt;
+        const float sq = order * order;
+        damp_z = exp_(-b * sq);
+        damp_t = exp_(-b * (sq + order + 0.3333333333333333f));
+    }
+    T oc = 1.0f, os = 0.0f;
+    if (moving || off_axis) sincos_(-TWO_PI * in.b0 * dt - (order + 0.5f) * turn, os, oc);
+    if constexpr (POOLS == 1) {
+        const T e2 = exp_(-in.r2 * dt) * wout * damp_t;
+        out.t[0] = e2 * oc;
+        out.t[1] = e2 * os;
+    } else {
+        T x[8];
+        transverse_step(in.r2, in.r2_b, in.exchange_b, in.fraction_b, in.free, in.shift_b, dt, wout, x);
+        const T rr = damp_t * oc, ri = damp_t * os;
+#pragma unroll
+        for (int k = 0; k < 4; ++k) {
+            out.t[2 * k] = rr * x[2 * k] - ri * x[2 * k + 1];
+            out.t[2 * k + 1] = rr * x[2 * k + 1] + ri * x[2 * k];
+        }
+    }
+    if constexpr (POOLS == 3) {
+        if constexpr (MODE == TABLE) {
+            three_pool_from_table(g.pool_table, row, atom, g.atom_count, dt, wout, in.r1, in.r1_b, in.r1_c, in.exchange_b,
+                                  in.exchange_c, in.free, in.fraction_b, in.fraction_c, out.e, out.grow);
+        } else if (!three_elsewhere) {
+            three_pool_step<MODE == NARROW>(in.r1, in.r1_b, in.r1_c, in.exchange_b, in.exchange_c, in.fraction_b,
+                                            in.fraction_c, dt, wout, out.e, out.grow);
+        }
+    } else {
+        two_pool_step(in.r1, in.r1_b, in.exchange_b, in.fraction_b, dt, wout, out.e, out.grow);
+    }
+    out.damp_z = damp_z;
+    out.wout = wout;
+    out.factor_r = damp_z;
+    out.factor_i = 0.0f;
+    if (moving) {
+        T ts, tc;
+        sincos_(-order * turn, ts, tc);
+        out.factor_r = damp_z * tc;
+        out.factor_i = damp_z * ts;
+    }
+    return out;
+}
+
+template <class T, int POOLS, int MODE, int Y, bool MAPS>
+__device__ __forceinline__ void pool_operators(const Params& p, int relax_code, const T* dts, const int* rows,
                                                const bool* active, const int* atom, int state, float order,
                                                const T* r1, const T* r2, const T* b0,
                                                const PoolTissue<T, POOLS, Y>& tissue,
@@ -594,69 +670,46 @@ __device__ __forceinline__ void pool_operators(const Params& p, const T* dts, co
     // A row of at least Y states spreads the three-pool step over its lanes
     // where it is formed in double; in float the shuffles cost what they save.
     const bool SPREAD = POOLS == 3 && MODE == ROOTS && Y > 1 && p.width >= Y;
+    const bool moving = (relax_code & 4) != 0;
+    const OperatorGeometry g{p.flow_scale, p.washout_scale, p.pool_table, p.atom_count};
     T attenuations[Y], damps[Y];
 #pragma unroll
     for (int y = 0; y < Y; ++y) {
-        const T dt = dts[y];
         const int at = p.atom_stride ? atom[y] : 0;
-        T wout = 1.0f, turn = 0.0f;
-        if constexpr (MOVING) {
-            const T velocity = active[y] ? read<T>(p.velocity, p.d_velocity, at) : T(0.0f);
-            wout = 1.0f - min_(abs_(velocity) * p.washout_scale * dt, T(1.0f));
-            turn = velocity * p.flow_scale * dt;
-        }
-        T damp_z = 1.0f, damp_t = 1.0f;
-        if constexpr (DIFFUSING) {
-            const T b = (active[y] ? read<T>(p.diffusion, p.d_diffusion, at) : T(0.0f)) * dt;
-            const float sq = order * order;
-            damp_z = exp_(-b * sq);
-            damp_t = exp_(-b * (sq + order + 0.3333333333333333f));
-        }
-        T oc = 1.0f, os = 0.0f;
-        if constexpr (MOVING || OFF_AXIS) {
-            T b0y = 0.0f;
-            if constexpr (OFF_AXIS && MAPS) b0y = b0[y];
-            sincos_(-TWO_PI * b0y * dt - (order + 0.5f) * turn, os, oc);
-        }
-        if constexpr (POOLS == 1) {
-            const T e2 = exp_(-r2[y] * dt) * wout * damp_t;
-            ops.t[y][0] = e2 * oc;
-            ops.t[y][1] = e2 * os;
+        OneTissue<T> in;
+        in.r1 = r1[y];
+        in.r2 = r2[y];
+        in.b0 = MAPS && p.off_axis ? b0[MAPS ? y : 0] : T(0.0f);
+        in.velocity = p.moving && active[y] ? read<T>(p.velocity, p.d_velocity, at) : T(0.0f);
+        in.diffusion = p.diffusing && active[y] ? read<T>(p.diffusion, p.d_diffusion, at) : T(0.0f);
+        in.fraction_b = tissue.fraction_b[y];
+        in.exchange_b = tissue.exchange_b[y];
+        in.r1_b = tissue.r1_b[y];
+        in.free = tissue.free[y];
+        if constexpr (POOLS >= 2) {
+            in.r2_b = tissue.r2_b[y];
+            in.shift_b = tissue.shift_b[y];
         } else {
-            T x[8];
-            transverse_step(r2[y], tissue.r2_b[y], tissue.exchange_b[y], tissue.fraction_b[y], tissue.free[y],
-                            tissue.shift_b[y], dt, wout, x);
-            const T rr = damp_t * oc, ri = damp_t * os;
-#pragma unroll
-            for (int k = 0; k < 4; ++k) {
-                ops.t[y][2 * k] = rr * x[2 * k] - ri * x[2 * k + 1];
-                ops.t[y][2 * k + 1] = rr * x[2 * k + 1] + ri * x[2 * k];
-            }
+            in.r2_b = in.shift_b = 0.0f;
         }
         if constexpr (POOLS == 3) {
-            if constexpr (MODE == TABLE) {
-                three_pool_from_table(p.pool_table, rows[y], atom[y], p.atom_count, dt, wout, r1[y],
-                                      tissue.r1_b[y], tissue.r1_c[y], tissue.exchange_b[y],
-                                      tissue.exchange_c[y], tissue.free[y], tissue.fraction_b[y],
-                                      tissue.fraction_c[y], ops.e[y], ops.grow[y]);
-            } else if (!SPREAD) {
-                three_pool_step<MODE == NARROW>(r1[y], tissue.r1_b[y], tissue.r1_c[y], tissue.exchange_b[y],
-                                                tissue.exchange_c[y], tissue.fraction_b[y],
-                                                tissue.fraction_c[y], dt, wout, ops.e[y], ops.grow[y]);
-            } else {
-                attenuations[y] = wout;
-            }
+            in.fraction_c = tissue.fraction_c[y];
+            in.exchange_c = tissue.exchange_c[y];
+            in.r1_c = tissue.r1_c[y];
         } else {
-            two_pool_step(r1[y], tissue.r1_b[y], tissue.exchange_b[y], tissue.fraction_b[y], dt, wout, ops.e[y],
-                          ops.grow[y]);
+            in.fraction_c = in.exchange_c = in.r1_c = 0.0f;
         }
-        damps[y] = damp_z;
-        if constexpr (MOVING) {
-            T ts, tc;
-            sincos_(-order * turn, ts, tc);
-            ops.factor_r[y] = damp_z * tc;
-            ops.factor_i[y] = damp_z * ts;
-        }
+        const OneOperator<T, POOLS> one = one_operator<T, POOLS, MODE>(g, relax_code, dts[y], rows[y], atom[y], order, in, SPREAD);
+#pragma unroll
+        for (int k = 0; k < OneOperator<T, POOLS>::NT; ++k) ops.t[y][k] = one.t[k];
+#pragma unroll
+        for (int k = 0; k < OneOperator<T, POOLS>::NE; ++k) ops.e[y][k] = one.e[k];
+#pragma unroll
+        for (int k = 0; k < OneOperator<T, POOLS>::NG; ++k) ops.grow[y][k] = one.grow[k];
+        ops.factor_r[y] = one.factor_r;
+        ops.factor_i[y] = one.factor_i;
+        damps[y] = one.damp_z;
+        attenuations[y] = one.wout;
     }
     if constexpr (POOLS == 3 && MODE == ROOTS && Y > 1) {
         if (SPREAD) {
@@ -687,7 +740,7 @@ __device__ __forceinline__ void pool_operators(const Params& p, const T* dts, co
             }
         }
     }
-    if constexpr (!MOVING) {
+    if (!moving) {
 #pragma unroll
         for (int y = 0; y < Y; ++y) {
 #pragma unroll
@@ -1065,16 +1118,8 @@ __device__ __forceinline__ void complex_loop(const Params& p) {
                         rows[y] = 0;
                         if constexpr (MODE == TABLE) rows[y] = uniform ? row_shared : p.duration_row[e];
                     }
-                    switch (relax_code) {
-                        case 0: pool_operators<T, POOLS, MODE, Y, false, false, false, MAPS>(EPG_POOL_ARGS); break;
-                        case 1: pool_operators<T, POOLS, MODE, Y, false, false, true, MAPS>(EPG_POOL_ARGS); break;
-                        case 2: pool_operators<T, POOLS, MODE, Y, false, true, false, MAPS>(EPG_POOL_ARGS); break;
-                        case 3: pool_operators<T, POOLS, MODE, Y, false, true, true, MAPS>(EPG_POOL_ARGS); break;
-                        case 4: pool_operators<T, POOLS, MODE, Y, true, false, false, MAPS>(EPG_POOL_ARGS); break;
-                        case 5: pool_operators<T, POOLS, MODE, Y, true, false, true, MAPS>(EPG_POOL_ARGS); break;
-                        case 6: pool_operators<T, POOLS, MODE, Y, true, true, false, MAPS>(EPG_POOL_ARGS); break;
-                        default: pool_operators<T, POOLS, MODE, Y, true, true, true, MAPS>(EPG_POOL_ARGS); break;
-                    }
+                    pool_operators<T, POOLS, MODE, Y, MAPS>(p, relax_code, dts, rows, active, atom, state, order, r1, r2,
+                                                            b0, tissue, ops);
                     last_dt = uniform ? dt_shared : T(-1.0f);
                     last_row = row_shared;
                 }

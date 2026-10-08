@@ -75,40 +75,26 @@ problems a program carries are another matter: a thread holds `Y_LANES` of
 them in registers, set per kernel in `src/blochsim/_lanes.hpp`, so that one
 reading of each event serves all of them.
 
-**A kernel runs compiled for its own switches where one is listed.** Every
-EPG kernel takes its feature switches as arguments, so as compiled once it
-carries the registers and code of every term it might evaluate. Each entry of
-`src/blochsim/_specializations.json` compiles the same kernel again with those
-switches as constants (`_special.hpp`): every function is inlined, a constant
-switch folds, and the terms it turns off are never generated. The launcher runs
-the entry a launch's switches match exactly, and the kernel compiled for all of
-them where none does, so the list decides speed and never correctness.
-`scripts/kernel_census.py` records the switches launches use and writes the
-list; `_gpu_launch.generic_kernels()` runs a block on the general kernels, which
-is how `tests/sequence/test_specialized_kernels.py` holds the two to each other.
-Each entry is another compile of its kernel, so the list is most of a CUDA
-build's time; `--config-settings=cmake.define.BLOCHSIM_SPECIALIZE=OFF` builds
-the general kernels alone. A specialized kernel is compiled for rows of at most
-32 state orders, so its shifts are shuffles with no test; a wider launch runs
-the general one.
-
 **The EPG kernels are written for their layouts** (`_layout.hpp`), and a
-launch whose rows fit a warp runs them ahead of any tile kernel. A layout is what is compiled: the pools, how a
-pulse is formed, whether the tissue has per-voxel maps, the problems a thread
-holds, one train or several; every other switch is read at run time and
-steers whole blocks once per event, so one compile serves every combination
-of them. The loops are written once over a number type
-(`_layout_numbers.hpp`): at `float` they are the forward simulation, at
-`num::Dual` -- a value and its derivative along the direction -- the
-Jacobian-vector product. The adjoints are written the same way, so their
-derivative along a direction is the same source at `num::Dual`: the forward
-sweep keeps the state every few events and the reverse sweep replays each
-stretch from it, and an interval's gradient is contracted against its
+launch whose rows fit a warp runs them ahead of any tile kernel. A layout is
+what is compiled: the pools, how a pulse is formed, whether the tissue has
+per-voxel maps, the problems a thread holds, one train or several; every other
+switch is read at run time and steers whole blocks once per event, so one
+compile serves every combination of them. The loops are written once over a
+number type (`_layout_numbers.hpp`): at `float` they are the forward
+simulation, at `num::Dual` -- a value and its derivative along the direction
+-- the Jacobian-vector product. The adjoints are written the same way, so
+their derivative along a direction is the same source at `num::Dual`: the
+forward sweep keeps the state every few events and the reverse sweep replays
+each stretch from it, and an interval's gradient is contracted against its
 operator's derivatives -- taken along every tissue input at once by
-`num::Multi` -- only when the interval changes. `_gpu_launch.generic_kernels()` turns layouts off
-with the specializations, and `layout_launches()` counts them. They exist only
-on the card: `_gpu_host` compiles the tile kernels, so the host lane holds
-those, not these, to the C++ kernels.
+`num::Multi` -- only when the interval changes. Code that runs only when an
+interval changes is out of line and reads its switches at run time, which is
+what keeps a layout's compile to seconds. `_gpu_launch.generic_kernels()`
+turns the layouts off and `layout_launches()` counts them;
+`tests/sequence/test_layout_kernels.py` holds the two to each other. They
+exist only on the card: `_gpu_host` compiles the tile kernels, so the host
+lane holds those, not these, to the C++ kernels.
 
 **The EPG kernels index in 32 bits** (`bsk::index_t`), as Triton did for every
 integer argument that fit. An offset that can pass 2^31 is cast to 64 bits

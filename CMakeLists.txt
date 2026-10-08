@@ -109,48 +109,6 @@ if(BLOCHSIM_CUDA)
         list(APPEND _blochsim_gpu_sources "${_source}")
     endforeach()
 
-    # The kernels again, each for the combinations of its feature switches
-    # listed in _specializations.json: a switch fixed at compile time folds,
-    # and the terms it turns off are never generated. The launcher runs one
-    # where a launch's switches match it and the kernel above where none does.
-    # OFF builds the kernels above alone, which is the quick build for work on
-    # them.
-    option(BLOCHSIM_SPECIALIZE "Compile the kernels for the switch combinations listed" ON)
-    set(_blochsim_special_dir "${CMAKE_CURRENT_BINARY_DIR}/special")
-    set(_blochsim_special_table "")
-    if(BLOCHSIM_SPECIALIZE)
-        set(_list "${CMAKE_CURRENT_SOURCE_DIR}/src/blochsim/_specializations.json")
-        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_list}")
-        file(READ "${_list}" _json)
-        string(JSON _count LENGTH "${_json}" specializations)
-        if(_count GREATER 0)
-            math(EXPR _last "${_count} - 1")
-            foreach(INDEX RANGE ${_last})
-                string(JSON KERNEL GET "${_json}" specializations ${INDEX} kernel)
-                string(JSON _fixed GET "${_json}" specializations ${INDEX} fixed)
-                string(JSON _switches LENGTH "${_fixed}")
-                set(FIXED "")
-                set(_text "")
-                if(_switches GREATER 0)
-                    math(EXPR _last_switch "${_switches} - 1")
-                    foreach(_j RANGE ${_last_switch})
-                        string(JSON _name MEMBER "${_fixed}" ${_j})
-                        string(JSON _value GET "${_fixed}" ${_name})
-                        string(APPEND FIXED ", BLOCHSIM_PARAM(${_name}), ${_value}")
-                        string(APPEND _text "${_name}=${_value},")
-                    endforeach()
-                endif()
-                set(_source "${_blochsim_special_dir}/special${INDEX}.cu")
-                configure_file(src/blochsim/_gpu_special.cu.in "${_source}" @ONLY)
-                list(APPEND _blochsim_gpu_sources "${_source}")
-                string(APPEND _blochsim_special_table "    X(${INDEX}, ${KERNEL}, \"${_text}\") \\\n")
-            endforeach()
-        endif()
-    endif()
-    file(CONFIGURE OUTPUT "${_blochsim_special_dir}/_special_table.hpp"
-        CONTENT "// Written by CMake from _specializations.json: X(index, kernel, \"switch=value,...\").\n#define BLOCHSIM_FOR_EACH_SPECIAL(X) \\\n${_blochsim_special_table}\n"
-        @ONLY)
-
     # The EPG kernels written for their layouts (_layout.hpp): a unit per
     # kernel and pool layout, so they compile side by side.
     list(APPEND _blochsim_gpu_sources src/blochsim/_layout.cu src/blochsim/_layout_real.cu
@@ -185,7 +143,7 @@ if(BLOCHSIM_CUDA)
         WITH_SOABI
         ${_blochsim_gpu_sources}
     )
-    target_include_directories(_gpu PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/blochsim" "${_blochsim_special_dir}")
+    target_include_directories(_gpu PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/blochsim")
     # The runtime is linked in, so a machine needs the driver and nothing else.
     target_link_libraries(_gpu PRIVATE CUDA::cudart_static)
     # Warning 221 is a double constant that rounds to zero in float, which the
