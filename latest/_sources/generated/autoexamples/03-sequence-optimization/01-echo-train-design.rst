@@ -296,7 +296,7 @@ will play, and :class:`~blochsim.Bounded` holds them exactly.
 
  .. code-block:: none
 
-    one train of 120 echoes designed in 0.08 s, 3.4 ms per iteration
+    one train of 120 echoes designed in 0.07 s, 2.8 ms per iteration
 
 
 
@@ -587,7 +587,7 @@ Starting from the prescription the abstract reports: a 45 echo train at
 
  .. code-block:: none
 
-    a whole protocol designed in 0.44 s, 10.9 ms per iteration
+    a whole protocol designed in 0.62 s, 15.5 ms per iteration
 
 
 
@@ -651,7 +651,7 @@ would leave.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f2a08724b30>, <matplotlib.legend.Legend object at 0x7f2a087242f0>, <matplotlib.legend.Legend object at 0x7f2a11770470>]
+    [<matplotlib.legend.Legend object at 0x7f10c47e5580>, <matplotlib.legend.Legend object at 0x7f10c7f8eff0>, <matplotlib.legend.Legend object at 0x7f10c488cf50>]
 
 
 
@@ -674,7 +674,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.418 seconds)
+   **Total running time of the script:** (0 minutes 1.974 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_01-echo-train-design.py:

@@ -163,8 +163,8 @@ under the home directory.
 
  .. code-block:: none
 
-    Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmps04a_gya.zip
-    0it [00:00, ?it/s]      0%|          | 0/233926107 [00:01<?, ?it/s]      4%|▎         | 8396800/233926107 [00:01<00:02, 81068083.59it/s]     10%|▉         | 23076864/233926107 [00:01<00:01, 110992552.89it/s]     14%|█▍        | 33816576/233926107 [00:01<00:01, 102500473.10it/s]     18%|█▊        | 42655744/233926107 [00:01<00:01, 96370117.47it/s]      23%|██▎       | 52756480/233926107 [00:02<00:01, 94530521.04it/s]     27%|██▋       | 63291392/233926107 [00:02<00:01, 95398135.97it/s]     32%|███▏      | 73809920/233926107 [00:02<00:01, 93437363.62it/s]     36%|███▌      | 84344832/233926107 [00:02<00:01, 92261337.16it/s]     40%|███▉      | 93413376/233926107 [00:02<00:01, 90919099.35it/s]     44%|████▍     | 103284736/233926107 [00:02<00:01, 91395065.68it/s]     49%|████▊     | 113819648/233926107 [00:02<00:01, 93205529.10it/s]     53%|█████▎    | 124338176/233926107 [00:02<00:01, 93767830.67it/s]     58%|█████▊    | 134873088/233926107 [00:02<00:01, 93685848.27it/s]     62%|██████▏   | 144220160/233926107 [00:03<00:00, 90824263.77it/s]     66%|██████▌   | 153812992/233926107 [00:03<00:00, 91347914.53it/s]     70%|███████   | 164347904/233926107 [00:03<00:00, 92241375.58it/s]     75%|███████▍  | 174866432/233926107 [00:03<00:00, 93145913.44it/s]     79%|███████▉  | 185401344/233926107 [00:03<00:00, 91973640.39it/s]     84%|████████▍ | 195919872/233926107 [00:03<00:00, 93435325.78it/s]     88%|████████▊ | 206454784/233926107 [00:03<00:00, 91724891.93it/s]     93%|█████████▎| 216973312/233926107 [00:03<00:00, 93276282.09it/s]     97%|█████████▋| 227508224/233926107 [00:03<00:00, 94138103.18it/s]    233930752it [00:04, 56222951.24it/s]                               
+    Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmp7r3se4oj.zip
+    0it [00:00, ?it/s]      0%|          | 0/233926107 [00:01<?, ?it/s]      1%|▏         | 2924544/233926107 [00:01<00:07, 29243794.55it/s]      6%|▋         | 15171584/233926107 [00:01<00:02, 79278968.24it/s]     11%|█         | 25706496/233926107 [00:01<00:02, 84343087.58it/s]     15%|█▌        | 36225024/233926107 [00:01<00:02, 86559575.22it/s]     19%|█▉        | 44179456/233926107 [00:01<00:02, 76163176.80it/s]     22%|██▏       | 51396608/233926107 [00:02<00:02, 61851944.50it/s]     27%|██▋       | 63545344/233926107 [00:02<00:02, 77334789.76it/s]     33%|███▎      | 78225408/233926107 [00:02<00:01, 94513009.38it/s]     40%|███▉      | 92905472/233926107 [00:02<00:01, 104629427.48it/s]     47%|████▋     | 109682688/233926107 [00:02<00:01, 116156998.90it/s]     52%|█████▏    | 121503744/233926107 [00:02<00:00, 115196688.28it/s]     57%|█████▋    | 133160960/233926107 [00:02<00:00, 104760719.53it/s]     61%|██████▏   | 143859712/233926107 [00:02<00:00, 100718734.67it/s]     66%|██████▌   | 154083328/233926107 [00:03<00:00, 95518041.59it/s]      70%|███████   | 164413440/233926107 [00:03<00:00, 93723144.47it/s]     74%|███████▍  | 173858816/233926107 [00:03<00:00, 91359615.85it/s]     78%|███████▊  | 183033856/233926107 [00:03<00:00, 90745486.16it/s]     82%|████████▏ | 192135168/233926107 [00:03<00:00, 88267907.19it/s]     86%|████████▋ | 202309632/233926107 [00:03<00:00, 87662432.59it/s]     91%|█████████ | 212844544/233926107 [00:03<00:00, 88061847.64it/s]     95%|█████████▌| 222789632/233926107 [00:03<00:00, 91116527.17it/s]     99%|█████████▉| 231940096/233926107 [00:03<00:00, 87608569.61it/s]    233930752it [00:05, 46327921.60it/s]                               
 
 
 
@@ -203,30 +203,30 @@ between a phantom with partial volume in it and one without.
 
  .. code-block:: none
 
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_bbox_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_bbox_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_nogm_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_nogm_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_0_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_0_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_1_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_1_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_2_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_2_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_3_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_3_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_4_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_4_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_5_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_5_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_6_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_6_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_7_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_7_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_8_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_8_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_9_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_9_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_10_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_10_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_11_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_11_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_12_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_12_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_13_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_13_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_14_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_14_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_15_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_15_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_16_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_16_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_17_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_17_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_model.pt
-    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/warp_model.pt to /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/deepmriprep/data/models/warp_model.pt
-    128x128 slice, 5735 brain voxels; 92% are a mixture of two tissues or more
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_bbox_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_bbox_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_nogm_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_nogm_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_0_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_0_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_1_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_1_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_2_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_2_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_3_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_3_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_4_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_4_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_5_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_5_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_6_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_6_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_7_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_7_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_8_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_8_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_9_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_9_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_10_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_10_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_11_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_11_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_12_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_12_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_13_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_13_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_14_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_14_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_15_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_15_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_16_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_16_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_17_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_17_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_model.pt
+    Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/warp_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/warp_model.pt
+    128x128 slice, 5733 brain voxels; 92% are a mixture of two tissues or more
 
 
 
@@ -284,9 +284,9 @@ the same subject would fill the table from data instead.
 
 
     tissue           voxels     M0  T1 (ms)  T2 (ms)
-    grey matter        2427   0.80     1100     95.0
-    white matter       2294   0.70      650     70.0
-    CSF                 571   1.00     4000   2000.0
+    grey matter        2428   0.80     1100     95.0
+    white matter       2297   0.70      650     70.0
+    CSF                 568   1.00     4000   2000.0
 
 
 
@@ -320,7 +320,7 @@ sixteen thousand.
 
  .. code-block:: none
 
-    3 classes x 400 frames in 0.4s -> (3, 400)
+    3 classes x 400 frames in 0.3s -> (3, 400)
 
 
 
@@ -403,8 +403,8 @@ twenty-one-fold undersampled, which is how MRF is run.
 
  .. code-block:: none
 
-    400 arms built in 3.7s
-    forward NUFFT 3.7s -> (400, 8, 768)
+    400 arms built in 2.5s
+    forward NUFFT 2.1s -> (400, 8, 768)
 
 
 
@@ -459,7 +459,7 @@ here because the maps are known. A real pipeline would estimate them.
 
  .. code-block:: none
 
-    adjoint and combine 3.9s
+    adjoint and combine 2.2s
 
 
 
@@ -484,8 +484,8 @@ reads.
 
  .. code-block:: none
 
-    per-frame error inside the brain :  60.7%
-    time-course agreement            : median 0.893, tenth percentile 0.714
+    per-frame error inside the brain :  60.3%
+    time-course agreement            : median 0.894, tenth percentile 0.715
 
 
 
@@ -605,7 +605,7 @@ parameter-inference notebooks do.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 6.259 seconds)
+   **Total running time of the script:** (2 minutes 0.542 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_05-misc_01-synthetic-data.py:
