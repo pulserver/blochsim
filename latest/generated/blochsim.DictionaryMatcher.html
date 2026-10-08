@@ -596,7 +596,7 @@ product, the grouping cuts how many are taken. State a <code class="docutils lit
 dictionary it matches against is compressed to <code class="docutils literal notranslate"><span class="pre">(atoms,</span> <span class="pre">rank)</span></code>.</p>
 <p>The expensive operation is a matrix product. Torch therefore dispatches
 directly to the installed CPU BLAS or cuBLAS implementation; a separate
-C++ or Triton matrix-multiplication kernel would duplicate a faster
+C++ or CUDA matrix-multiplication kernel would duplicate a faster
 vendor implementation. Chunking bounds the temporary score matrix.</p>
 <div class="admonition-references admonition">
 <p class="admonition-title">References</p>

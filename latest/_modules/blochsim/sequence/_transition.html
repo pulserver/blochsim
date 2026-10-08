@@ -517,6 +517,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._derivative</span><span class="w"> </span><span class="kn">import</span> <span class="n">directional_derivatives</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._description</span><span class="w"> </span><span class="kn">import</span> <span class="n">RfDefinition</span>
 
 
@@ -1090,7 +1091,9 @@
         <span class="c1"># rather than shaping it.</span>
         <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span><span class="n">j</span> <span class="o">*</span> <span class="n">carried</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">wide</span><span class="p">),</span> <span class="n">b</span>
 
-    <span class="n">values</span><span class="p">,</span> <span class="n">slopes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">jvp</span><span class="p">(</span><span class="n">integrate</span><span class="p">,</span> <span class="p">(</span><span class="n">theta</span><span class="p">,),</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">theta</span><span class="p">),))</span>
+    <span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">slopes</span><span class="p">,)</span> <span class="o">=</span> <span class="n">directional_derivatives</span><span class="p">(</span>
+        <span class="n">integrate</span><span class="p">,</span> <span class="p">(</span><span class="n">theta</span><span class="p">,),</span> <span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">theta</span><span class="p">),),)</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">TransitionTable</span><span class="p">(</span>
         <span class="n">a</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">(),</span>
         <span class="n">b</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">(),</span>

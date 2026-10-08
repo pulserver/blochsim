@@ -150,7 +150,7 @@ makes ignoring it a bias in both.
  .. code-block:: none
 
 
-    [<matplotlib.legend.Legend object at 0x7f5094bd37a0>]
+    [<matplotlib.legend.Legend object at 0x7f2a1174a510>]
 
 
 
@@ -225,7 +225,7 @@ machine sees it, so a single pair of per-voxel buffers reaches the kernels.
       driven alike     [0.0, 0.0, 0.0]
       counter-rotated  [0.8234, 0.8765, 0.8949]
 
-    [<matplotlib.legend.Legend object at 0x7f509499acf0>]
+    [<matplotlib.legend.Legend object at 0x7f2a10cd67b0>]
 
 
 
@@ -658,7 +658,7 @@ to the engine rather than a name in a call.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 28.926 seconds)
+   **Total running time of the script:** (0 minutes 16.779 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_01-framework_02-expanded-physics.py:

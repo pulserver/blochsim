@@ -651,9 +651,9 @@ pick the one your driver supports, and install from that index –
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu128
 </pre></div>
 </div>
-<p>The GPU kernels are written in Triton, which comes with the Linux CUDA
-wheels; you do not install it separately and you do not need the CUDA
-toolkit, only a driver new enough for the build you picked.</p>
+<p>The GPU kernels are compiled into the Linux x86-64 wheel of BlochSim; you do
+not need the CUDA toolkit, only a driver new enough for the build you
+picked. Built from source, they are compiled wherever CMake finds <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>.</p>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="mac" for="sd-tab-item-5">
@@ -663,8 +663,8 @@ Apple silicon</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <p>The simulation runs on the CPU kernels. There is no Metal path: the
-fused state machine exists as C++ and as Triton, and Triton has no
-Apple backend.</p>
+fused state machine exists as C++ for the CPU and as CUDA for NVIDIA
+cards.</p>
 </div>
 </div>
 <p>Then check that the build is the one you wanted, <em>before</em> installing anything
@@ -695,11 +695,11 @@ once:</p>
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">FSESimulator</span><span class="p">(</span>
     <span class="n">ESP</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
     <span class="n">TR</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span>
-    <span class="n">T1</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">830.0</span><span class="p">,</span> <span class="mf">1330.0</span><span class="p">,</span> <span class="mf">4000.0</span><span class="p">]),</span>   <span class="c1"># ms</span>
+    <span class="n">T1</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">830.0</span><span class="p">,</span> <span class="mf">1330.0</span><span class="p">,</span> <span class="mf">4000.0</span><span class="p">]),</span>  <span class="c1"># ms</span>
     <span class="n">T2</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">80.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">]),</span>
 <span class="p">)</span>
 <span class="n">signal</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">48</span><span class="p">,),</span> <span class="mf">60.0</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>                              <span class="c1"># torch.Size([3, 48])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 48])</span>
 </pre></div>
 </div>
 <p>On a card, hand it tissue that already lives there and the whole run follows:</p>
@@ -707,9 +707,8 @@ once:</p>
 <span class="n">signal</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">48</span><span class="p">,),</span> <span class="mf">60.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The first GPU call pays for compiling the Triton kernel it needs – tens of
-seconds, once per kernel per machine, cached afterwards. A first call that
-seems to hang is almost always that compile.</p>
+<p>The kernels are compiled ahead of time, so the first GPU call costs what
+any other does, apart from PyTorch initialising CUDA.</p>
 </section>
 </section>
 <section id="your-first-simulation">

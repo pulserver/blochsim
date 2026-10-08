@@ -52,10 +52,11 @@ the compiler is on the path.
 **Git**, and a fork of https://github.com/pulserver/blochsim if you intend to
 open a pull request.
 
-**An NVIDIA card, if you want to touch the GPU kernels.** They are Triton,
-which arrives with the Linux CUDA wheels of PyTorch. You can develop and test
-most of the Triton path without a card -- see {ref}`dev-tests` -- but only a
-card runs it for real.
+**The CUDA toolkit and an NVIDIA card, if you want to touch the GPU kernels.**
+They are C++ compiled ahead of time by `nvcc`, which CMake uses wherever it
+finds it. The same kernels are also compiled for the host, so you can develop
+and test them without a card -- see {ref}`dev-tests` -- but only a card runs
+them for real.
 
 ## Installing for development
 
@@ -99,10 +100,11 @@ python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 
 `src/blochsim/sequence/`
 : The description an acquisition is assembled from -- events, operators,
-  builders -- and the dispatch that turns one into a kernel launch. The
-  Triton kernels are `_epg_triton.py`; the shared parameter ABI, which the
-  Python dispatch, the C++ extension and the Triton kernels all read, is
-  `_parameters.py`.
+  builders -- and the dispatch that turns one into a kernel launch:
+  `_epg_gpu.py` and `_pools_gpu.py` for the GPU kernels, whose source is
+  `src/blochsim/_epg_kernels.hpp` and `_pools_kernels.hpp`. The shared
+  parameter ABI, which the Python dispatch, the C++ extension and the GPU
+  kernels all read, is `_parameters.py`.
 
 `src/blochsim/model/`
 : What a signal model is: the physics, the simulator that orders its events,
@@ -249,23 +251,11 @@ diffusion, flow, spoiling, the two-pool and three-pool longitudinal steps --
 while `sequence/`, `model/`, `estimators/`, `recon/` and `optim/`
 cover the layers above.
 
-Two things to know before you time a run:
-
-**The `interpreted` marker is deselected by default.** Those tests run a
-Triton kernel through Triton's CPU interpreter -- no GPU, no compile, and
-about a minute each. That is how the GPU plumbing is verified on a machine
-with no card:
-
-```sh
-pytest tests/ -m interpreted
-TRITON_INTERPRET=1 python your_script.py     # the same trick, by hand
-```
-
-**Kernel compiles dominate a cold GPU run**, not the arithmetic. A suite that
-takes minutes on a card is mostly Triton compiling one specialization per
-feature combination it meets; the second run of the same suite is a different
-number entirely. Run the whole suite at natural boundaries rather than after
-every edit.
+**The GPU kernels run without a card.** On Linux the install compiles them
+for the host as well, one program at a time over host tensors, and
+`tests/sequence/test_host_kernels.py` and `test_many_pools_host.py` hold that
+build to the C++ kernels. That is how the GPU kernels are verified on a
+machine with no card; the tests that need one skip themselves.
 
 When you change physics, add the test that pins it against something outside
 BlochSim: a closed form, a published figure, or an isochromat summation you

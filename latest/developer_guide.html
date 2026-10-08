@@ -615,10 +615,11 @@ the compiler is on the path.</p>
 </div>
 <p><strong>Git</strong>, and a fork of <a class="github reference external" href="https://github.com/pulserver/blochsim">pulserver/blochsim</a> if you intend to
 open a pull request.</p>
-<p><strong>An NVIDIA card, if you want to touch the GPU kernels.</strong> They are Triton,
-which arrives with the Linux CUDA wheels of PyTorch. You can develop and test
-most of the Triton path without a card – see <a class="reference internal" href="#dev-tests"><span class="std std-ref">Running the tests</span></a> – but only a
-card runs it for real.</p>
+<p><strong>The CUDA toolkit and an NVIDIA card, if you want to touch the GPU kernels.</strong>
+They are C++ compiled ahead of time by <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>, which CMake uses wherever it
+finds it. The same kernels are also compiled for the host, so you can develop
+and test them without a card – see <a class="reference internal" href="#dev-tests"><span class="std std-ref">Running the tests</span></a> – but only a card runs
+them for real.</p>
 </section>
 <section id="installing-for-development">
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">Installing for development</a><a class="headerlink" href="#installing-for-development" title="Link to this heading">#</a></h2>
@@ -655,10 +656,11 @@ python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import
 <h3><a class="toc-backref" href="#id3" role="doc-backlink">Where the source lives</a><a class="headerlink" href="#where-the-source-lives" title="Link to this heading">#</a></h3>
 <dl class="simple myst">
 <dt><code class="docutils literal notranslate"><span class="pre">src/blochsim/sequence/</span></code></dt><dd><p>The description an acquisition is assembled from – events, operators,
-builders – and the dispatch that turns one into a kernel launch. The
-Triton kernels are <code class="docutils literal notranslate"><span class="pre">_epg_triton.py</span></code>; the shared parameter ABI, which the
-Python dispatch, the C++ extension and the Triton kernels all read, is
-<code class="docutils literal notranslate"><span class="pre">_parameters.py</span></code>.</p>
+builders – and the dispatch that turns one into a kernel launch:
+<code class="docutils literal notranslate"><span class="pre">_epg_gpu.py</span></code> and <code class="docutils literal notranslate"><span class="pre">_pools_gpu.py</span></code> for the GPU kernels, whose source is
+<code class="docutils literal notranslate"><span class="pre">src/blochsim/_epg_kernels.hpp</span></code> and <code class="docutils literal notranslate"><span class="pre">_pools_kernels.hpp</span></code>. The shared
+parameter ABI, which the Python dispatch, the C++ extension and the GPU
+kernels all read, is <code class="docutils literal notranslate"><span class="pre">_parameters.py</span></code>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">src/blochsim/model/</span></code></dt><dd><p>What a signal model is: the physics, the simulator that orders its events,
 and the binding that resolves a protocol’s structure once and rebinds its
@@ -780,20 +782,11 @@ operator against closed forms – the shift, the RF rotation, relaxation,
 diffusion, flow, spoiling, the two-pool and three-pool longitudinal steps –
 while <code class="docutils literal notranslate"><span class="pre">sequence/</span></code>, <code class="docutils literal notranslate"><span class="pre">model/</span></code>, <code class="docutils literal notranslate"><span class="pre">estimators/</span></code>, <code class="docutils literal notranslate"><span class="pre">recon/</span></code> and <code class="docutils literal notranslate"><span class="pre">optim/</span></code>
 cover the layers above.</p>
-<p>Two things to know before you time a run:</p>
-<p><strong>The <code class="docutils literal notranslate"><span class="pre">interpreted</span></code> marker is deselected by default.</strong> Those tests run a
-Triton kernel through Triton’s CPU interpreter – no GPU, no compile, and
-about a minute each. That is how the GPU plumbing is verified on a machine
-with no card:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/<span class="w"> </span>-m<span class="w"> </span>interpreted
-<span class="nv">TRITON_INTERPRET</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>python<span class="w"> </span>your_script.py<span class="w">     </span><span class="c1"># the same trick, by hand</span>
-</pre></div>
-</div>
-<p><strong>Kernel compiles dominate a cold GPU run</strong>, not the arithmetic. A suite that
-takes minutes on a card is mostly Triton compiling one specialization per
-feature combination it meets; the second run of the same suite is a different
-number entirely. Run the whole suite at natural boundaries rather than after
-every edit.</p>
+<p><strong>The GPU kernels run without a card.</strong> On Linux the install compiles them
+for the host as well, one program at a time over host tensors, and
+<code class="docutils literal notranslate"><span class="pre">tests/sequence/test_host_kernels.py</span></code> and <code class="docutils literal notranslate"><span class="pre">test_many_pools_host.py</span></code> hold that
+build to the C++ kernels. That is how the GPU kernels are verified on a
+machine with no card; the tests that need one skip themselves.</p>
 <p>When you change physics, add the test that pins it against something outside
 BlochSim: a closed form, a published figure, or an isochromat summation you
 write in the test itself. The <code class="docutils literal notranslate"><span class="pre">tests/epg</span></code> files are written that way, and

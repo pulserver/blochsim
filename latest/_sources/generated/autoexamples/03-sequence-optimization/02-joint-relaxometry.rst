@@ -253,7 +253,7 @@ differing only in flip angle. Before and after.
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7f5085c4af90>
+    <matplotlib.legend.Legend object at 0x7f2a10b8e990>
 
 
 
@@ -407,7 +407,7 @@ standard deviation the bound was computed with.
 
  .. code-block:: none
 
-    38980 joint fits in 3.9 s
+    38980 joint fits in 4.0 s
 
 
 
@@ -528,7 +528,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.348 seconds)
+   **Total running time of the script:** (0 minutes 12.444 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_02-joint-relaxometry.py:
