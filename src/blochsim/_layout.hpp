@@ -14,14 +14,21 @@
 #include "_kernels.hpp"
 #include "_layout_complex.hpp"
 #include "_layout_complex_vjp.hpp"
+#include "_layout_pooled.hpp"
 #include "_layout_real.hpp"
 #include "_layout_real_vjp.hpp"
 
 namespace blochsim_layout {
 
-// Queue ``kernel`` on ``stream`` and return its launch status, or -1 where it
-// has no layout for these arguments and the tile kernel is to run instead.
-int launch(int kernel, const bsk::Arguments& arguments, cudaStream_t stream);
+// Queue ``kernel`` over ``programs`` on ``stream`` and return its launch
+// status, or -1 where it has no layout for these arguments and the tile
+// kernel is to run instead.
+int launch(int kernel, const bsk::Arguments& arguments, long long programs, cudaStream_t stream);
+
+// The floats of the buffer the many-pool adjoint's layout takes for
+// ``problems``, or -1 where the tile kernels run it. A launch the layout
+// takes records nothing first: the adjoint keeps its own checkpoints.
+long long pooled_adjoint_floats(long long problems, int event_count, int n, int m, int width, bool dual);
 
 // One translation unit per kernel and pool layout, so a build compiles them
 // side by side. ``rf`` and ``mode`` are epg::Rf and epg::Mode.
@@ -48,6 +55,17 @@ BLOCHSIM_LAYOUT_ADJOINT(BLOCHSIM_LAYOUT_ADJOINT_DECLARATION)
 
 int real_vjp(const layout_real_vjp::Params& p, cudaStream_t stream);
 int real_vjp_jvp(const layout_real_vjp::Params& p, cudaStream_t stream);
+
+// The many-pool kernels, a unit per pool count. The adjoint keeps every
+// POOLED_SEGMENT-th state and replays the stretches between.
+constexpr int POOLED_SEGMENT = 4;
+#define BLOCHSIM_LAYOUT_POOLED(X) X(2) X(3) X(4) X(5) X(6) X(7) X(8)
+#define BLOCHSIM_LAYOUT_POOLED_DECLARATION(pools)                                                   \
+    int pooled_forward_##pools(const epg_pooled::Params& p, int rf, bool dual, cudaStream_t stream); \
+    int pooled_adjoint_##pools(const epg_pooled::Params& p, const epg_pooled::Adjoint& g, int rf, bool dual, \
+                               cudaStream_t stream);
+BLOCHSIM_LAYOUT_POOLED(BLOCHSIM_LAYOUT_POOLED_DECLARATION)
+#undef BLOCHSIM_LAYOUT_POOLED_DECLARATION
 
 // Programs of two warps each.
 constexpr int WARPS = 2;

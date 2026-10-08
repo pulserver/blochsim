@@ -311,6 +311,141 @@ layout_real_vjp::Params real_adjoint_params(bool dual, const Reader& r) {
     return p;
 }
 
+// What the many-pool forward kernel and its adjoint read alike.
+epg_pooled::Params pooled_params(const Reader& r, long long programs) {
+    epg_pooled::Params p{};
+    p.m0 = r.floats("m0");
+    p.b1 = r.floats("b1");
+    p.b1_phase = r.floats("b1_phase");
+    p.b0 = r.floats("b0");
+    p.efficiency = r.floats("efficiency");
+    p.diffusion = r.floats("diffusion");
+    p.velocity = r.floats("velocity");
+    p.dm0 = r.floats("dm0");
+    p.db1 = r.floats("db1");
+    p.db1_phase = r.floats("db1_phase");
+    p.db0 = r.floats("db0");
+    p.defficiency = r.floats("defficiency");
+    p.ddiffusion = r.floats("ddiffusion");
+    p.dvelocity = r.floats("dvelocity");
+    p.duration = r.floats("duration");
+    p.flip = r.floats("flip");
+    p.phase = r.floats("phase");
+    p.saturation = r.floats("saturation");
+    p.rf_frequency = r.floats("rf_frequency");
+    p.dduration = r.floats("dduration");
+    p.dflip = r.floats("dflip");
+    p.dphase = r.floats("dphase");
+    p.table = r.floats("table");
+    p.dtable = r.floats("dtable");
+    p.profile = r.floats("profile");
+    p.lineshape = r.floats("lineshape");
+    p.pairs = r.floats("pairs");
+    p.dpairs = r.floats("dpairs");
+    p.kind = r.ints("kind");
+    p.output_index = r.ints("output_index");
+    p.shim_index = r.ints("shim_index");
+    p.pool_index = r.ints("pool_index");
+    p.profile_index = r.ints("profile_index");
+    p.pair_index = r.ints("pair_index");
+    p.action = static_cast<const unsigned char*>(r.a[r.at("action")].p);
+    p.base = r.integer("base");
+    p.problems = static_cast<int>(programs);
+    p.atom_count = static_cast<int>(r.integer("atom_count"));
+    p.event_count = static_cast<int>(r.integer("event_count"));
+    p.output_count = static_cast<int>(r.integer("output_count"));
+    p.state_count = static_cast<int>(r.integer("state_count"));
+    p.rows = static_cast<int>(r.integer("rows"));
+    p.width = static_cast<int>(r.integer("S"));
+    p.m = static_cast<int>(r.integer("m"));
+    p.blocks = static_cast<int>(r.integer("blocks"));
+    p.locations = static_cast<int>(r.integer("locations"));
+    p.profile_bins = static_cast<int>(r.integer("profile_bins"));
+    p.lineshape_bins = static_cast<int>(r.integer("lineshape_bins"));
+    p.flow_scale = r.real("flow_scale");
+    p.washout_scale = r.real("washout_scale");
+    p.profile_step = r.real("profile_step");
+    p.lineshape_step = r.real("lineshape_step");
+    p.atom_stride = r.flag("atom_stride");
+    p.shimmed = r.flag("shimmed");
+    p.directed_pairs = r.flag("directed_pairs");
+    p.directed_table = r.flag("directed_table");
+    p.off_axis = r.flag("off_axis");
+    p.moving = r.flag("moving");
+    p.diffusing = r.flag("diffusing");
+    p.transmit = r.flag("transmit");
+    p.density = r.flag("density");
+    p.inverting = r.flag("inverting");
+    return p;
+}
+
+epg_pooled::Adjoint pooled_adjoint(const Reader& r) {
+    epg_pooled::Adjoint g{};
+    g.grad_real = r.floats("grad_real");
+    g.grad_imag = r.floats("grad_imag");
+    g.grad_tissue = r.outputs("grad_tissue");
+    g.dgrad_tissue = r.outputs("dgrad_tissue");
+    g.grad_duration = r.outputs("grad_duration");
+    g.dgrad_duration = r.outputs("dgrad_duration");
+    g.grad_flip = r.outputs("grad_flip");
+    g.dgrad_flip = r.outputs("dgrad_flip");
+    g.grad_phase = r.outputs("grad_phase");
+    g.dgrad_phase = r.outputs("dgrad_phase");
+    g.grad_table = r.outputs("grad_table");
+    g.dgrad_table = r.outputs("dgrad_table");
+    g.grad_pairs = r.outputs("grad_pairs");
+    g.dgrad_pairs = r.outputs("dgrad_pairs");
+    g.trajectory = r.outputs("trajectory");
+    g.m0_row = static_cast<int>(r.integer("m0_row"));
+    g.b1_row = static_cast<int>(r.integer("b1_row"));
+    g.b1_phase_row = static_cast<int>(r.integer("b1_phase_row"));
+    g.b0_row = static_cast<int>(r.integer("b0_row"));
+    g.efficiency_row = static_cast<int>(r.integer("efficiency_row"));
+    g.diffusion_row = static_cast<int>(r.integer("diffusion_row"));
+    g.velocity_row = static_cast<int>(r.integer("velocity_row"));
+    return g;
+}
+
+// Whether the many-pool layouts carry this many pools and orders.
+bool pooled_fits(long long n, long long width) { return n >= 2 && n <= 8 && width <= 32; }
+
+int pooled_launch(bool adjoint, const Reader& r, long long programs, cudaStream_t stream) {
+    const long long n = r.integer("n");
+    if (!pooled_fits(n, r.integer("S"))) {
+        return -1;
+    }
+    // A recording for the tile adjoint is the tile kernel's to make.
+    if (!adjoint && r.flag("keep")) {
+        return -1;
+    }
+    epg_pooled::Params p = pooled_params(r, programs);
+    if (!adjoint) {
+        p.output_real = r.outputs("output_real");
+        p.output_imag = r.outputs("output_imag");
+    }
+    const int rf = r.flag("dynamic") ? epg::DYNAMIC : (r.flag("profiled") ? epg::PROFILE : epg::HARD);
+    const bool dual = r.flag("following");
+    if (adjoint) {
+        const epg_pooled::Adjoint g = pooled_adjoint(r);
+        switch (n) {
+#define BLOCHSIM_LAYOUT_POOLED_CASE(pools) \
+    case pools: return pooled_adjoint_##pools(p, g, rf, dual, stream);
+            BLOCHSIM_LAYOUT_POOLED(BLOCHSIM_LAYOUT_POOLED_CASE)
+#undef BLOCHSIM_LAYOUT_POOLED_CASE
+        }
+    } else {
+        switch (n) {
+#define BLOCHSIM_LAYOUT_POOLED_CASE(pools) \
+    case pools: return pooled_forward_##pools(p, rf, dual, stream);
+            BLOCHSIM_LAYOUT_POOLED(BLOCHSIM_LAYOUT_POOLED_CASE)
+#undef BLOCHSIM_LAYOUT_POOLED_CASE
+        }
+    }
+    return -1;
+}
+
+const int POOLED = bsk::kernel_index("_pooled_kernel");
+const int POOLED_ADJOINT = bsk::kernel_index("_pooled_adjoint_kernel");
 const int COMPLEX = bsk::kernel_index("_epg_kernel");
 const int COMPLEX_VJP = bsk::kernel_index("_epg_vjp_kernel");
 const int COMPLEX_VJP_JVP = bsk::kernel_index("_epg_vjp_jvp_kernel");
@@ -322,8 +457,20 @@ const int REAL_JVP = bsk::kernel_index("_epg_real_jvp_kernel");
 
 }  // namespace
 
-int launch(int kernel, const bsk::Arguments& arguments, cudaStream_t stream) {
+long long pooled_adjoint_floats(long long problems, int event_count, int n, int m, int width, bool dual) {
+    if (!pooled_fits(n, width)) {
+        return -1;
+    }
+    const long long programs = (problems + 32 / width - 1) / (32 / width);
+    return problems * epg_pooled::adjoint_kept_floats(n, width, event_count, POOLED_SEGMENT, dual) +
+           programs * epg_pooled::adjoint_scratch_floats(n, m, 32, POOLED_SEGMENT, dual);
+}
+
+int launch(int kernel, const bsk::Arguments& arguments, long long programs, cudaStream_t stream) {
     const Reader r{kernel, arguments.a};
+    if (kernel == POOLED || kernel == POOLED_ADJOINT) {
+        return pooled_launch(kernel == POOLED_ADJOINT, r, programs, stream);
+    }
     const bool adjoint = kernel == COMPLEX_VJP || kernel == COMPLEX_VJP_JVP || kernel == REAL_VJP || kernel == REAL_VJP_JVP;
     if (kernel != COMPLEX && kernel != COMPLEX_JVP && kernel != REAL && kernel != REAL_JVP && !adjoint) {
         return -1;

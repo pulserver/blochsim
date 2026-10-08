@@ -66,6 +66,22 @@ def layout_launches() -> int:
     return _module("cuda").layout_launches() if available() else 0
 
 
+def pooled_layout_floats(
+    problems: int, event_count: int, n: int, m: int, width: int, dual: bool
+) -> int | None:
+    """The floats the many-pool adjoint's layout takes, or None where it does not run.
+
+    A launch the layout takes records nothing first: the adjoint keeps its own
+    checkpoints in the buffer it is given.
+    """
+    if not available():
+        return None
+    floats = _module("cuda").pooled_layout_floats(
+        problems, event_count, n, m, width, dual
+    )
+    return None if floats < 0 else floats
+
+
 @contextmanager
 def generic_kernels() -> Iterator[None]:
     """Run every launch inside on the tile kernels rather than on its layout."""

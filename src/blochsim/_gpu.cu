@@ -78,7 +78,7 @@ PyObject* launch(PyObject*, PyObject* args) {
         return cuda_error(status, "selecting the device");
     }
     if (laying_out) {
-        const int laid = blochsim_layout::launch(request.kernel, request.arguments,
+        const int laid = blochsim_layout::launch(request.kernel, request.arguments, request.grid[0],
                                                  reinterpret_cast<cudaStream_t>(stream));
         if (laid >= 0) {
             ++layout_launches;
@@ -125,6 +125,18 @@ PyObject* layout_launch_count(PyObject*, PyObject*) {
     return PyLong_FromUnsignedLongLong(layout_launches);
 }
 
+PyObject* pooled_layout_floats(PyObject*, PyObject* args) {
+    long long problems = 0;
+    int event_count = 0, n = 0, m = 0, width = 0, dual = 0;
+    if (!PyArg_ParseTuple(args, "Liiiip", &problems, &event_count, &n, &m, &width, &dual)) {
+        return nullptr;
+    }
+    if (!laying_out) {
+        return PyLong_FromLong(-1);
+    }
+    return PyLong_FromLongLong(blochsim_layout::pooled_adjoint_floats(problems, event_count, n, m, width, dual != 0));
+}
+
 PyMethodDef METHODS[] = {
     {"kernels", blochsim_launch::kernel_table, METH_NOARGS,
      "Each kernel's parameter names and kinds."},
@@ -134,6 +146,8 @@ PyMethodDef METHODS[] = {
      "Whether launches may run their kernel's layout; returns the previous setting."},
     {"layout_launches", layout_launch_count, METH_NOARGS,
      "How many launches have run a kernel's layout."},
+    {"pooled_layout_floats", pooled_layout_floats, METH_VARARGS,
+     "The floats the many-pool adjoint's layout takes, or -1 where the tile kernels run it."},
     {nullptr, nullptr, 0, nullptr},
 };
 

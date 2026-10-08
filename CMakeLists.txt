@@ -138,6 +138,12 @@ if(BLOCHSIM_CUDA)
         endforeach()
     endforeach()
 
+    foreach(POOLS RANGE 2 8)
+        set(_source "${CMAKE_CURRENT_BINARY_DIR}/layout/pooled_${POOLS}.cu")
+        configure_file(src/blochsim/_layout_pooled.cu.in "${_source}" @ONLY)
+        list(APPEND _blochsim_gpu_sources "${_source}")
+    endforeach()
+
     python_add_library(_gpu MODULE
         USE_SABI ${BLOCHSIM_ABI3_VERSION}
         WITH_SOABI

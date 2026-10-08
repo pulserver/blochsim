@@ -21,7 +21,7 @@ from typing import Any
 
 import torch
 
-from .._gpu_launch import Kernel, next_power_of_2
+from .._gpu_launch import Kernel, next_power_of_2, pooled_layout_floats
 from ._accelerators import _shim_count, _train_count
 from ._epg_gpu import _TRAJECTORY_BUDGET_BYTES, _atom_stride, _output_shape
 from ._parameters import (
@@ -367,9 +367,25 @@ def _adjoint(
     )
     tiles = _tiles(pools.layout, state_count)
     planes = 12 if following else 6
-    held = planes * tiles["P"] * tiles["S"] * max(1, event_count)
+
+    # The layout keeps its own checkpoints in the buffer it is given; the tile
+    # kernels read a recording the forward kernel makes first.
+    def laid_floats(problems: int) -> int | None:
+        if device.type != "cuda":
+            return None
+        return pooled_layout_floats(
+            problems, event_count, tiles["n"], tiles["m"], tiles["S"], following
+        )
+
+    sample = min(total, 32)
+    laid = laid_floats(sample)
+    if laid is None:
+        held = planes * tiles["P"] * tiles["S"] * max(1, event_count)
+    else:
+        held = -(-laid // sample)
     wave = max(1, min(total, _TRAJECTORY_BUDGET_BYTES // (4 * held)))
-    trajectory = torch.empty(wave * held, dtype=torch.float32, device=device)
+    floats = wave * held if laid is None else laid_floats(wave)
+    trajectory = torch.empty(floats, dtype=torch.float32, device=device)
 
     grad_output = grad_output.resolve_conj()
     grad_real = grad_output.real.contiguous()
@@ -401,17 +417,18 @@ def _adjoint(
             base, tissue, events, output_count, state_count, pools, geometry,
             profile, lineshape,
         )  # fmt: skip
-        _pooled_kernel[(span,)](
-            *inputs,
-            grad_real,
-            grad_imag,
-            trajectory,
-            *scalars,
-            planes=planes,
-            keep=True,
-            **switches,
-            **tiles,
-        )
+        if laid is None:
+            _pooled_kernel[(span,)](
+                *inputs,
+                grad_real,
+                grad_imag,
+                trajectory,
+                *scalars,
+                planes=planes,
+                keep=True,
+                **switches,
+                **tiles,
+            )
         _pooled_adjoint_kernel[(span,)](
             *inputs,
             grad_real,
