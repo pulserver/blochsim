@@ -425,13 +425,13 @@ def test_a_schedule_that_moves_its_timing_answers_what_the_plain_one_does() -> N
         ),
     ],
 )
-def test_resolving_walks_the_stream_once_per_direction(design, packings) -> None:
+def test_resolving_walks_the_stream_once_per_argument(design, packings) -> None:
     """Which is the whole cost of resolving, and what it is spent on.
 
-    One walk for the structure, two per argument for the derivatives the map is
-    read from, and one to check the map against a packing it never saw. A walk
-    is per-event Python under a forward-mode interpreter, so an extra one is
-    not a rounding error in what resolving costs.
+    One walk for the structure, one per argument for the derivatives the map is
+    read from -- both directions it is read along share it -- and one to check
+    the map against a packing it never saw. A walk is per-event Python, so an
+    extra one is not a rounding error in what resolving costs.
     """
     simulator = MRFSimulator(TR=10.0, TI=20.0, states=10)
     played = simulator.played(**design)
@@ -442,7 +442,7 @@ def test_resolving_walks_the_stream_once_per_direction(design, packings) -> None
     )
 
     assert packing is not None
-    assert len(packings) == 2 + 2 * len(packing.varying)
+    assert len(packings) == 2 + len(packing.varying)
 
 
 def test_the_sample_times_are_the_clock_the_intervals_make() -> None:

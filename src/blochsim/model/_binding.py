@@ -37,6 +37,7 @@ from typing import Any
 
 import torch
 
+from .._derivative import directional_derivatives
 from ..sequence._accelerators import (
     _PackedEvents,
     pack_description,
@@ -231,7 +232,7 @@ def bind(
         seeds = _seeds(primals, position)
         if seeds is None:
             continue
-        along = tuple(torch.func.jvp(floats, primals, seed)[1] for seed in seeds)
+        _, along = directional_derivatives(floats, primals, seeds)
         for buffer, scale, ramp in zip(_VALUES, *along, strict=True):
             term = _term(scale, ramp, primals[position].numel())
             if term is None:
