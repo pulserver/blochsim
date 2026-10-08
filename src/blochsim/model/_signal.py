@@ -45,6 +45,7 @@ from typing import Any
 
 import torch
 
+from .._derivative import forward_mode
 from ..sequence._array import as_torch, brought, is_array, like
 from ..sequence._parameters import PUBLIC_PROPERTIES
 
@@ -228,6 +229,7 @@ class _SignalModel(ABC):
             declared = {**rest, **dict(zip(names, inputs, strict=True))}
             return self._shaped(self.evaluate(declared, **sequence), batch)
 
+        forward_mode()
         columns = []
         signal = None
         for name in names:
