@@ -2,9 +2,8 @@
 //
 // One CUDA block runs one program: its threads hold a tile an element each,
 // x along a row and y across the rows. The module links the CUDA runtime
-// statically, so a machine needs the driver and nothing else, and it calls no
-// PyTorch API: a launch takes the addresses of the tensors' data and the
-// stream PyTorch is queueing on.
+// torch's CUDA builds bring, and calls no PyTorch API: a launch takes the
+// addresses of the tensors' data and the stream PyTorch is queueing on.
 //
 // The kernels themselves are compiled one to a file, from _gpu_kernel.cu.in.
 #define BLOCHSIM_TABLE_ONLY 1

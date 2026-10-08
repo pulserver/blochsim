@@ -221,10 +221,25 @@ plain CPython extensions against the **stable ABI** from 3.10 on: they call no
 PyTorch API and link no PyTorch library, which is why one `cp310-abi3` wheel
 per platform serves every supported interpreter and why that wheel is a couple
 of megabytes rather than the size of libtorch. Keep it that way — a `#include
-<torch/...>` in any of them ends all of that. The GPU module links the CUDA
-runtime statically, so a machine needs the driver and nothing else, and the
-x86-64 manylinux wheel is the one built with it.
+<torch/...>` in any of them ends all of that.
 
-Wheels are built by cibuildwheel and published to PyPI by trusted publishing on
-a `v*.*.*` tag. `scripts/check_wheel.py` loads each compiled kernel by path,
-without importing the package, and is what every built wheel is tested with.
+The card's module is a package of its own per CUDA major version,
+`blochsim-cuda12` and `blochsim-cuda13` (`src/cuda/12`, `src/cuda/13`), which
+`pip install blochsim[cu12]` or `blochsim[cu13]` installs beside a torch of
+the same major version. Each is this CMake project with `BLOCHSIM_CUDA_PACKAGE`
+set, which builds `_gpu` alone into `blochsim_cudaNN/`; it links the CUDA
+runtime dynamically -- torch's nvidia wheel, found by rpath -- carries machine
+code for 7.5, 8.0 and 9.0 and PTX for 9.0, and pins the blochsim it was built
+with. `_gpu_launch` loads the build for torch's CUDA major version and refuses
+one for another major or another release, naming the extra to install; with
+none installed it takes the `_gpu` a source build leaves beside the package.
+
+```sh
+python -m build --wheel src/cuda/12   # with CUDA 12.6's nvcc as CUDACXX
+```
+
+Wheels are built by cibuildwheel, the CUDA packages in a manylinux container
+of their own, and published to PyPI by trusted publishing on a `v*.*.*` tag,
+each project from its own environment (`pypi`, `pypi-cuda12`, `pypi-cuda13`).
+`scripts/check_wheel.py` loads each compiled kernel by path, without importing
+the package, and is what every built wheel is tested with.

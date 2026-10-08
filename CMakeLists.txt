@@ -54,13 +54,22 @@ function(blochsim_add_kernel name source)
     install(TARGETS ${name} DESTINATION blochsim)
 endfunction()
 
-blochsim_add_kernel(_epg_cpu  src/blochsim/_epg_cpu.cpp)
-blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)
+# The GPU kernels are a package of their own per CUDA major version,
+# blochsim-cuda12 and blochsim-cuda13 (src/cuda/): the same project with
+# BLOCHSIM_CUDA_PACKAGE set, which builds the card's module into
+# blochsim_cudaNN/ and nothing else. Empty builds blochsim itself.
+set(BLOCHSIM_CUDA_PACKAGE "" CACHE STRING
+    "CUDA major version of the blochsim-cudaNN wheel being built; empty for blochsim")
+
+if(NOT BLOCHSIM_CUDA_PACKAGE)
+    blochsim_add_kernel(_epg_cpu  src/blochsim/_epg_cpu.cpp)
+    blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)
+endif()
 
 # The GPU kernels compiled for the host, one program at a time. Nothing in the
 # package dispatches to them; they are how the suite checks the GPU kernels on
 # a machine with no card. Linux only, like the card's build.
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT BLOCHSIM_CUDA_PACKAGE)
     set(_blochsim_host_default ON)
 else()
     set(_blochsim_host_default OFF)
@@ -75,7 +84,7 @@ endif()
 # compiler is found unless BLOCHSIM_CUDA says otherwise.
 include(CheckLanguage)
 check_language(CUDA)
-if(CMAKE_CUDA_COMPILER AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(BLOCHSIM_CUDA_PACKAGE OR (CMAKE_CUDA_COMPILER AND CMAKE_SYSTEM_NAME STREQUAL "Linux"))
     set(_blochsim_cuda_default ON)
 else()
     set(_blochsim_cuda_default OFF)
@@ -83,13 +92,22 @@ endif()
 option(BLOCHSIM_CUDA "Compile the GPU kernels for the card" ${_blochsim_cuda_default})
 
 if(BLOCHSIM_CUDA)
-    # Real code for each generation and PTX for the newest, which the driver
-    # compiles for a card newer than any listed.
+    # Machine code for 7.5, 8.0 and 9.0, and PTX for 9.0, which the driver
+    # compiles for a card newer than any listed. Code for 8.0 runs on every
+    # 8.x card, so 8.6 and 8.9 take it.
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-        set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90)
+        set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 90)
     endif()
     enable_language(CUDA)
     find_package(CUDAToolkit REQUIRED)
+    if(BLOCHSIM_CUDA_PACKAGE)
+        if(NOT CUDAToolkit_VERSION_MAJOR STREQUAL BLOCHSIM_CUDA_PACKAGE)
+            message(FATAL_ERROR "blochsim-cuda${BLOCHSIM_CUDA_PACKAGE} is being built with CUDA ${CUDAToolkit_VERSION}")
+        endif()
+        set(_blochsim_gpu_destination "blochsim_cuda${BLOCHSIM_CUDA_PACKAGE}")
+    else()
+        set(_blochsim_gpu_destination "blochsim")
+    endif()
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
@@ -150,10 +168,26 @@ if(BLOCHSIM_CUDA)
         ${_blochsim_gpu_sources}
     )
     target_include_directories(_gpu PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/blochsim")
-    # The runtime is linked in, so a machine needs the driver and nothing else.
-    target_link_libraries(_gpu PRIVATE CUDA::cudart_static)
+    # The runtime is the one torch's CUDA builds bring in the nvidia wheels:
+    # torch loads it before this module, and the rpath covers a bare import
+    # from site-packages. CUDA 12's runtime wheel keeps it in
+    # nvidia/cuda_runtime, CUDA 13's in nvidia/cu13.
+    set_target_properties(_gpu PROPERTIES CUDA_RUNTIME_LIBRARY Shared)
+    target_link_libraries(_gpu PRIVATE CUDA::cudart)
+    set_property(TARGET _gpu APPEND PROPERTY INSTALL_RPATH
+        "$ORIGIN/../nvidia/cuda_runtime/lib"
+        "$ORIGIN/../nvidia/cu13/lib")
     # Warning 221 is a double constant that rounds to zero in float, which the
-    # kernels write deliberately as the floor of a clamp.
-    target_compile_options(_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=221>)
-    install(TARGETS _gpu DESTINATION blochsim)
+    # kernels write deliberately as the floor of a clamp. The fatbinaries are
+    # compressed, which keeps three architectures' machine code in a wheel
+    # PyPI takes.
+    target_compile_options(_gpu PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=221;-Xfatbin=-compress-all>)
+    install(TARGETS _gpu DESTINATION ${_blochsim_gpu_destination})
+    if(BLOCHSIM_CUDA_PACKAGE)
+        install(FILES src/cuda/__init__.py DESTINATION ${_blochsim_gpu_destination})
+        install(FILES LICENSE.txt DESTINATION "${SKBUILD_METADATA_DIR}/licenses")
+    endif()
+elseif(BLOCHSIM_CUDA_PACKAGE)
+    message(FATAL_ERROR "BLOCHSIM_CUDA_PACKAGE=${BLOCHSIM_CUDA_PACKAGE} needs BLOCHSIM_CUDA=ON")
 endif()

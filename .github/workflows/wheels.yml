@@ -14,6 +14,7 @@ on:
       - "src/blochsim/*.hpp"
       - "src/blochsim/*.cu"
       - "src/blochsim/*.cu.in"
+      - "src/cuda/**"
       - scripts/check_wheel.py
       - .github/workflows/wheels.yml
   workflow_dispatch:
@@ -54,9 +55,7 @@ jobs:
   wheels:
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
-    # The x86-64 manylinux wheel compiles the GPU kernels for every listed
-    # architecture.
-    timeout-minutes: 150
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -92,9 +91,144 @@ jobs:
           name: dist-${{ matrix.os }}
           path: wheelhouse/*.whl
 
+  # The GPU kernels are a package of their own per CUDA major version,
+  # blochsim-cuda12 and blochsim-cuda13 (src/cuda/), which blochsim loads when
+  # torch is built for the same major version: `pip install blochsim[cu12]`.
+  # Each carries the card's module alone and links the CUDA runtime that
+  # torch's CUDA builds bring, and is compiled with the oldest toolkit of its
+  # major that torch ships, so it runs against every torch of it.
+  wheels-cuda:
+    name: Build blochsim-cuda${{ matrix.cuda }} (linux x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    container:
+      image: quay.io/pypa/manylinux_2_28_x86_64
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # CUDA 12.6's nvcc takes GCC 13 at the newest as its host compiler.
+          - cuda: "12"
+            toolkit: "12-6"
+            home: /usr/local/cuda-12.6
+            host: gcc-toolset-13-gcc-c++
+            hostcxx: /opt/rh/gcc-toolset-13/root/usr/bin/g++
+          - cuda: "13"
+            toolkit: "13-0"
+            home: /usr/local/cuda-13.0
+            host: ""
+            hostcxx: ""
+    env:
+      CUDA_HOME: ${{ matrix.home }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # setuptools-scm reads the version from the tag history, and the
+          # CUDA build pins the blochsim of the same version.
+          fetch-depth: 0
+      - name: Install the CUDA toolkit
+        run: |
+          dnf install -y dnf-plugins-core
+          dnf config-manager --add-repo \
+            https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
+          dnf install -y --nogpgcheck cuda-nvcc-${{ matrix.toolkit }} cuda-cudart-devel-${{ matrix.toolkit }} ${{ matrix.host }}
+          echo $CUDA_HOME/bin >> $GITHUB_PATH
+          echo /opt/python/cp312-cp312/bin >> $GITHUB_PATH
+      - name: Build the wheel
+        env:
+          CUDACXX: ${{ matrix.home }}/bin/nvcc
+        run: |
+          if [ -n "${{ matrix.hostcxx }}" ]; then export CUDAHOSTCXX=${{ matrix.hostcxx }}; fi
+          python -m pip install build
+          python -m build --wheel --outdir dist/ src/cuda/${{ matrix.cuda }}
+      # The CUDA runtime is excluded rather than vendored: torch already brings
+      # it, from the nvidia wheel the module's rpath points into.
+      - name: Repair to a manylinux tag
+        run: |
+          python -m pip install auditwheel
+          LD_LIBRARY_PATH=$CUDA_HOME/lib64 python -m auditwheel repair dist/*.whl \
+            -w wheelhouse/ --plat manylinux_2_28_x86_64 --exclude libcudart.so.${{ matrix.cuda }}
+      # The card's module and the package around it, and nothing vendored.
+      # PyPI takes a file of 100 MB at most unless a project is granted more.
+      - name: Inspect the CUDA wheel
+        run: |
+          python -m auditwheel show wheelhouse/*.whl
+          python -m zipfile -l wheelhouse/*.whl | tee contents.txt
+          ! grep -Ei 'libcudart|\.libs/' contents.txt
+          grep -q 'blochsim_cuda${{ matrix.cuda }}/_gpu' contents.txt
+          ! grep -E '^ *blochsim/' contents.txt
+          size=$(stat -c %s wheelhouse/*.whl)
+          echo "wheel: $size bytes"
+          test "$size" -lt 100000000
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cuda-wheel-${{ matrix.cuda }}
+          path: wheelhouse/*.whl
+
+  # What a user installs: the blochsim wheel with its extra, beside torch's
+  # build for the same CUDA major version, on the oldest and the newest Python
+  # the package supports. The runners have no card, so this proves that the
+  # install resolves -- the CUDA build's pins against torch's -- that blochsim
+  # loads the CUDA build, and that the runtime it links is the one torch's
+  # nvidia wheel installed, found from the module's own directory.
+  test-cuda-wheels:
+    name: Test blochsim[cu${{ matrix.cuda }}] on Python ${{ matrix.python }}
+    needs: [wheels, wheels-cuda]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cuda: ["12", "13"]
+        python: ["3.10", "3.14"]
+        include:
+          - cuda: "12"
+            torch: cu126
+          - cuda: "13"
+            torch: cu130
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist-ubuntu-latest
+          path: base
+      - uses: actions/download-artifact@v8
+        with:
+          name: cuda-wheel-${{ matrix.cuda }}
+          path: cuda
+      # Both wheels are named as files, so pip takes them whatever their
+      # version, and the extra's requirement is the CUDA wheel given beside it.
+      - name: Install blochsim[cu${{ matrix.cuda }}] with torch's ${{ matrix.torch }} build
+        run: |
+          python -m pip install --upgrade pip
+          pip install "$(ls base/*manylinux*x86_64*.whl)[cu${{ matrix.cuda }}]" cuda/*.whl \
+            torch --index-url https://download.pytorch.org/whl/${{ matrix.torch }} \
+            --extra-index-url https://pypi.org/simple
+          pip list | grep -Ei '^(torch|blochsim|nvidia-cuda-runtime)'
+      - name: The card's module loads bare, against torch's runtime
+        run: python scripts/check_wheel.py
+      - name: blochsim loads the CUDA build for torch's major version
+        run: |
+          python -c "
+          import torch
+          from blochsim import _gpu_launch
+          module = _gpu_launch._module('cuda')
+          print(torch.__version__, module.__name__)
+          assert torch.version.cuda.split('.')[0] == '${{ matrix.cuda }}', torch.version.cuda
+          assert module.__name__ == 'blochsim_cuda${{ matrix.cuda }}._gpu', module.__name__
+          assert _gpu_launch.available()
+          "
+
+  # PyPI hands a trusted publisher a token for one project, the one whose
+  # publisher matches the job's repository, workflow and environment, so each
+  # project is published from an environment of its own: pypi for blochsim,
+  # pypi-cuda12 and pypi-cuda13 for the CUDA builds. The CUDA builds pin the
+  # blochsim they were built with, so they follow it.
   publish:
     name: Publish to PyPI
-    needs: [sdist, wheels]
+    needs: [sdist, wheels, wheels-cuda, test-cuda-wheels]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment:
@@ -110,4 +244,24 @@ jobs:
           merge-multiple: true
           path: dist
 
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-cuda:
+    name: Publish blochsim-cuda${{ matrix.cuda }} to PyPI
+    needs: [publish]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cuda: ["12", "13"]
+    environment:
+      name: pypi-cuda${{ matrix.cuda }}
+      url: https://pypi.org/p/blochsim-cuda${{ matrix.cuda }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: cuda-wheel-${{ matrix.cuda }}
+          path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1

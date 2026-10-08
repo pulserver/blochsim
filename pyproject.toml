@@ -54,6 +54,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# The GPU kernels, compiled for the CUDA major version torch is built for: a
+# package per major version (src/cuda/), which blochsim loads when torch's
+# matches it. Install the one for the torch beside it -- cu12 with a CUDA 12
+# build of torch, cu13 with a CUDA 13 one.
+cu12 = [
+"blochsim-cuda12; sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+cu13 = [
+"blochsim-cuda13; sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
 # What it takes to read a Pulseq .seq file. The format's reference
 # implementation parses it and computes its trajectory; nothing else in the
 # package imports it.
@@ -143,26 +153,14 @@ test-command = "python {project}/scripts/check_wheel.py"
 # publishes no musllinux wheel for that install to resolve. The workflow loads
 # the musl kernels in an Alpine container instead, where nothing resolves.
 test-skip = "*musllinux*"
-# The GPU kernels compiled for the host are for the suite, not for a user.
-config-settings = {"cmake.define.BLOCHSIM_HOST_KERNELS" = "OFF"}
+# The GPU kernels compiled for the host are for the suite, not for a user, and
+# those for the card are the blochsim-cudaNN packages' (src/cuda/).
+config-settings = {"cmake.define.BLOCHSIM_HOST_KERNELS" = "OFF", "cmake.define.BLOCHSIM_CUDA" = "OFF"}
 
 [tool.cibuildwheel.linux]
 # scikit-build-core installs cmake and ninja as build-time wheels inside the
 # manylinux container; the image's compiler is what builds the kernels.
 archs = ["auto64"]
-
-# The GPU kernels, on the one platform PyTorch publishes CUDA builds for that
-# a manylinux image can compile: the toolkit's compiler and its static
-# runtime, nothing the wheel carries beyond the module itself.
-[[tool.cibuildwheel.overrides]]
-select = "*-manylinux_x86_64"
-before-all = [
-    "dnf install -y dnf-plugins-core",
-    "dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo",
-    "dnf install -y cuda-nvcc-12-8 cuda-cudart-devel-12-8",
-]
-environment = {PATH = "/usr/local/cuda-12.8/bin:$PATH", CUDACXX = "/usr/local/cuda-12.8/bin/nvcc"}
-config-settings = {"cmake.define.BLOCHSIM_HOST_KERNELS" = "OFF", "cmake.define.BLOCHSIM_CUDA" = "ON"}
 
 [tool.cibuildwheel.macos]
 # An Apple silicon runner builds its own wheel and cross-compiles the Intel

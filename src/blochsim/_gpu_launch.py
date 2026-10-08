@@ -11,9 +11,12 @@ from __future__ import annotations
 
 __all__: list[str] = []
 
+import importlib
+import importlib.util
 from collections.abc import Iterator
 from contextlib import contextmanager
 from functools import cache
+from importlib import metadata
 from typing import Any
 
 import torch
@@ -29,12 +32,65 @@ def cdiv(numerator: int, denominator: int) -> int:
     return -(-int(numerator) // int(denominator))
 
 
-@cache
-def _module(device_type: str) -> Any:
-    if device_type == "cuda":
+# The CUDA major versions a blochsim-cudaNN package is built for (src/cuda/).
+CUDA_MAJORS = (12, 13)
+
+
+class CudaBuildMismatch(ImportError):
+    """A CUDA build is installed, but not the one this torch and this blochsim load."""
+
+
+def _installed(name: str) -> str | None:
+    try:
+        return metadata.version(name)
+    except metadata.PackageNotFoundError:
+        return None
+
+
+def _cuda_module() -> Any:
+    """The card's module: the CUDA build for torch's CUDA major version.
+
+    ``blochsim[cu12]`` and ``blochsim[cu13]`` install it as a package of its
+    own. Where none is installed, a build from source keeps it beside the
+    package. A build for another CUDA major version, or from another release,
+    is refused by name rather than loaded.
+    """
+    builds = [
+        major
+        for major in CUDA_MAJORS
+        if importlib.util.find_spec(f"blochsim_cuda{major}") is not None
+    ]
+    if not builds:
         from blochsim import _gpu
 
         return _gpu
+    major = (
+        max(builds)
+        if torch.version.cuda is None
+        else int(torch.version.cuda.split(".")[0])
+    )
+    if major not in builds:
+        names = ", ".join(f"blochsim-cuda{m}" for m in builds)
+        raise CudaBuildMismatch(
+            f"blochsim: torch is built for CUDA {torch.version.cuda}, and the CUDA "
+            f"build installed is {names}; install blochsim[cu{major}]."
+        )
+    release, built = (
+        _installed(name) for name in ("blochsim", f"blochsim-cuda{major}")
+    )
+    if built != release:
+        raise CudaBuildMismatch(
+            f"blochsim: blochsim {release} is installed with blochsim-cuda{major} "
+            f"{built}, whose kernels are another release's; install "
+            f"blochsim[cu{major}]=={release}."
+        )
+    return importlib.import_module(f"blochsim_cuda{major}._gpu")
+
+
+@cache
+def _module(device_type: str) -> Any:
+    if device_type == "cuda":
+        return _cuda_module()
     from blochsim import _gpu_host
 
     return _gpu_host
@@ -53,9 +109,18 @@ def _signature(name: str) -> tuple[tuple[str, ...], str]:
 
 @cache
 def available() -> bool:
-    """Whether this installation carries the kernels compiled for a card."""
+    """Whether this installation carries the kernels compiled for a card.
+
+    Raises
+    ------
+    CudaBuildMismatch
+        A CUDA build is installed for another CUDA major version than torch's,
+        or from another release than this blochsim.
+    """
     try:
         _module("cuda")
+    except CudaBuildMismatch:
+        raise
     except ImportError:
         return False
     return True

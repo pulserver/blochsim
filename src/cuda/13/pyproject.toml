@@ -1,0 +1,52 @@
+# blochsim's GPU kernels compiled with CUDA 13, which `blochsim[cu13]` installs.
+# The same CMake project as blochsim's own pyproject, configured with
+# BLOCHSIM_CUDA_PACKAGE, which builds the card's module into blochsim_cuda13/
+# and nothing else; blochsim loads it from there when torch is a CUDA 13
+# build. Built with CUDA 13.0, the runtime torch's oldest CUDA 13 build ships,
+# so it runs against every CUDA 13 torch.
+[build-system]
+requires = ["scikit-build-core>=0.11", "setuptools-scm>=8"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "blochsim-cuda13"
+dynamic = ["version", "dependencies"]
+description = "blochsim's GPU kernels compiled with CUDA 13, for blochsim[cu13]"
+readme = { text = "blochsim's GPU kernels compiled with CUDA 13. Install them as `pip install blochsim[cu13]`; see https://github.com/pulserver/blochsim.", content-type = "text/markdown" }
+license = "MIT"
+requires-python = ">=3.10"
+
+[project.urls]
+Homepage = "https://github.com/pulserver/blochsim"
+
+[tool.scikit-build]
+cmake.source-dir = "../../.."
+cmake.version = ">=3.26"
+cmake.build-type = "Release"
+build-dir = "../../../build/cuda13-{wheel_tag}"
+cmake.define.BLOCHSIM_CUDA_PACKAGE = "13"
+cmake.define.BLOCHSIM_HOST_KERNELS = "OFF"
+wheel.packages = []
+# The module is a CPython extension against the stable ABI from 3.10 on.
+wheel.py-api = "cp310"
+
+[[tool.dynamic-metadata]]
+field = "version"
+provider = "scikit_build_core.metadata.setuptools_scm"
+
+# The module is blochsim's launcher ABI, so it is pinned to the blochsim it
+# was built with. The runtime is the one torch's CUDA 13 builds bring.
+[[tool.dynamic-metadata]]
+field = "dependencies"
+provider = "scikit_build_core.metadata.template"
+result = [
+    "blochsim=={project[version]}",
+    "nvidia-cuda-runtime>=13.0",
+]
+
+# The version blochsim's own pyproject computes, so the pin above matches it.
+[tool.setuptools_scm]
+root = "../../.."
+version_scheme = "python-simplified-semver"
+local_scheme = "no-local-version"
+fallback_version = "v99-dev"
