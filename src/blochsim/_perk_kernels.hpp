@@ -11,6 +11,10 @@
 // adjoint forms the angles again rather than keeping them. Every array is
 // contiguous and row-major.
 //
+// A launch too small to fill the card splits the features across a second
+// axis of programs: each forms its share of them and adds what it makes into
+// an output that starts at zero, and the first adds the parameter mean.
+//
 // Staged blocks are zero past the last feature, parameter or voxel, and a zero
 // weight is what removes a padded feature from both products, so the inner
 // loops carry no bounds. On a card a program is THREADS threads; on the host
@@ -70,6 +74,31 @@ BSK_HD const Four& four(const float* address) {
 
 BSK_HD int clamp_width(std::int64_t left, int block) {
     return left < block ? static_cast<int>(left) : block;
+}
+
+// The features this program forms, ``[begin, end)``: whole blocks of
+// ``BLOCK``, as evenly as ``splits`` programs share them.
+template <int BLOCK>
+BSK_HD void _feature_share(std::int64_t features, std::int64_t splits, std::int64_t& begin,
+                           std::int64_t& end) {
+    const std::int64_t blocks = (features + BLOCK - 1) / BLOCK;
+    const std::int64_t share = (blocks + splits - 1) / splits * BLOCK;
+    begin = bsk::program_id(1) * share;
+    end = begin + share < features ? begin + share : features;
+}
+
+// One output element: written where the features are not split, added to
+// where they are.
+BSK_HD void _emit(float* output, float value, std::int64_t splits) {
+    if (splits == 1) {
+        *output = value;
+    } else {
+#if defined(BLOCHSIM_SIMT)
+        atomicAdd(output, value);
+#else
+        *output += value;
+#endif
+    }
 }
 
 // Signals of voxels ``first`` onward, contrasts ``c0`` onward, ``width`` of
@@ -162,8 +191,11 @@ BSK_HD void _regress_kernel(const float* signal, const float* frequency, const f
                             const float* feature_mean, const float* weight,
                             const float* parameter_mean, float* output, std::int64_t voxels,
                             std::int64_t contrasts, std::int64_t features,
-                            std::int64_t parameters, float scale, std::int64_t threads) {
+                            std::int64_t parameters, float scale, std::int64_t splits,
+                            std::int64_t threads) {
     static_cast<void>(threads);
+    std::int64_t begin = 0, end = 0;
+    _feature_share<FEATURES>(features, splits, begin, end);
     PERK_SHARED float signals[CONTRASTS][BLOCK_VOXELS + 1];
     PERK_SHARED_ROWS float frequencies[CONTRASTS][FEATURES + PAD];
     PERK_SHARED_ROWS float weights[FEATURES][PARAMETERS];
@@ -183,8 +215,8 @@ BSK_HD void _regress_kernel(const float* signal, const float* frequency, const f
                 }
             }
         }
-        for (std::int64_t f0 = 0; f0 < features; f0 += FEATURES) {
-            const int width = clamp_width(features - f0, FEATURES);
+        for (std::int64_t f0 = begin; f0 < end; f0 += FEATURES) {
+            const int width = clamp_width(end - f0, FEATURES);
             PERK_SYNC();
             PERK_EACH_THREAD(t) {
                 for (int j = t; j < FEATURES; j += THREADS) {
@@ -227,8 +259,8 @@ BSK_HD void _regress_kernel(const float* signal, const float* frequency, const f
 #pragma unroll
                 for (int k = 0; k < PARAMETERS; ++k) {
                     if (voxel < voxels && k < held) {
-                        output[voxel * parameters + p0 + k] =
-                            total[t][r][k] + parameter_mean[p0 + k];
+                        const float mean = bsk::program_id(1) == 0 ? parameter_mean[p0 + k] : 0.0f;
+                        _emit(&output[voxel * parameters + p0 + k], total[t][r][k] + mean, splits);
                     }
                 }
             }
@@ -241,9 +273,11 @@ BSK_HD void _regress_vjp_kernel(const float* signal, const float* frequency, con
                                 const float* weight, const float* cotangent, float* output,
                                 std::int64_t voxels, std::int64_t contrasts,
                                 std::int64_t features, std::int64_t parameters, float scale,
-                                std::int64_t threads) {
+                                std::int64_t splits, std::int64_t threads) {
     static_cast<void>(threads);
     constexpr int BLOCK = ADJOINT_FEATURES;
+    std::int64_t begin = 0, end = 0;
+    _feature_share<BLOCK>(features, splits, begin, end);
     PERK_SHARED float signals[CONTRASTS][BLOCK_VOXELS + 1];
     PERK_SHARED_ROWS float frequencies[CONTRASTS][BLOCK + PAD];
     PERK_SHARED_ROWS float back[BLOCK][GRADIENT + PAD];
@@ -264,8 +298,8 @@ BSK_HD void _regress_vjp_kernel(const float* signal, const float* frequency, con
                 }
             }
         }
-        for (std::int64_t f0 = 0; f0 < features; f0 += BLOCK) {
-            const int width = clamp_width(features - f0, BLOCK);
+        for (std::int64_t f0 = begin; f0 < end; f0 += BLOCK) {
+            const int width = clamp_width(end - f0, BLOCK);
             PERK_SYNC();
             PERK_EACH_THREAD(t) {
                 for (int j = t; j < BLOCK; j += THREADS) {
@@ -350,7 +384,7 @@ BSK_HD void _regress_vjp_kernel(const float* signal, const float* frequency, con
 #pragma unroll
                 for (int c = 0; c < GRADIENT; ++c) {
                     if (voxel < voxels && c < held) {
-                        output[voxel * contrasts + g0 + c] = gradient[t][r][c];
+                        _emit(&output[voxel * contrasts + g0 + c], gradient[t][r][c], splits);
                     }
                 }
             }
