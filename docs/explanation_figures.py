@@ -646,6 +646,56 @@ def _arrow(axis, start, end, color=MUTED):
     )
 
 
+def signal_model():
+    """Where a description comes from, and what the handlers do with it."""
+    figure, axis = plt.subplots(figsize=(PAGE_WIDTH, 3.4))
+    width, height = 2.1, 0.8
+    sources = [
+        ("layout(**protocol)", "the default, built\nby the constructor"),
+        ("from_pulseq", "a .seq file"),
+        ("from_description", "an MRD stream"),
+    ]
+    for row, (title, subtitle) in enumerate(sources):
+        y = 2.2 - row * 1.1
+        _box(axis, 0.0, y, width, height, title, subtitle, TRANSVERSE)
+        _arrow(axis, (width + 0.05, y + height / 2), (2.95, 1.5))
+    _box(
+        axis,
+        3.0,
+        1.1,
+        width,
+        height,
+        "description",
+        "RF, ADC and wait\nevents, timestamped",
+        ACCENT,
+    )
+    _arrow(axis, (3.0 + width + 0.05, 1.5), (5.95, 1.5))
+    _box(
+        axis,
+        6.0,
+        1.1,
+        width,
+        height,
+        "handlers",
+        "an operator per\nkind of event",
+        LONGITUDINAL,
+    )
+    _arrow(axis, (6.0 + width / 2, 1.05), (6.0 + width / 2, 0.45))
+    _box(axis, 6.0, -0.4, width, height, "signal", "and its derivatives", ACCENT)
+    axis.text(
+        6.0 + width / 2,
+        2.3,
+        "excitation, refocusing, inversion,\nsaturation, readout, delay",
+        ha="center",
+        va="center",
+        color=MUTED,
+        fontsize=9,
+    )
+    axis.set(xlim=(-0.2, 8.3), ylim=(-0.6, 3.15))
+    axis.axis("off")
+    return figure
+
+
 def pipeline():
     """From the sequence you write to the signal, and where each piece runs."""
     figure, axis = plt.subplots(figsize=(PAGE_WIDTH, 3.0))
@@ -1367,6 +1417,8 @@ FIGURES = {
     "truncation": truncation,
     "diffusion": diffusion,
     "two_pool": two_pool,
+    # the signal model page
+    "signal_model": signal_model,
     # the implementation page
     "pipeline": pipeline,
     "event_stream": event_stream,

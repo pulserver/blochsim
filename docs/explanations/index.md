@@ -3,6 +3,10 @@
 The concepts behind BlochSim, separate from the step-by-step examples and the
 API reference.
 
+{doc}`signal-model`
+: What a signal model is: handlers, layout, and the descriptions that replace
+  the layout.
+
 {doc}`description`
 : The sequence representation BlochSim consumes: events, RF definitions,
   readout roles, Pulseq input, and the MRD description a running scanner can
@@ -22,6 +26,7 @@ API reference.
 :hidden:
 :maxdepth: 1
 
+signal-model
 description
 epg
 implementation
