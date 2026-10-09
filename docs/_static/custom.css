@@ -51,9 +51,22 @@ div.highlight-text .copybtn {
   text-align: left;
 }
 
-/* A capability's code and test, under its statement. */
-.bd-article .capabilities li > p + p {
-  margin-top: -0.6em;
+/* A capability's code and test, folded under its statement. */
+.bd-article .capabilities details.sd-dropdown {
+  margin: -0.4em 0 0.6em 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+.bd-article .capabilities details.sd-dropdown > summary.sd-card-header {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.85em;
+  color: var(--pst-color-text-muted);
+}
+.bd-article .capabilities details.sd-dropdown .sd-card-body {
+  padding: 0.2em 0 0 0;
   font-size: 0.9em;
   text-align: left;
   color: var(--pst-color-text-muted);
