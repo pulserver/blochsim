@@ -3,16 +3,15 @@
 1. Your first simulation
 ========================
 
-blochsim computes the signal an MR sequence produces in a tissue, and how
-that signal changes when the tissue or the sequence changes. In this lesson
-you simulate a fast spin echo (FSE) that ships with blochsim: first in three
-tissues at once, then with a different refocusing angle, then its derivative
-with respect to T2.
+blochsim computes the signal of an MR sequence for given tissue properties,
+together with its derivatives with respect to those properties and to the
+sequence parameters. This lesson uses the fast spin echo (FSE) simulator
+shipped with blochsim: you simulate three tissues, change the refocusing
+angle, and compute the derivative of the signal with respect to T2.
 
 **Learning objectives**
 
-- Build a shipped simulator from the sequence parameters and run it over
-  several tissues at once.
+- Construct a shipped simulator and evaluate it for several tissues.
 - Take the derivative of the signal with respect to a tissue property.
 - Choose how many configuration states to keep, and where the simulation runs.
 
@@ -42,14 +41,13 @@ TISSUES = ("white matter", "grey matter", "CSF")
 # Your sequence
 # -------------
 #
-# A fast spin echo excites the magnetization once, then plays a train of
-# refocusing pulses, and records one echo between each pair of them. Here the
-# train has 48 echoes, 5 ms apart, and the whole train is repeated every 3 s.
+# The sequence is a CPMG echo train: a 90-degree excitation followed by 48
+# refocusing pulses, echo spacing (ESP) 5 ms, repetition time 3 s.
 #
-# A shipped sequence is a *simulator*: a class you construct with the
-# sequence parameters. Times are in milliseconds and angles in degrees, as on a
-# scanner console. The refocusing angles are a list with one entry per echo,
-# so a train whose angles change along the echoes is written the same way.
+# Each shipped sequence is a *simulator* class, constructed from its sequence
+# parameters. Times are in milliseconds and angles in degrees. The refocusing
+# angles are given per echo, so variable flip angle trains use the same
+# interface.
 import torch
 
 from blochsim.simulators import FSESimulator
@@ -61,11 +59,11 @@ flip = torch.full((48,), 180.0)
 # Your tissue
 # -----------
 #
-# The tissue is what you pass when you call the simulator: here T1 and T2, in
-# milliseconds. A number is one voxel. A tensor is many voxels, and blochsim
-# simulates all of them at once, so a whole map costs one call. Here are white
-# matter, grey matter and cerebrospinal fluid, which share a T1 of 1 s and
-# differ in T2:
+# Tissue properties are passed at call time; here T1 and T2, in milliseconds.
+# Each simulator accepts scalar and tensor-valued inputs. Tensor-valued inputs
+# are simulated in parallel, over multiple CPU threads or on a GPU if
+# available. The three entries below approximate white matter, grey matter and
+# cerebrospinal fluid, with a common T1 of 1 s:
 T2 = torch.tensor([80.0, 110.0, 2000.0])
 
 signal = fse.simulate(flip=flip, T1=1000.0, T2=T2)
@@ -81,17 +79,16 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# The signal has one row per voxel and one column per echo. Each echo train
-# decays with its own T2, as it would on a scanner: CSF keeps most of its
-# signal, white matter loses it within the train.
+# The output has one row per tissue and one column per echo. With ideal
+# 180-degree refocusing each train decays as exp(-TE/T2).
 #
 # Changing the sequence
 # ---------------------
 #
-# A clinical FSE rarely refocuses at 180 degrees, because the power the pulses
-# deposit grows with the square of the angle. Lower the refocusing angle to 60
-# degrees and simulate again. A low angle opens more echo pathways, so ask
-# for more of them to be kept (``states``, explained at the end of the lesson):
+# Clinical FSE protocols often use refocusing angles below 180 degrees to
+# reduce SAR, which scales with the square of the flip angle. At 60 degrees more
+# coherence pathways contribute, so more configuration states are retained
+# (``states``, discussed below):
 signal60 = fse.simulate(flip=torch.full((48,), 60.0), T1=1000.0, T2=T2, states=48)
 
 # sphinx_gallery_start_ignore
@@ -109,26 +106,24 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# A 60-degree pulse refocuses only part of the magnetization. The rest is
-# stored along z and comes back as a stimulated echo a few pulses later, so
-# the first echoes oscillate and then settle to a slow decay, well above the
-# 180-degree train at the end. blochsim follows every one of these echo
-# pathways, with the extended phase graph (EPG) formalism: the
-# :doc:`EPG explanation </explanations/epg>` says how.
+# With 60-degree refocusing, part of the magnetization is stored along z and
+# returns as stimulated echoes. The first echoes oscillate before the train
+# approaches a pseudo steady state, and the late echoes decay more slowly than
+# exp(-TE/T2). blochsim models all coherence pathways with the extended phase
+# graph (EPG) formalism; see the :doc:`EPG explanation </explanations/epg>`.
 #
 # Derivative with respect to the tissue
 # -------------------------------------
 #
-# A T2 map is found by adjusting T2 until the simulated train matches the
-# measured one, and that search needs to know how the signal changes with T2.
-# ``jacobian`` returns the signal and its derivative with respect to the
-# properties you name:
+# Model-based T2 fitting, as well as Cramér-Rao bound analysis, needs the
+# derivative of the signal with respect to T2. ``jacobian`` returns the signal
+# and its derivatives with respect to the named properties:
 signal, dT2 = fse.jacobian("T2", flip=flip, T1=1000.0, T2=T2)
 
 # %%
-# The derivative is exact, not a finite difference: blochsim carries it
-# through the simulation alongside the signal. Compare it with a finite
-# difference over a 1 ms step:
+# The derivative is computed in forward mode alongside the signal, not by
+# finite differences. As a check, compare it with a forward difference over a
+# 1 ms step:
 step = 1.0
 finite = (fse.simulate(flip=flip, T1=1000.0, T2=T2 + step) - signal) / step
 
@@ -147,22 +142,21 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# The two agree to the size of the step. The derivative is largest in the
-# middle of the train: those are the echoes that tell one T2 from another.
-# Name several properties, ``jacobian(("T1", "T2"), ...)``, and you get one
-# derivative per property.
+# The two agree to within the truncation error of the finite difference. The
+# sensitivity to T2 peaks at TE close to T2. Passing several names,
+# ``jacobian(("T1", "T2"), ...)``, returns one derivative per property.
 #
 # How exact, and where it runs
 # ----------------------------
 #
-# Two settings decide what a simulation costs. You can give either to the
+# Two settings control accuracy and cost. Both can be passed to the
 # constructor or to the call.
 #
-# ``states`` is how many configuration states (echo pathways) the simulation
-# keeps. Each refocusing pulse can open one more pathway, so a train of 48
-# echoes needs at most 48. The FSE keeps 10 by default, enough for 180-degree
-# pulses, where few pathways carry signal. Too few gives a wrong answer, not a
-# less precise one, so check against the full number when you lower the angle:
+# ``states`` is the number of EPG configuration states retained. A train of N
+# refocusing pulses populates at most N states, so 48 is exact here. The FSE
+# simulator defaults to 10, which is sufficient for near-180-degree trains.
+# Truncation is a systematic error, so check it against the exact number when
+# the refocusing angle is low:
 flip60 = torch.full((48,), 60.0)
 reference = fse.simulate(flip=flip60, T1=1000.0, T2=T2, states=48)
 for states in (10, 24, 32):
@@ -171,24 +165,23 @@ for states in (10, 24, 32):
     print(f"{states:2d} states: {error:.0%} off")
 
 # %%
-# The 60-degree train needs all 48. That is why the figure above asked for
-# them.
+# The 60-degree train requires the full 48 states, which the previous figure
+# used.
 #
-# ``blochsim.execution`` says where the simulation runs. The default,
-# ``"auto"``, keeps small problems on the CPU and sends large ones to a GPU if
-# there is one, in pieces if they do not fit. Naming a device forces it:
+# ``blochsim.execution`` selects the device. The default, ``"auto"``, runs
+# small problems on the CPU and large ones on a GPU when available, split
+# into chunks when they exceed device memory. A named device overrides this:
 import blochsim
 
 with blochsim.execution("cpu"):
     on_cpu = fse.simulate(flip=flip, T1=1000.0, T2=T2)
 
 # %%
-# A simulator is worth keeping. The first call works out the structure of the
-# sequence, and later calls only change the numbers, so build it once and call
-# it in your loop.
+# The first call resolves the sequence structure; later calls only rebind
+# numerical values. Construct a simulator once and reuse it inside loops.
 #
-# For a one-off simulation, every shipped sequence also has a function form,
-# which builds the simulator and calls it in one line:
+# Each shipped sequence also has a functional form, convenient for one-off
+# calls:
 signal, dT2 = blochsim.fse_sim(
     flip=flip, ESP=5.0, TR=3000.0, T1=1000.0, T2=T2, diff="T2"
 )

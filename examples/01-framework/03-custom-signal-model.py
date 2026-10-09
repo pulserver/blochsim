@@ -3,24 +3,23 @@
 3. Custom signal model
 =======================
 
-In lessons 1 and 2 you simulated sequences that ship with blochsim. In this
-lesson you write one yourself, saturation recovery, one piece at a time, and
-check after each piece what blochsim does with it. By the end your sequence
-does everything a shipped one does: it runs over many voxels at once, has
-derivatives with respect to tissue and to the sequence, and takes any of the
-physics of lesson 2.
+Lessons 1 and 2 used shipped simulators. This lesson implements a new one,
+saturation recovery, by subclassing :class:`~blochsim.model.Simulator`. The
+resulting class supports the same features as a shipped simulator: batched
+tissue inputs, derivatives with respect to tissue and sequence parameters, and
+the additional physics of lesson 2.
 
 **Learning objectives**
 
-- Choose the handlers: which operator plays each kind of event.
-- Write the layout: the events of one repetition, in order.
-- Check your sequence against its closed form.
-- Look at the events your layout produces.
-- Differentiate it, with respect to the tissue and to the sequence.
+- Define the handlers, which map each kind of event to an operator.
+- Define the layout, the ordered events of one repetition.
+- Validate the model against its closed-form solution.
+- Inspect the generated sequence description.
+- Differentiate with respect to tissue and sequence parameters.
 
 Previous: :doc:`02-advanced-physics`. Next:
-:doc:`04-description-based-simulation`, where the events come from a Pulseq
-file or a scanner instead of from your layout.
+:doc:`04-description-based-simulation`, where the events are read from a Pulseq
+file or a scanner instead of the layout.
 """
 
 # %%
@@ -45,32 +44,30 @@ TISSUES = ("white matter", "grey matter", "CSF")
 # Your sequence
 # -------------
 #
-# Saturation recovery measures T1 in three steps. A 90-degree pulse followed by
-# a spoiler gradient destroys all the magnetization. During a wait, the
-# saturation time TS, the longitudinal magnetization recovers towards its
-# equilibrium. A small flip angle then reads how much has come back. Repeat
-# for several saturation times and the signal traces out
+# Each block of the sequence is a 90-degree pulse followed by a spoiler, which
+# nulls the magnetization; a saturation time TS of free recovery; and a
+# low-flip-angle spoiled readout. Over a set of saturation times the signal is
 #
 # .. math::
 #
 #    S(T_S) = M_0 \sin\alpha \, \left(1 - e^{-T_S/T_1}\right).
 #
-# The closed form is what you check your simulation against at the end.
+# which serves as the reference for the simulation.
 #
 # The handlers
 # ------------
 #
-# A sequence is made of events: pulses, readouts and waits. The *handlers* say
-# what each kind of event does to the magnetization. They are class attributes
-# of a :class:`~blochsim.model.Simulator`, one per kind of event:
+# A sequence consists of RF, ADC and wait events. The *handlers* define the
+# operator that plays each kind of event. They are class attributes of the
+# simulator, one per kind:
 # ``excitation``, ``refocusing``, ``inversion``, ``saturation``, ``readout``
-# and ``delay`` (a wait: free precession, no RF and no ADC). One you do not set
-# keeps its default.
+# and ``delay`` (free precession with no RF and no ADC). Unset handlers keep
+# their defaults.
 #
-# Saturation recovery needs four. Its saturation is a 90-degree pulse followed
-# by a spoiler, and ``@`` composes the two into one operator. Its readout is
-# :func:`~blochsim.SPGRReadout`, which records a sample and then spoils, so
-# nothing is left in the transverse plane for the next block:
+# Saturation recovery uses four. The saturation handler is a 90-degree pulse
+# composed with a spoiler through ``@``. The readout is
+# :func:`~blochsim.SPGRReadout`, a sample followed by ideal transverse
+# spoiling:
 import torch
 
 from blochsim import Delay, Excitation, SPGRReadout, Spoil
@@ -91,27 +88,27 @@ class SaturationRecovery(Simulator):
 
 
 # %%
-# ``states = 1`` keeps a single configuration state. Every block starts by
-# spoiling, so no echo pathway survives from one block to the next and one
-# state is the whole answer.
+# Since every block starts and ends with spoiling, no transverse coherence
+# survives between blocks, and a single configuration state (``states = 1``)
+# is exact.
 #
-# The handlers matter beyond your own sequence. A Pulseq file or a scanner
-# stream carries pulses, ADC windows and their timing, but no gradients. When
-# blochsim plays one (lesson 4), your handlers decide what happens between the
-# events: whether a readout spoils, winds the states on, or rewinds them.
+# The handlers also determine how an external description is simulated. A
+# Pulseq file or a scanner stream specifies RF pulses, ADC windows and timing,
+# but blochsim does not take gradients from it. When such a description is
+# simulated (lesson 4), the handlers define the dephasing between events:
+# spoiled, unbalanced or balanced.
 #
 # The layout
 # ----------
 #
-# The *layout* is the list of events of one repetition, in the order they are
-# played, written with the handlers through ``self.operators``. It is your
-# sequence's default description: the constructor calls it with the
-# parameters you pass. You never write timestamps; each operator holds the
-# timeline for as long as it lasts.
+# The *layout* returns the events of one repetition in playing order, built
+# from the handlers through ``self.operators``. It is the default sequence
+# description, generated by the constructor from the sequence parameters.
+# Timestamps are derived from the duration of each operator.
 #
-# The parameters are the keyword arguments of ``layout``. Here they are the
-# saturation times in milliseconds and the readout flip angle in degrees;
-# operators take seconds and radians.
+# The sequence parameters are the keyword arguments of ``layout``: here the
+# saturation times in milliseconds and the readout flip angle in degrees.
+# Operators take SI units (seconds, radians).
 
 
 class SaturationRecovery(SaturationRecovery):
@@ -125,11 +122,10 @@ class SaturationRecovery(SaturationRecovery):
 
 
 # %%
-# Run it
-# ------
+# Simulation
+# ----------
 #
-# Your simulator now works like a shipped one. Construct it with the sequence
-# parameters, call it with the tissue:
+# The class is used like a shipped simulator:
 TS = torch.logspace(1.3, 3.7, 40)  # 20 ms to 5 s
 T1 = torch.tensor([830.0, 1330.0, 4000.0])
 
@@ -153,16 +149,15 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# The simulation lands on the closed form. blochsim was never told what the
-# events add up to; it played them one by one, so the agreement checks your
-# layout.
+# The simulation matches the closed form to single precision. Since blochsim
+# evaluates the events individually, the agreement validates the layout.
 #
-# Look at the events
-# ------------------
+# Sequence description
+# --------------------
 #
 # ``describe`` returns the events your layout produced, with their
-# timestamps, as a :class:`~blochsim.SequenceDescription`. Its ``plot`` draws
-# them. When a simulation looks wrong, this is the first place to look:
+# timestamps, as a :class:`~blochsim.SequenceDescription`; ``plot`` displays
+# them. This is the first thing to inspect when a result is unexpected:
 description = recovery.describe(TS=[50.0, 100.0, 200.0], flip=10.0)
 
 # sphinx_gallery_start_ignore
@@ -174,22 +169,21 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# Three blocks, each a saturation pulse, a wait that grows from block to
-# block, a 10-degree excitation and a readout. This description is the same
-# kind of object lesson 4 reads from a Pulseq file or a scanner.
+# Three blocks, each with a saturation pulse, a wait of increasing length, a
+# 10-degree excitation and a readout. Lesson 4 reads the same kind of object
+# from a Pulseq file or a scanner.
 #
 # Derivatives
 # -----------
 #
-# Everything lesson 1 did with a shipped simulator works on yours without
-# another line. ``jacobian`` gives the derivative with respect to tissue, which
-# is what a T1 fit needs:
+# ``jacobian`` works on the new class without additional code. The derivative
+# with respect to T1 is what a T1 fit requires:
 signal, dT1 = recovery.jacobian("T1", T1=T1, T2=80.0)
 
 # %%
-# The sequence parameters are PyTorch tensors, so the derivative with respect
-# to the sequence is PyTorch's own ``backward``. Here is how the total signal
-# changes with each saturation time:
+# Sequence parameters are PyTorch tensors, so derivatives with respect to them
+# are obtained by reverse-mode autodiff (``backward``). Here, the gradient of
+# the summed signal with respect to each saturation time:
 TS_designed = TS.clone().requires_grad_(True)
 total = recovery.simulate(TS=TS_designed, T1=830.0, T2=80.0).abs().sum()
 total.backward()
@@ -205,16 +199,15 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# This is what sequence design descends: choose the saturation times, the flip
-# angles or the timings that make a cost smallest. The sequence design
-# Applications do it for real protocols.
+# This gradient is the basis of sequence optimization; the sequence design
+# Applications use it on complete protocols.
 #
-# More physics
-# ------------
+# Additional physics
+# ------------------
 #
-# The properties of lesson 2 are tissue properties, so your sequence takes them
-# as they are. A transmit field 20% low turns the saturation pulse into a
-# 72-degree pulse, which leaves part of the magnetization behind:
+# The physics of lesson 2 is controlled by tissue properties and therefore
+# applies to the new class unchanged. With B1 = 0.8 the saturation pulse is
+# 72 degrees, and saturation is incomplete:
 low_b1 = recovery.simulate(T1=830.0, T2=80.0, B1=0.8)
 ideal = recovery.simulate(T1=830.0, T2=80.0)
 
@@ -228,10 +221,9 @@ plt.show()
 # sphinx_gallery_end_ignore
 
 # %%
-# At short saturation times the low-B1 signal is higher, because the
-# magnetization the saturation missed adds to what recovered. At long ones it
-# is lower, because the readout turns 8 degrees instead of 10. A T1 fit that
-# ignores B1 is biased by both.
+# At short saturation times the residual longitudinal magnetization raises
+# the signal; at long ones the 8-degree readout lowers it. A T1 fit that
+# ignores B1 is biased by both effects.
 #
 # As a spec
 # ---------
