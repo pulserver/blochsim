@@ -219,10 +219,10 @@ CuPy or PyTorch elsewhere -- over the same memory rather than a copy.
   fused implementation.
 
 {doc}`generated/autoexamples/index`
-: The executable Course and Tours. The Course starts with a shipped simulator,
-  then shows how to implement a new sequence by subclassing
-  {class}`~blochsim.model.Simulator`; the Tours cover inference, design and
-  model-based reconstruction.
+: The executable Course and Applications. The Course starts with a shipped
+  simulator and ends with a signal model and an operator of your own; the
+  Applications cover parameter mapping, sequence design, model-based
+  reconstruction and synthetic data.
 
 {doc}`api/index`
 : The reference. Start at {doc}`api/simulators` for what ships, at
