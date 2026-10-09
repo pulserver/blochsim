@@ -93,7 +93,7 @@ def legend_outside(where, ncols=1, title=None):
     if hasattr(where, "add_subplot"):
         seen = {}
         for axis in where.axes:
-            for handle, label in zip(*axis.get_legend_handles_labels()):
+            for handle, label in zip(*axis.get_legend_handles_labels(), strict=True):
                 seen.setdefault(label, handle)
         return where.legend(
             list(seen.values()),

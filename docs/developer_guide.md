@@ -123,8 +123,8 @@ python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 : Mirrored by subpackage, executed by the gallery, and built by Sphinx
   respectively.
 
-{doc}`explanations/implementation` is the tour of how those pieces fit
-together; read it before changing any of them.
+{doc}`internals/kernels` describes how those pieces fit together; read it
+before changing any of them.
 
 (dev-style)=
 
@@ -323,3 +323,16 @@ Everything here happens under the {doc}`misc/code_of_conduct`, which applies
 to issues, discussions, pull requests and reviews alike. BlochSim is released
 under the {doc}`misc/license`, and a contribution is released under the same
 terms; {doc}`misc/contributors` is generated from the repository history.
+
+## Internals
+
+The implementation behind the explanation pages: the derivations, the format
+rules and the kernels, for whoever changes them.
+
+```{toctree}
+:maxdepth: 1
+
+internals/epg
+internals/description
+internals/kernels
+```
