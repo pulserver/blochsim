@@ -229,8 +229,9 @@ plt.show()
 
 # %%
 # At short saturation times the low-B1 signal is higher, because the
-# magnetization the saturation missed adds to what recovered. A T1 fit that
-# ignores B1 reads that as a shorter T1.
+# magnetization the saturation missed adds to what recovered. At long ones it
+# is lower, because the readout turns 8 degrees instead of 10. A T1 fit that
+# ignores B1 is biased by both.
 #
 # As a spec
 # ---------
