@@ -57,7 +57,7 @@ import matplotlib.pyplot as plt
 from brainweb_dl import get_mri
 from cmap import Colormap
 
-from figure_style import PAGE_WIDTH
+from figure_style import PAGE_WIDTH, SERIES
 
 warnings.filterwarnings("ignore")
 
@@ -224,14 +224,14 @@ for axis, values, cmap, limits, label, title in (
     handle = panel(axis, values.cpu().numpy(), cmap, limits, title=title)
     figure.colorbar(handle, ax=axis, label=label, fraction=0.046, pad=0.03)
     axis.set_box_aspect(1)
-for echo in (0, ECHOES // 2, ECHOES - 1):
+for shade, echo in enumerate((0, ECHOES // 2, ECHOES - 1)):
     arm = trajectory[echo].reshape(SPOKES, SAMPLES, 2)
     for spoke in range(SPOKES):
         axes[2].plot(
             arm[spoke, :, 0],
             arm[spoke, :, 1],
             lw=0.4,
-            color=plt.cm.plasma(echo / (ECHOES - 1)),
+            color=SERIES[shade],
         )
 axes[2].set(xlabel="$k_x$", ylabel="$k_y$", title="3 of 8 echoes")
 axes[2].set_box_aspect(1)

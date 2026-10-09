@@ -600,7 +600,7 @@ print(
 
 # sphinx_gallery_start_ignore
 fig, axes = plt.subplots(2, 3, figsize=(PAGE_WIDTH, 0.7 * PAGE_WIDTH))
-colours = plt.cm.viridis(np.linspace(0.0, 0.85, SAMPLES))
+colours = [SERIES[index % len(SERIES)] for index in range(SAMPLES)]
 grid_index = np.arange(1, GRID + 1)
 shown = (0, 5, 10, 15)
 

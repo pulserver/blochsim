@@ -336,12 +336,12 @@ bar.set_label("phase [rad]")
 bar.set_ticks([-np.pi, 0.0, np.pi], labels=["$-\\pi$", "0", "$\\pi$"])
 
 axis = figure.add_subplot(grid[0, 5])
-for frame in (0, FRAMES // 2, FRAMES - 1):
+for shade, frame in enumerate((0, FRAMES // 2, FRAMES - 1)):
     axis.plot(
         trajectory[frame, :, 0],
         trajectory[frame, :, 1],
         lw=0.5,
-        color=plt.cm.plasma(frame / (FRAMES - 1)),
+        color=SERIES[shade],
     )
 axis.set(xlabel="$k_x$", ylabel="$k_y$", title=f"3 of {FRAMES} arms")
 axis.set_box_aspect(1)
