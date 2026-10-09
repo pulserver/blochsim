@@ -290,6 +290,7 @@ def report(name, seconds, found):
 #
 # deepinv's ``gamma`` is the inverse regularization weight, so a smaller value
 # regularizes harder. Each route was given the best of a short sweep, not shown.
+
 # sphinx_gallery_start_ignore
 started = clock()
 # sphinx_gallery_end_ignore
