@@ -139,7 +139,7 @@ plt.show()
 # %%
 # Inside the slice, the flip now varies less across the transmit range, most of
 # all where B1 is low. Outside the slice the leakage stays at the level of the
-# sinc. Compare the mean |Mxy| inside the slice at each B1:
+# sinc. Compare the mean :math:`|M_{xy}|` inside the slice at each B1:
 centre = inside.bool()
 for label, profile in (("starting sinc", before), ("optimized", after)):
     mean = profile[:, centre].mean(dim=1)
