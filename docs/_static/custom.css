@@ -8,7 +8,7 @@
 html[data-theme="dark"] .bd-content img.sphx-glr-single-img,
 html[data-theme="dark"] .bd-content img.sphx-glr-multi-img,
 html[data-theme="dark"] .bd-content figure img {
-  background-color: transparent;
+  background-color: transparent !important;
   filter: none;
 }
 
