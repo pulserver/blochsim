@@ -83,13 +83,13 @@ from blochsim import Delay, Excitation, SPGRReadout, Spoil
 from blochsim.model import Simulator
 
 
-def saturate(flip_rad=torch.pi / 2, phase_rad=0.0):
+def Saturate(flip_rad=torch.pi / 2, phase_rad=0.0):
     """A 90-degree pulse, then a spoiler."""
     return Excitation(flip_rad, phase_rad) @ Spoil()
 
 
 class SaturationRecovery(Simulator):
-    saturation = saturate  # plays a saturation pulse
+    saturation = Saturate  # plays a saturation pulse
     excitation = Excitation  # plays an excitation pulse
     delay = Delay  # plays a wait
     readout = SPGRReadout  # plays a readout, then spoils
