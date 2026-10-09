@@ -69,8 +69,10 @@ A signal model is two things:
   saturation pulses. Each is a class attribute; one you do not set keeps
   its default (a wait is `Delay`: free precession, no RF and no ADC).
 - **layout**: the events of one repetition, in order, written with those
-  handlers. The layout is what `from_pulseq` or `from_description` would
-  otherwise give you, read from a `.seq` file or from a scanner's stream.
+  handlers. It is the sequence's default description: the constructor builds
+  it from the parameters you pass. `from_pulseq` and `from_description` read
+  the description from a `.seq` file or a scanner's stream instead, and skip
+  the layout.
 
 Here is saturation recovery, which saturates, waits, and reads what came back:
 
@@ -108,8 +110,8 @@ signal = recovery.simulate(T1=830.0, T2=80.0)
 
 - `layout` uses only `self.operators`, the handlers you set. You never
   write timestamps; each operator holds the timeline for as long as it lasts.
-- The handlers are also what plays a sequence read with `from_pulseq` or
-  `from_description`. A Pulseq file or a scanner stream carries pulses, ADC
+- The handlers play the events whichever way the description came, so a
+  sequence read with `from_pulseq` or `from_description` still uses them. A Pulseq file or a scanner stream carries pulses, ADC
   windows and timing but no gradients, so the handlers are where the
   dephasing lives: the readout decides whether the states are spoiled,
   wound on or rewound.
