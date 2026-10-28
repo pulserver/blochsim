@@ -198,14 +198,15 @@ jobs:
         with:
           name: cuda-wheel-${{ matrix.cuda }}
           path: cuda
-      # Both wheels are named as files, so pip takes them whatever their
-      # version, and the extra's requirement is the CUDA wheel given beside it.
+      # torch comes from its CUDA index alone: PyPI's torch can be newer and
+      # built for another CUDA major. Both wheels are named as files, so pip
+      # takes them whatever their version, and the extra's requirement is the
+      # CUDA wheel given beside it.
       - name: Install blochsim[cu${{ matrix.cuda }}] with torch's ${{ matrix.torch }} build
         run: |
           python -m pip install --upgrade pip
-          pip install "$(ls base/*manylinux*x86_64*.whl)[cu${{ matrix.cuda }}]" cuda/*.whl \
-            torch --index-url https://download.pytorch.org/whl/${{ matrix.torch }} \
-            --extra-index-url https://pypi.org/simple
+          pip install torch --index-url https://download.pytorch.org/whl/${{ matrix.torch }}
+          pip install "$(ls base/*manylinux*x86_64*.whl)[cu${{ matrix.cuda }}]" cuda/*.whl
           pip list | grep -Ei '^(torch|blochsim|nvidia-cuda-runtime)'
       - name: The card's module loads bare, against torch's runtime
         run: python scripts/check_wheel.py
