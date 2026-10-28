@@ -316,8 +316,8 @@ regularizes harder. Each route was given the best of a short sweep, not shown.
 
  .. code-block:: none
 
-    adjoint per echo       0.0s   T2 error  30.6 ms (20.6%)
-    iterative per echo     0.2s   T2 error  30.7 ms (20.6%)
+    adjoint per echo       0.1s   T2 error  30.6 ms (20.6%)
+    iterative per echo     0.3s   T2 error  30.7 ms (20.6%)
 
     tensor([[ 52.7455,  61.8838,  58.0762,  ...,  96.9138,  74.0681,  63.4068],
             [ 47.4148,  49.6994,  50.4609,  ...,  91.5832,  66.4529,  77.8758],
@@ -379,14 +379,14 @@ second time.
 
  .. code-block:: none
 
-    iterative subspace     1.1s   T2 error  16.9 ms (13.1%)
+    iterative subspace     1.0s   T2 error  16.9 ms (13.1%)
 
     tensor([[ 51.9840,  73.3066,  67.2144,  ...,  86.2525,  60.3607,  35.2305],
             [ 20.0000,  23.0461,  30.6613,  ..., 102.2445,  41.3226,  70.2605],
             [ 30.6613,  66.4529, 121.2826,  ...,  64.1683,  65.6914,  71.7836],
             ...,
             [ 33.7074,  20.0000, 105.2906,  ...,  76.3527,  50.4609,  81.6834],
-            [ 82.4449, 160.8818, 157.0742,  ..., 110.6212,  50.4609,  38.2766],
+            [ 82.4449, 161.6433, 157.0742,  ..., 110.6212,  50.4609,  38.2766],
             [ 93.1062,  84.7295, 110.6212,  ..., 115.9519, 205.0501, 119.7595]])
 
 
@@ -458,7 +458,7 @@ What this Application did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.998 seconds)
+   **Total running time of the script:** (0 minutes 2.637 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_01-linear-subspace.py:
