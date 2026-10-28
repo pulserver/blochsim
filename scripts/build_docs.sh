@@ -22,7 +22,8 @@ for argument in "$@"; do
 done
 
 if ! "$python_bin" - <<'PY'
-import importlib, sys
+import importlib.util
+import sys
 
 
 def absent(name):
