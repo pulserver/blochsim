@@ -267,11 +267,11 @@ reconstruction has no such step, because its result is the maps.
 
     tensor([[ 48.9379,  20.7615,  32.1844,  ..., 164.6894, 400.0000, 400.0000],
             [ 87.0140,  54.2685,  61.8838,  ..., 400.0000, 400.0000, 400.0000],
-            [400.0000,  90.0601,  39.0381,  ..., 400.0000, 120.5210,  84.7295],
+            [400.0000,  90.8216,  39.0381,  ..., 400.0000, 120.5210,  84.7295],
             ...,
             [400.0000, 400.0000, 305.5711,  ...,  23.0461,  43.6072,  27.6152],
             [ 78.6373,  84.7295, 190.5812,  ...,  20.0000,  39.0381,  39.7996],
-            [ 41.3226, 361.9239, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
+            [ 41.3226, 363.4469, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
 
 
 
@@ -360,15 +360,15 @@ encoding are BART's.
 
  .. code-block:: none
 
-    model-based            5.6s   T2 error  11.6 ms ( 9.4%)
+    model-based            5.2s   T2 error  11.6 ms ( 9.4%)
 
-    tensor([[100.6415, 100.7110, 101.6161,  ..., 101.3230, 102.0799,  98.8597],
-            [100.9624,  98.9116,  97.5704,  ..., 101.4051,  98.1519,  95.6148],
-            [101.0574, 100.0148,  98.4379,  ..., 105.0772, 104.9345, 104.2215],
+    tensor([[100.6485, 100.7202, 101.6285,  ..., 101.3273, 102.0833,  98.8517],
+            [100.9671,  98.9119,  97.5817,  ..., 101.4050,  98.1353,  95.5978],
+            [101.0628, 100.0185,  98.4362,  ..., 105.0742, 104.9474, 104.2501],
             ...,
-            [101.5620, 101.8510, 101.8470,  ..., 100.1675, 102.1606, 100.2421],
-            [100.4910, 100.6044, 101.2162,  ...,  99.1119, 104.5041, 106.3198],
-            [100.9847, 100.9229, 101.3378,  ...,  94.5165,  98.9711, 103.9647]])
+            [101.5603, 101.8524, 101.8485,  ..., 100.1827, 102.1851, 100.2868],
+            [100.4932, 100.6068, 101.2182,  ...,  99.1220, 104.5265, 106.3573],
+            [100.9880, 100.9246, 101.3378,  ...,  94.5218,  98.9739, 103.9938]])
 
 
 
@@ -403,10 +403,10 @@ Timing the four shows which part a faster reconstruction has to speed up.
  .. code-block:: none
 
     per conjugate-gradient step, 3 channels solved for:
-      model    J  v      4.7 ms
-      model    J^H v     1.6 ms
-      encoding A         1.2 ms
-      encoding A^H       1.1 ms
+      model    J  v      4.4 ms
+      model    J^H v     1.5 ms
+      encoding A         1.1 ms
+      encoding A^H       1.0 ms
     the Jacobian this avoids holding: 1.7 MiB, against 0.6 MiB for a signal
 
 
@@ -477,7 +477,7 @@ What this Application did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.530 seconds)
+   **Total running time of the script:** (0 minutes 6.150 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_02-nonlinear-inversion.py:

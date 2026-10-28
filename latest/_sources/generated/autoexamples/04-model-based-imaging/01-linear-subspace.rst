@@ -317,7 +317,7 @@ regularizes harder. Each route was given the best of a short sweep, not shown.
  .. code-block:: none
 
     adjoint per echo       0.0s   T2 error  30.6 ms (20.6%)
-    iterative per echo     0.2s   T2 error  30.7 ms (20.6%)
+    iterative per echo     0.3s   T2 error  30.7 ms (20.6%)
 
     tensor([[ 52.7455,  61.8838,  58.0762,  ...,  96.9138,  74.0681,  63.4068],
             [ 47.4148,  49.6994,  50.4609,  ...,  91.5832,  66.4529,  77.8758],
@@ -379,7 +379,7 @@ second time.
 
  .. code-block:: none
 
-    iterative subspace     1.0s   T2 error  16.9 ms (13.1%)
+    iterative subspace     1.1s   T2 error  16.9 ms (13.1%)
 
     tensor([[ 51.9840,  73.3066,  67.2144,  ...,  86.2525,  60.3607,  35.2305],
             [ 20.0000,  23.0461,  30.6613,  ..., 102.2445,  41.3226,  70.2605],
@@ -458,7 +458,7 @@ What this Application did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.870 seconds)
+   **Total running time of the script:** (0 minutes 3.093 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_01-linear-subspace.py:
