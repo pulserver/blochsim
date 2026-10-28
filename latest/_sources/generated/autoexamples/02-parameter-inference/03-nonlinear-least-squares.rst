@@ -281,10 +281,10 @@ error is the median relative T2 error over the brain voxels.
     ----------------------------------------------------------------------------------
     match, T2 only                     400    0.0s   0.01s   0.1 MiB        --   17.9%
     match, T2 x 10 offsets            4000    0.0s   0.09s   0.5 MiB        --    1.8%
-    match, T2 x 20 offsets            8000    0.0s   0.18s   1.1 MiB        --    1.8%
-    match, T2 x 40 offsets           16000    0.0s   0.37s   2.1 MiB        --    1.8%
-    match, T2 x 80 offsets           32000    0.0s   0.85s   4.3 MiB        --    1.7%
-    fit, T2 + M0, floor known           --    0.0s   0.65s   0.0 MiB        --    0.6%
+    match, T2 x 20 offsets            8000    0.0s   0.19s   1.1 MiB        --    1.8%
+    match, T2 x 40 offsets           16000    0.0s   0.38s   2.1 MiB        --    1.8%
+    match, T2 x 80 offsets           32000    0.0s   0.94s   4.3 MiB        --    1.7%
+    fit, T2 + M0, floor known           --    0.0s   0.66s   0.0 MiB        --    0.6%
     fit, T2 + M0 + offset               --    0.0s   1.07s   0.0 MiB        --    1.8%
 
 
@@ -381,7 +381,7 @@ What this page did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 13.832 seconds)
+   **Total running time of the script:** (0 minutes 14.307 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_02-parameter-inference_03-nonlinear-least-squares.py:

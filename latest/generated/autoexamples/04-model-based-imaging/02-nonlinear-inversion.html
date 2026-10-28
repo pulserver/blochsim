@@ -683,7 +683,7 @@ encoding are BART’s.</p>
 </span><span class="w">
 </span><span class="n">modelled</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">found</span><span class="p">)</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model-based            5.2s   T2 error  11.6 ms ( 9.4%)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model-based            5.4s   T2 error  11.6 ms ( 9.4%)
 
 tensor([[100.6485, 100.7202, 101.6285,  ..., 101.3273, 102.0833,  98.8517],
         [100.9671,  98.9119,  97.5817,  ..., 101.4050,  98.1353,  95.5978],
@@ -709,8 +709,8 @@ Timing the four shows which part a faster reconstruction has to speed up.</p>
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>per conjugate-gradient step, 3 channels solved for:
   model    J  v      4.4 ms
-  model    J^H v     1.5 ms
-  encoding A         1.1 ms
+  model    J^H v     1.6 ms
+  encoding A         1.2 ms
   encoding A^H       1.0 ms
 the Jacobian this avoids holding: 1.7 MiB, against 0.6 MiB for a signal
 </pre></div>
@@ -761,7 +761,7 @@ Report time and mean T2 error over the brain, the time of each Jacobian
 product, and the size of the Jacobian that the operator avoids storing.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.150 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.292 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-04-model-based-imaging-02-nonlinear-inversion-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/notebooks/generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo3.svg" style="width: 150px;" />

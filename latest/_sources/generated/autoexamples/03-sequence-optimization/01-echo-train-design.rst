@@ -571,7 +571,7 @@ Start from the prescription of the abstract in [2]_: a 45-echo train at
 
  .. code-block:: none
 
-    a whole protocol designed in 1.39 s, 34.6 ms per iteration
+    a whole protocol designed in 1.39 s, 34.8 ms per iteration
 
 
 
@@ -666,7 +666,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.705 seconds)
+   **Total running time of the script:** (0 minutes 2.741 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_03-sequence-optimization_01-echo-train-design.py:

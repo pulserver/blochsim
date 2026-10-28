@@ -360,7 +360,7 @@ encoding are BART's.
 
  .. code-block:: none
 
-    model-based            5.2s   T2 error  11.6 ms ( 9.4%)
+    model-based            5.4s   T2 error  11.6 ms ( 9.4%)
 
     tensor([[100.6485, 100.7202, 101.6285,  ..., 101.3273, 102.0833,  98.8517],
             [100.9671,  98.9119,  97.5817,  ..., 101.4050,  98.1353,  95.5978],
@@ -404,8 +404,8 @@ Timing the four shows which part a faster reconstruction has to speed up.
 
     per conjugate-gradient step, 3 channels solved for:
       model    J  v      4.4 ms
-      model    J^H v     1.5 ms
-      encoding A         1.1 ms
+      model    J^H v     1.6 ms
+      encoding A         1.2 ms
       encoding A^H       1.0 ms
     the Jacobian this avoids holding: 1.7 MiB, against 0.6 MiB for a signal
 
@@ -477,7 +477,7 @@ What this Application did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.150 seconds)
+   **Total running time of the script:** (0 minutes 6.292 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_02-nonlinear-inversion.py:
