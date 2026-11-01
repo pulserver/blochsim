@@ -75,7 +75,8 @@ axis 1, as deepinv and mri-nufft lay it out.
 
 An estimator fitted with `rank` carries a {class}`~blochsim.Subspace`.
 {attr}`~blochsim.Subspace.modes` gives the basis as `(rank, contrasts)`, the
-layout mri-nufft's `MRISubspace` and BART's `pics -B` read. The reconstruction
+layout mri-nufft's `MRISubspace` reads; BART's `pics -B` and bartorch's
+`basis=` contract without its conjugate and read `subspace.basis.mT`. The reconstruction
 is linear in the coefficients, has one minimum and needs no starting point.
 {meth}`~blochsim.estimators.DictionaryMatcher.from_coefficients` then maps the coefficients
 without projecting them again. A signal that needs many components, such as a

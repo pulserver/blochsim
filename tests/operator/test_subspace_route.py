@@ -19,13 +19,20 @@ SIZE = 16
 RANK = 3
 
 
-@pytest.fixture(scope="module")
-def basis():
-    """A temporal basis for a multi-echo decay, from the model itself."""
+@pytest.fixture(scope="module", params=["real", "off-resonant"])
+def basis(request):
+    """A temporal basis for a multi-echo decay, from the model itself.
+
+    Off resonance turns each atom's phase along the echoes at a rate of its
+    own, so the basis is complex and a conjugate in the wrong place shows.
+    """
     acquisition = MultiEchoSimulator(TE=TE_MS)
     signals = torch.as_tensor(
         acquisition.simulate(T2=torch.linspace(20.0, 300.0, 64))
     ).to(torch.complex64)
+    if request.param == "off-resonant":
+        hertz = torch.linspace(-8.0, 8.0, 64)[:, None]
+        signals = signals * torch.exp(2j * torch.pi * hertz * TE_MS[None] / 1000)
     return Subspace.fit(signals, RANK)
 
 
