@@ -63,16 +63,22 @@ class Subspace:
 
     @property
     def modes(self) -> torch.Tensor:
-        """The basis transposed, ``(rank, contrasts)``.
+        """The basis conjugate-transposed, ``(rank, contrasts)``: mri-nufft's ``MRISubspace`` layout.
 
-        This is the layout of mri-nufft's ``MRISubspace`` and BART's
-        ``pics -B``. It is a plain transpose: expansion is
-        ``image_t = sum_k conj(modes[k, t]) c_k``, as in :meth:`expand`.
+        ``MRISubspace`` expands ``image_t = sum_k conj(modes[k, t]) c_k`` and
+        projects ``c_k = sum_t modes[k, t] image_t``, which are :meth:`expand`
+        and :meth:`project`. BART's ``pics -B`` and bartorch's ``basis=``
+        contract without the conjugate, ``image_t = sum_k B[k, t] c_k``, so
+        they take ``basis.mT``; for a real basis the two are the same.
         """
-        return self.basis.mT
+        return self.basis.mH.resolve_conj()
 
     def project(self, signals: torch.Tensor) -> torch.Tensor:
-        """Project ``signals`` onto the basis, giving ``signals @ basis``.
+        r"""Project ``signals`` onto the basis, giving ``signals @ basis.conj()``.
+
+        The coefficients are the inner products of each signal with the basis
+        vectors, :math:`c_k = \langle b_k, s \rangle = \sum_t \overline{b_{tk}} s_t`,
+        so :meth:`expand` returns a signal of the span unchanged.
 
         Parameters
         ----------
@@ -87,10 +93,13 @@ class Subspace:
             ``(..., rank)`` coefficients.
         """
         dtype = torch.promote_types(signals.dtype, self.basis.dtype)
-        return signals.to(dtype) @ self.basis.to(dtype).to(signals.device)
+        return signals.to(dtype) @ self.basis.conj().to(dtype).to(signals.device)
 
     def expand(self, coefficients: torch.Tensor) -> torch.Tensor:
-        """Expand coefficients to contrasts, giving ``coefficients @ basis.mH``.
+        r"""Expand coefficients to contrasts, giving ``coefficients @ basis.mT``.
+
+        :math:`s_t = \sum_k b_{tk} c_k`, the inverse of :meth:`project` on the
+        span of the basis.
 
         Parameters
         ----------
@@ -103,7 +112,7 @@ class Subspace:
             ``(..., contrasts)``, on the coefficients' device.
         """
         dtype = torch.promote_types(coefficients.dtype, self.basis.dtype)
-        return coefficients.to(dtype) @ self.basis.mH.to(dtype).to(coefficients.device)
+        return coefficients.to(dtype) @ self.basis.mT.to(dtype).to(coefficients.device)
 
     @classmethod
     def fit(cls, signals: torch.Tensor, rank: int) -> Subspace:

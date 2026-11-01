@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Fixed
+
+- **`Subspace` round-trips complex signals.** `project` is `signals @ basis.conj()`
+  and `expand` is `coefficients @ basis.mT`, so a signal in the span comes back
+  unchanged; `modes` is `basis.mH`, which mri-nufft's `MRISubspace` expands
+  with its conjugate. Before, a complex dictionary whose atoms do not share one
+  phase was projected onto the conjugate of its span (96 % error on random
+  signals of the span). Real dictionaries are unaffected. bartorch's `basis=`
+  and BART's `pics -B` take `basis.mT`.
+
 ### Changed
 
 - **Every GPU, a bounded share of it, by default.** `execution="auto"` is the

@@ -96,3 +96,33 @@ def test_the_leading_axes_are_flattened() -> None:
     shaped = Subspace.fit(dictionary.reshape(6, 10, 32), 5)
 
     assert torch.allclose(flat.basis, shaped.basis, atol=1e-6)
+
+
+def test_complex_signals_of_the_span_round_trip() -> None:
+    """``expand`` undoes ``project`` on the span for complex signals too.
+
+    A real dictionary cannot tell ``s @ B`` from ``s @ conj(B)``; a complex one,
+    whose atoms do not share one phase, can.
+    """
+    generator = torch.Generator().manual_seed(0)
+    basis = torch.linalg.qr(
+        torch.randn(50, 3, dtype=torch.complex64, generator=generator)
+    )[0]
+    signals = torch.randn(10, 3, dtype=torch.complex64, generator=generator) @ basis.mT
+    subspace = Subspace.fit(signals, 3)
+
+    coefficients = subspace.project(signals)
+
+    torch.testing.assert_close(
+        subspace.expand(coefficients), signals, rtol=1e-5, atol=1e-5
+    )
+    torch.testing.assert_close(
+        coefficients, signals @ subspace.basis.conj(), rtol=1e-6, atol=1e-6
+    )
+    # mri-nufft's MRISubspace expands with conj(modes) and projects with modes.
+    torch.testing.assert_close(
+        coefficients @ subspace.modes.conj(), signals, rtol=1e-5, atol=1e-5
+    )
+    torch.testing.assert_close(
+        signals @ subspace.modes.mT, coefficients, rtol=1e-5, atol=1e-5
+    )
