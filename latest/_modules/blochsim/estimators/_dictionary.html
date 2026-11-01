@@ -428,6 +428,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._execution</span><span class="w"> </span><span class="kn">import</span> <span class="n">PER_VOXEL_CROSSOVER</span><span class="p">,</span> <span class="n">per_voxel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._grouped</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grouping</span><span class="p">,</span> <span class="n">best_of</span><span class="p">,</span> <span class="n">correlate</span><span class="p">,</span> <span class="n">match_in_groups</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._lattice</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lattice</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._mapping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Estimator</span>
 
 
@@ -488,9 +489,25 @@
 <span class="sd">        Fraction below its best group score within which a voxel still</span>
 <span class="sd">        considers a group. Larger keeps more groups. The default was tuned on</span>
 <span class="sd">        280 groups of 700 atoms; raise it for smaller dictionaries.</span>
+<span class="sd">    coarse : int, default=None</span>
+<span class="sd">        For a dictionary simulated on a lattice of parameter values (a</span>
+<span class="sd">        product of one list per parameter, some combinations possibly left</span>
+<span class="sd">        out), score every ``coarse``-th value along each parameter first,</span>
+<span class="sd">        then the ``2 coarse + 1`` values around the winner along each. Needs</span>
+<span class="sd">        ``parameters``; not with ``groups``. See :attr:`lattice`.</span>
+<span class="sd">    refine : bool, default=True</span>
+<span class="sd">        With ``coarse``, search around the coarse winner; ``False`` returns</span>
+<span class="sd">        the coarse lattice's best atoms alone, which an iterative</span>
+<span class="sd">        reconstruction can match against until its last iteration. An</span>
+<span class="sd">        attribute that may be set between calls.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The coarse-to-fine search assumes the signal changes smoothly along the</span>
+<span class="sd">    lattice, so the best atom lies within ``coarse`` steps of the coarse</span>
+<span class="sd">    winner; on a 3 % logarithmic (T1, T2) grid of 37 000 atoms a stride of 3</span>
+<span class="sd">    scores about 4 200 + 49 atoms per voxel.</span>
+
 <span class="sd">    A ``rank`` given to :meth:`fit` compresses the dictionary to</span>
 <span class="sd">    ``(atoms, rank)`` before grouping. The estimator also returns an ``M0``</span>
 <span class="sd">    map, computed from the match score and atom norms without touching atoms.</span>
@@ -514,6 +531,8 @@
         <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prune</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5e-3</span><span class="p">,</span>
+        <span class="n">coarse</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">refine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">acquisition</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">query_chunk_size</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">dictionary_chunk_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -524,12 +543,19 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"groups must be positive, got </span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">prune</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"prune must be in [0, 1), got </span><span class="si">{</span><span class="n">prune</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coarse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coarse</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"coarse must be positive, got </span><span class="si">{</span><span class="n">coarse</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coarse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"search by groups or by a coarse lattice, not both"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">query_chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">query_chunk_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dictionary_chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dictionary_chunk_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">top_k</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prune</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">prune</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">coarse</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">coarse</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refine</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">refine</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span><span class="p">:</span> <span class="n">Grouping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span><span class="p">:</span> <span class="n">Lattice</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"dictionary"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"normalized_dictionary"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"dictionary_power"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -553,6 +579,11 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lattice</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Where each atom sits on its parameters' lattice, or ``None`` without ``coarse``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictionaryMatcher</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Keep the grouping beside the dictionary when the module moves.</span>
 
@@ -562,6 +593,8 @@
         <span class="n">moved</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">moved</span><span class="o">.</span><span class="n">_grouping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">moved</span><span class="o">.</span><span class="n">_grouping</span> <span class="o">=</span> <span class="n">moved</span><span class="o">.</span><span class="n">_grouping</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">moved</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">moved</span><span class="o">.</span><span class="n">_lattice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">moved</span><span class="o">.</span><span class="n">_lattice</span> <span class="o">=</span> <span class="n">moved</span><span class="o">.</span><span class="n">_lattice</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">moved</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">moved</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_arrays</span><span class="p">(</span>
@@ -667,11 +700,15 @@
                     <span class="n">top_k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">top_k</span><span class="p">,</span>
                     <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span>
                     <span class="n">prune</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prune</span><span class="p">,</span>
+                    <span class="n">coarse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coarse</span><span class="p">,</span>
+                    <span class="n">refine</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="c1"># Clustering is a property of the dictionary, not of where it</span>
                 <span class="c1"># sits, so the replica moves it rather than repeating it.</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">replica</span><span class="o">.</span><span class="n">_grouping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">replica</span><span class="o">.</span><span class="n">_lattice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
                 <span class="n">replica</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
                 <span class="n">replica</span><span class="o">.</span><span class="n">normalized_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalized_dictionary</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
                 <span class="n">replica</span><span class="o">.</span><span class="n">dictionary_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -699,6 +736,13 @@
             <span class="kc">None</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="n">Grouping</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_values</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"a coarse-to-fine search needs the atoms' parameters"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">Lattice</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_replicas</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -758,6 +802,20 @@
             <span class="n">torch</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
         <span class="p">)</span>
         <span class="n">normalized_signals</span> <span class="o">=</span> <span class="n">signals</span> <span class="o">/</span> <span class="n">signal_norm</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indices</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                <span class="n">normalized_signals</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">normalized_dictionary</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refine</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">query_chunk_size</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">indices</span><span class="p">,</span>
+                <span class="n">scores</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_density</span><span class="p">(</span><span class="n">signal_norm</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">indices</span><span class="p">),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_scaled</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">indices</span><span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">indices</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="n">match_in_groups</span><span class="p">(</span>
                 <span class="n">normalized_signals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prune</span>

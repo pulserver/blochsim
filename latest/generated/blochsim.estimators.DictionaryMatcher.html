@@ -479,6 +479,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.fitted"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.fitted</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.grouping"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.grouping</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.lattice"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.lattice</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.match"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.match()</span></code></a></li>
 </ul>
 </li>
@@ -518,10 +519,23 @@ representatives first, discarding groups before scoring their atoms
 <li><p><strong>prune</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><em>default=5e-3</em>) – Fraction below its best group score within which a voxel still
 considers a group. Larger keeps more groups. The default was tuned on
 280 groups of 700 atoms; raise it for smaller dictionaries.</p></li>
+<li><p><strong>coarse</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>default=None</em>) – For a dictionary simulated on a lattice of parameter values (a
+product of one list per parameter, some combinations possibly left
+out), score every <code class="docutils literal notranslate"><span class="pre">coarse</span></code>-th value along each parameter first,
+then the <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">coarse</span> <span class="pre">+</span> <span class="pre">1</span></code> values around the winner along each. Needs
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code>; not with <code class="docutils literal notranslate"><span class="pre">groups</span></code>. See <a class="reference internal" href="#blochsim.estimators.DictionaryMatcher.lattice" title="blochsim.estimators.DictionaryMatcher.lattice"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lattice</span></code></a>.</p></li>
+<li><p><strong>refine</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>default=True</em>) – With <code class="docutils literal notranslate"><span class="pre">coarse</span></code>, search around the coarse winner; <code class="docutils literal notranslate"><span class="pre">False</span></code> returns
+the coarse lattice’s best atoms alone, which an iterative
+reconstruction can match against until its last iteration. An
+attribute that may be set between calls.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>The coarse-to-fine search assumes the signal changes smoothly along the
+lattice, so the best atom lies within <code class="docutils literal notranslate"><span class="pre">coarse</span></code> steps of the coarse
+winner; on a 3 % logarithmic (T1, T2) grid of 37 000 atoms a stride of 3
+scores about 4 200 + 49 atoms per voxel.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">rank</span></code> given to <code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code> compresses the dictionary to
 <code class="docutils literal notranslate"><span class="pre">(atoms,</span> <span class="pre">rank)</span></code> before grouping. The estimator also returns an <code class="docutils literal notranslate"><span class="pre">M0</span></code>
 map, computed from the match score and atom norms without touching atoms.
@@ -573,6 +587,12 @@ for MR fingerprinting reconstruction”, Magnetic Resonance in Medicine
 <dd><p>Clustering of the dictionary, or <code class="docutils literal notranslate"><span class="pre">None</span></code> without <code class="docutils literal notranslate"><span class="pre">groups</span></code>.</p>
 <p>Its <code class="docutils literal notranslate"><span class="pre">condition</span></code> is the condition number of the representatives and
 <code class="docutils literal notranslate"><span class="pre">compression</span></code> the factor by which in-group inner products shorten.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="blochsim.estimators.DictionaryMatcher.lattice">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lattice</span></span><a class="headerlink" href="#blochsim.estimators.DictionaryMatcher.lattice" title="Link to this definition">#</a></dt>
+<dd><p>Where each atom sits on its parameters’ lattice, or <code class="docutils literal notranslate"><span class="pre">None</span></code> without <code class="docutils literal notranslate"><span class="pre">coarse</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -634,6 +654,7 @@ for MR fingerprinting reconstruction”, Magnetic Resonance in Medicine
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.fitted"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.fitted</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.grouping"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.grouping</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.lattice"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.lattice</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blochsim.estimators.DictionaryMatcher.match"><code class="docutils literal notranslate"><span class="pre">DictionaryMatcher.match()</span></code></a></li>
 </ul>
 </li>
