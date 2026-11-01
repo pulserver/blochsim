@@ -11,6 +11,7 @@ import torch
 
 from .._execution import PER_VOXEL_CROSSOVER, per_voxel
 from ._grouped import Grouping, best_of, correlate, match_in_groups
+from ._lattice import Lattice
 from ._mapping import Estimator
 
 
@@ -69,9 +70,25 @@ class DictionaryMatcher(Estimator):
         Fraction below its best group score within which a voxel still
         considers a group. Larger keeps more groups. The default was tuned on
         280 groups of 700 atoms; raise it for smaller dictionaries.
+    coarse : int, default=None
+        For a dictionary simulated on a lattice of parameter values (a
+        product of one list per parameter, some combinations possibly left
+        out), score every ``coarse``-th value along each parameter first,
+        then the ``2 coarse + 1`` values around the winner along each. Needs
+        ``parameters``; not with ``groups``. See :attr:`lattice`.
+    refine : bool, default=True
+        With ``coarse``, search around the coarse winner; ``False`` returns
+        the coarse lattice's best atoms alone, which an iterative
+        reconstruction can match against until its last iteration. An
+        attribute that may be set between calls.
 
     Notes
     -----
+    The coarse-to-fine search assumes the signal changes smoothly along the
+    lattice, so the best atom lies within ``coarse`` steps of the coarse
+    winner; on a 3 % logarithmic (T1, T2) grid of 37 000 atoms a stride of 3
+    scores about 4 200 + 49 atoms per voxel.
+
     A ``rank`` given to :meth:`fit` compresses the dictionary to
     ``(atoms, rank)`` before grouping. The estimator also returns an ``M0``
     map, computed from the match score and atom norms without touching atoms.
@@ -95,6 +112,8 @@ class DictionaryMatcher(Estimator):
         top_k: int = 1,
         groups: int | None = None,
         prune: float = 5e-3,
+        coarse: int | None = None,
+        refine: bool = True,
     ) -> None:
         super().__init__(acquisition)
         if query_chunk_size < 1 or dictionary_chunk_size < 1:
@@ -105,12 +124,19 @@ class DictionaryMatcher(Estimator):
             raise ValueError(f"groups must be positive, got {groups}")
         if not 0.0 <= prune < 1.0:
             raise ValueError(f"prune must be in [0, 1), got {prune}")
+        if coarse is not None and coarse < 1:
+            raise ValueError(f"coarse must be positive, got {coarse}")
+        if coarse is not None and groups is not None:
+            raise ValueError("search by groups or by a coarse lattice, not both")
         self.query_chunk_size = int(query_chunk_size)
         self.dictionary_chunk_size = int(dictionary_chunk_size)
         self.top_k = int(top_k)
         self.groups = None if groups is None else int(groups)
         self.prune = float(prune)
+        self.coarse = None if coarse is None else int(coarse)
+        self.refine = bool(refine)
         self._grouping: Grouping | None = None
+        self._lattice: Lattice | None = None
         self.register_buffer("dictionary", torch.empty(0))
         self.register_buffer("normalized_dictionary", torch.empty(0))
         self.register_buffer("dictionary_power", torch.empty(0))
@@ -134,6 +160,11 @@ class DictionaryMatcher(Estimator):
         """
         return self._grouping
 
+    @property
+    def lattice(self) -> Lattice | None:
+        """Where each atom sits on its parameters' lattice, or ``None`` without ``coarse``."""
+        return self._lattice
+
     def _apply(self, *args: Any, **kwargs: Any) -> DictionaryMatcher:
         """Keep the grouping beside the dictionary when the module moves.
 
@@ -143,6 +174,8 @@ class DictionaryMatcher(Estimator):
         moved = super()._apply(*args, **kwargs)
         if moved._grouping is not None:
             moved._grouping = moved._grouping.to(moved.dictionary.device)
+        if moved._lattice is not None:
+            moved._lattice = moved._lattice.to(moved.dictionary.device)
         return moved
 
     def _fit_arrays(
@@ -248,11 +281,15 @@ class DictionaryMatcher(Estimator):
                     top_k=self.top_k,
                     groups=self.groups,
                     prune=self.prune,
+                    coarse=self.coarse,
+                    refine=self.refine,
                 )
                 # Clustering is a property of the dictionary, not of where it
                 # sits, so the replica moves it rather than repeating it.
                 if self._grouping is not None:
                     replica._grouping = self._grouping.to(device)
+                if self._lattice is not None:
+                    replica._lattice = self._lattice.to(device)
                 replica.dictionary = self.dictionary.to(device)
                 replica.normalized_dictionary = self.normalized_dictionary.to(device)
                 replica.dictionary_power = self.dictionary_power.to(device)
@@ -280,6 +317,13 @@ class DictionaryMatcher(Estimator):
             None
             if self.groups is None
             else Grouping.fit(dictionary, min(self.groups, dictionary.shape[0]))
+        )
+        if self.coarse is not None and self.parameter_values.numel() == 0:
+            raise ValueError("a coarse-to-fine search needs the atoms' parameters")
+        self._lattice = (
+            None
+            if self.coarse is None
+            else Lattice.fit(self.parameter_values, self.coarse)
         )
         self._replicas = {}
 
@@ -336,6 +380,20 @@ class DictionaryMatcher(Estimator):
             torch.finfo(signals.real.dtype).eps
         )
         normalized_signals = signals / signal_norm[:, None]
+        if self._lattice is not None:
+            indices, scores = self._lattice.search(
+                normalized_signals,
+                self.normalized_dictionary,
+                self.top_k,
+                self.refine,
+                self.query_chunk_size,
+            )
+            return (
+                indices,
+                scores,
+                self._density(signal_norm, scores, indices),
+                *self._scaled(signals, indices),
+            )
         if self._grouping is not None:
             indices, scores = match_in_groups(
                 normalized_signals, self._grouping, self.top_k, self.prune
