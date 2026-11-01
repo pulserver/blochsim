@@ -482,18 +482,24 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""The basis transposed, ``(rank, contrasts)``.</span>
+<span class="w">        </span><span class="sd">"""The basis conjugate-transposed, ``(rank, contrasts)``: mri-nufft's ``MRISubspace`` layout.</span>
 
-<span class="sd">        This is the layout of mri-nufft's ``MRISubspace`` and BART's</span>
-<span class="sd">        ``pics -B``. It is a plain transpose: expansion is</span>
-<span class="sd">        ``image_t = sum_k conj(modes[k, t]) c_k``, as in :meth:`expand`.</span>
+<span class="sd">        ``MRISubspace`` expands ``image_t = sum_k conj(modes[k, t]) c_k`` and</span>
+<span class="sd">        projects ``c_k = sum_t modes[k, t] image_t``, which are :meth:`expand`</span>
+<span class="sd">        and :meth:`project`. BART's ``pics -B`` and bartorch's ``basis=``</span>
+<span class="sd">        contract without the conjugate, ``image_t = sum_k B[k, t] c_k``, so</span>
+<span class="sd">        they take ``basis.mT``; for a real basis the two are the same.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">mT</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">mH</span><span class="o">.</span><span class="n">resolve_conj</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Subspace.project">
 <a class="viewcode-back" href="../../generated/blochsim.Subspace.html#blochsim.Subspace.project">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Project ``signals`` onto the basis, giving ``signals @ basis``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Project ``signals`` onto the basis, giving ``signals @ basis.conj()``.</span>
+
+<span class="sd">        The coefficients are the inner products of each signal with the basis</span>
+<span class="sd">        vectors, :math:`c_k = \langle b_k, s \rangle = \sum_t \overline{b_{tk}} s_t`,</span>
+<span class="sd">        so :meth:`expand` returns a signal of the span unchanged.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -508,13 +514,16 @@
 <span class="sd">            ``(..., rank)`` coefficients.</span>
 <span class="sd">        """</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">promote_types</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">signals</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">signals</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Subspace.expand">
 <a class="viewcode-back" href="../../generated/blochsim.Subspace.html#blochsim.Subspace.expand">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Expand coefficients to contrasts, giving ``coefficients @ basis.mH``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Expand coefficients to contrasts, giving ``coefficients @ basis.mT``.</span>
+
+<span class="sd">        :math:`s_t = \sum_k b_{tk} c_k`, the inverse of :meth:`project` on the</span>
+<span class="sd">        span of the basis.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -527,7 +536,7 @@
 <span class="sd">            ``(..., contrasts)``, on the coefficients' device.</span>
 <span class="sd">        """</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">promote_types</span><span class="p">(</span><span class="n">coefficients</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">coefficients</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">mH</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">coefficients</span><span class="o">.</span><span class="n">device</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">coefficients</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">mT</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">coefficients</span><span class="o">.</span><span class="n">device</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Subspace.fit">

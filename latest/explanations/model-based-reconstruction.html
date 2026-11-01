@@ -588,7 +588,8 @@ axis 1, as deepinv and mri-nufft lay it out.</p>
 <h3>Linear route<a class="headerlink" href="#linear-route" title="Link to this heading">#</a></h3>
 <p>An estimator fitted with <code class="docutils literal notranslate"><span class="pre">rank</span></code> carries a <a class="reference internal" href="../generated/blochsim.Subspace.html#blochsim.Subspace" title="blochsim.Subspace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subspace</span></code></a>.
 <a class="reference internal" href="../generated/blochsim.Subspace.html#blochsim.Subspace.modes" title="blochsim.Subspace.modes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">modes</span></code></a> gives the basis as <code class="docutils literal notranslate"><span class="pre">(rank,</span> <span class="pre">contrasts)</span></code>, the
-layout mri-nufft’s <code class="docutils literal notranslate"><span class="pre">MRISubspace</span></code> and BART’s <code class="docutils literal notranslate"><span class="pre">pics</span> <span class="pre">-B</span></code> read. The reconstruction
+layout mri-nufft’s <code class="docutils literal notranslate"><span class="pre">MRISubspace</span></code> reads; BART’s <code class="docutils literal notranslate"><span class="pre">pics</span> <span class="pre">-B</span></code> and bartorch’s
+<code class="docutils literal notranslate"><span class="pre">basis=</span></code> contract without its conjugate and read <code class="docutils literal notranslate"><span class="pre">subspace.basis.mT</span></code>. The reconstruction
 is linear in the coefficients, has one minimum and needs no starting point.
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_coefficients()</span></code> then maps the coefficients
 without projecting them again. A signal that needs many components, such as a
