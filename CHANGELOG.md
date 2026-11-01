@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- **Coarse-to-fine dictionary search.** `DictionaryMatcher(coarse=k)` places
+  the atoms on the lattice their parameters were simulated on, scores every
+  k-th value along each parameter, then the `2k + 1` values around the winner
+  along each; `refine=False` stops after the coarse pass. A 3 % (T1, T2) grid
+  of about 37 000 atoms at `coarse=3` scores about 4 200 + 49 atoms per voxel.
+
 ### Changed
 
 - **Every GPU, a bounded share of it, by default.** `execution="auto"` is the
