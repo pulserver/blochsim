@@ -5,18 +5,14 @@ a series was played from and sends it after the MRD XML header and before the
 first acquisition, as ISMRMRD waveforms that every MRD writer keeps with the
 series: per file of the sequence chain a header (``waveform_id`` 1024) and an
 event list (1025), and one waveform per RF definition (1026), each one vector
-of 32-bit words led by its length. Earlier proxies sent one ``TEXT`` message
-instead, a JSON object under the key ``pulserver_sequence_description``, which
-is read too. What is read here is mechanical; which signal model the rows drive
-is chosen by whoever reads them.
+of 32-bit words led by its length. What is read here is mechanical; which
+signal model the rows drive is chosen by whoever reads them.
 """
 
 from __future__ import annotations
 
 __all__ = ["description_from_waveforms", "read_mrd_description"]
 
-import base64
-import json
 import struct
 from collections.abc import Iterable
 from typing import Any, BinaryIO
@@ -33,9 +29,6 @@ from ._description import (
     SequenceEvent,
     _trapezoid,
 )
-
-#: The key the description's JSON object opens with.
-MESSAGE_KEY = "pulserver_sequence_description"
 
 # MRD streaming message identifiers, and the fixed size of a FILENAME message.
 _FILENAME, _CONFIG, _HEADER, _CLOSE, _TEXT = 1, 2, 3, 4, 5
@@ -58,8 +51,9 @@ def read_mrd_description(
     """Read an MRD stream up to its sequence description.
 
     The messages ahead of the description -- a config, a config file name, the
-    XML header, other texts -- are read and the stream is left at the message
-    after the description, which is where its first acquisition is.
+    XML header, texts, other waveforms such as the physiological traces -- are
+    read and the stream is left at the message after the description's last
+    waveform, which is where its first acquisition is.
 
     Parameters
     ----------
@@ -94,10 +88,6 @@ def read_mrd_description(
             text = _exactly(stream, length).split(b"\0", 1)[0].decode("utf-8")
             if identifier == _HEADER:
                 header = text
-            elif identifier == _TEXT and text.startswith('{"' + MESSAGE_KEY + '"'):
-                return header, [
-                    _description(each) for each in json.loads(text)[MESSAGE_KEY]
-                ]
         elif identifier == _WAVEFORM:
             head = _exactly(stream, _WAVEFORM_HEADER_BYTES)
             (samples,) = struct.unpack_from("<H", head, _SAMPLES_AT)
@@ -238,30 +228,6 @@ def _exactly(stream: BinaryIO, count: int) -> bytes:
     return read
 
 
-def _array(packed: str, dtype: str) -> np.ndarray:
-    return np.frombuffer(base64.b64decode(packed), dtype=dtype)
-
-
-def _description(fields: dict[str, Any]) -> SequenceDescription:
-    kinds = _array(fields["type"], "<i4")
-    times_us = _array(fields["timestamp_us"], "<f8")
-    params = _array(fields["params"], "<f4").reshape(kinds.size, 7)
-    raster_s = float(fields["rf_raster_time_s"])
-    return SequenceDescription(
-        subsequence_index=int(fields["subsequence_index"]),
-        tr_duration_us=float(fields["tr_duration_us"]),
-        events=tuple(
-            _event(EventType(int(kind)), float(time_us), row)
-            for kind, time_us, row in zip(kinds, times_us, params, strict=True)
-        ),
-        rf_definitions={
-            int(each["id"]): _definition(each, raster_s)
-            for each in fields["rf_definitions"]
-        },
-        rf_raster_time_s=raster_s,
-    )
-
-
 def _event(kind: EventType, time_us: float, row: np.ndarray) -> SequenceEvent:
     if kind is EventType.RF:
         return SequenceEvent.rf(
@@ -282,26 +248,6 @@ def _event(kind: EventType, time_us: float, row: np.ndarray) -> SequenceEvent:
             is_echo=bool(row[2]),
         )
     return SequenceEvent.wait(time_us)
-
-
-def _shape(fields: dict[str, Any] | None) -> RfShape | None:
-    if fields is None:
-        return None
-    return RfShape(int(fields["num_uncompressed"]), _array(fields["samples"], "<f4"))
-
-
-def _definition(fields: dict[str, Any], raster_s: float) -> RfDefinition:
-    return _built_definition(
-        identifier=int(fields["id"]),
-        bandwidth_hz=float(fields["bandwidth_hz"]),
-        num_bands=int(fields["num_bands"]),
-        band_offsets=tuple(float(v) for v in fields["band_frequency_offsets_hz"]),
-        band_bandwidth_hz=float(fields["band_bandwidth_hz"]),
-        magnitude=_shape(fields["magnitude"]),
-        phase=_shape(fields["phase"]),
-        time=_shape(fields["time"]),
-        raster_s=raster_s,
-    )
 
 
 def _built_definition(

@@ -1,7 +1,7 @@
 """Reading the sequence description an MRD stream carries, as Pulserver's proxy sends it.
 
-The stream is written here the way the proxy writes it -- the XML header, one
-``TEXT`` message, then the first acquisition -- from a spoiled gradient echo
+The stream is written here the way the proxy writes it -- the XML header, the
+description's waveforms, then the first acquisition -- from a spoiled gradient echo
 built with pypulseq, and the description read back is checked against the rows
 it was written from and against the spoiled gradient-echo steady state, which
 has never seen a stream.
@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import base64
 import io
-import json
 import math
 import struct
 
@@ -122,11 +121,15 @@ def _message(identifier, text):
     return struct.pack("<HI", identifier, len(body)) + body
 
 
-def _stream(subsequences):
-    """The opening of a series as the proxy sends it."""
-    text = json.dumps({"pulserver_sequence_description": subsequences})
+def _stream(subsequences, before=b""):
+    """The opening of a series as the proxy sends it, ``before`` ahead of the description."""
+    body = b"".join(
+        _waveform_message(identifier, words)
+        for fields in subsequences
+        for identifier, words in _waveform_words(fields, len(subsequences))
+    )
     return io.BytesIO(
-        _message(3, HEADER) + _message(5, text) + struct.pack("<H", ACQUISITION)
+        _message(3, HEADER) + before + body + struct.pack("<H", ACQUISITION)
     )
 
 
@@ -206,8 +209,8 @@ def test_a_described_sequence_drives_the_spoiled_gradient_echo_steady_state(writ
     assert float(played.abs()) == pytest.approx(float(closed.abs()), rel=1e-3)
 
 
-def _waveform_words(fields):
-    """The words of the waveforms Pulserver's proxy sends, from the TEXT message's fields."""
+def _waveform_words(fields, subsequences=1):
+    """The words of the waveforms Pulserver's proxy sends for one file of a chain."""
 
     def array(packed, dtype):
         return np.frombuffer(base64.b64decode(packed), dtype=dtype)
@@ -216,7 +219,7 @@ def _waveform_words(fields):
     count = kinds.size
     header = np.concatenate(
         (
-            np.asarray([1, fields["subsequence_index"], 1, count], "<u4"),
+            np.asarray([1, fields["subsequence_index"], subsequences, count], "<u4"),
             np.asarray([len(fields["rf_definitions"])], "<u4"),
             np.asarray(
                 [fields["tr_duration_us"], fields["rf_raster_time_s"]], "<f8"
@@ -261,30 +264,17 @@ def _waveform_message(identifier, words):
     return struct.pack("<H", 1026) + bytes(head) + data.tobytes()
 
 
-def test_a_stream_of_description_waveforms_reads_as_the_text_message_does(written):
-    """The proxy now sends waveforms, which every MRD writer keeps with the series."""
+def test_the_physiological_waveforms_ahead_of_the_description_are_passed_over(written):
     physio = _waveform_message(1, np.arange(8, dtype="<u4"))
-    body = b"".join(_waveform_message(i, w) for i, w in _waveform_words(written))
-    stream = io.BytesIO(
-        _message(3, HEADER) + physio + body + struct.pack("<H", ACQUISITION)
-    )
-    header, (from_waveforms,) = read_mrd_description(stream)
-    _, (from_text,) = read_mrd_description(_stream([written]))
+    stream = _stream([written], before=physio)
+    header, (described,) = read_mrd_description(stream)
 
     assert header == HEADER
     assert struct.unpack("<H", stream.read(2)) == (ACQUISITION,)
-    assert [e.timestamp_us for e in from_waveforms.events] == [
-        e.timestamp_us for e in from_text.events
-    ]
-    for got, expected in zip(from_waveforms.events, from_text.events, strict=True):
-        np.testing.assert_array_equal(
-            np.asarray(got.params, np.float32), np.asarray(expected.params, np.float32)
-        )
-    np.testing.assert_array_equal(
-        from_waveforms.rf_definitions[0].magnitude.samples,
-        from_text.rf_definitions[0].magnitude.samples,
+    assert (
+        len(described.events)
+        == np.frombuffer(base64.b64decode(written["type"]), "<i4").size
     )
-    assert from_waveforms.tr_duration_us == from_text.tr_duration_us
 
 
 def test_a_kept_series_reads_its_description_from_its_waveforms(written):

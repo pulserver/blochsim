@@ -175,10 +175,8 @@ high.
 them, passing the physiological waveforms over, returns the XML header and the
 descriptions in play order, and leaves the stream at the first acquisition;
 {func}`~blochsim.description_from_waveforms` reads them off the waveforms of a
-stored series. Earlier proxies sent one `TEXT` message instead, a JSON object
-under the key `pulserver_sequence_description` holding the same fields with the
-arrays in base64, which is read too. A message other than a filename, config,
-header, text or waveform before the description is refused. The description
+stored series. A message other than a filename, config, header, text or
+waveform before the description is refused. The description
 carries no shim definitions, no per-sample slice-select gradient, no crusher
 dephasing or voxel size, and no event actions.
 
