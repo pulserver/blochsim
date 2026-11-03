@@ -32,10 +32,10 @@ kernels hold. The derivations and the operator-by-operator detail are in
   :::{dropdown} Show code and tests
   Code: `transmit_field`, {class}`~blochsim.ShimDefinition`. Tests: *channels in antiphase cancel*; *the field is the complex sum written out* (`test_transmit_array.py`).
   :::
-- **Integrates a shaped pulse into the rotation it performs across the slice, or per voxel when its channel weights vary while it plays.**
+- **Integrates a shaped pulse into the rotation it performs across the slice, or per voxel when its channel weights vary while it plays; a pulse selecting more than `NONSELECTIVE_THICKNESS_M` (20 mm) is taken at its centre rotation, a slab the encoding resolves.**
 
   :::{dropdown} Show code and tests
-  Code: `exact_slice_profile`, `transition_table`, `dynamic_pair`. Tests: *the slice shows up when the pulse selects one* (`test_exact_profile.py`); *the pair is what exponentiating each sample gives* (`test_dynamic_transmit.py`).
+  Code: `exact_slice_profile`, `transition_table`, `dynamic_pair`. Tests: *the slice shows up when the pulse selects one*; *a slab thicker than the threshold is profiled as its centre* (`test_exact_profile.py`); *the pair is what exponentiating each sample gives* (`test_dynamic_transmit.py`).
   :::
 - **Plays a waveform sample by sample, with relaxation, precession and exchange between samples.**
 

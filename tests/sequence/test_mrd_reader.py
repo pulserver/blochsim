@@ -1,7 +1,7 @@
 """Reading the sequence description an MRD stream carries, as Pulserver's proxy sends it.
 
-The stream is written here the way the proxy writes it -- the XML header, one
-``TEXT`` message, then the first acquisition -- from a spoiled gradient echo
+The stream is written here the way the proxy writes it -- the XML header, the
+description's waveforms, then the first acquisition -- from a spoiled gradient echo
 built with pypulseq, and the description read back is checked against the rows
 it was written from and against the spoiled gradient-echo steady state, which
 has never seen a stream.
@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import base64
 import io
-import json
 import math
 import struct
 
@@ -21,7 +20,12 @@ import pytest
 import torch
 
 from blochsim import Excitation, Simulator, SPGRReadout
-from blochsim.sequence import EventType, RfUse, read_mrd_description
+from blochsim.sequence import (
+    EventType,
+    RfUse,
+    description_from_waveforms,
+    read_mrd_description,
+)
 from blochsim.simulators import SPGRSimulator
 
 FLIP_DEG = 30.0
@@ -117,11 +121,15 @@ def _message(identifier, text):
     return struct.pack("<HI", identifier, len(body)) + body
 
 
-def _stream(subsequences):
-    """The opening of a series as the proxy sends it."""
-    text = json.dumps({"pulserver_sequence_description": subsequences})
+def _stream(subsequences, before=b""):
+    """The opening of a series as the proxy sends it, ``before`` ahead of the description."""
+    body = b"".join(
+        _waveform_message(identifier, words)
+        for fields in subsequences
+        for identifier, words in _waveform_words(fields, len(subsequences))
+    )
     return io.BytesIO(
-        _message(3, HEADER) + _message(5, text) + struct.pack("<H", ACQUISITION)
+        _message(3, HEADER) + before + body + struct.pack("<H", ACQUISITION)
     )
 
 
@@ -199,3 +207,108 @@ def test_a_described_sequence_drives_the_spoiled_gradient_echo_steady_state(writ
     )
 
     assert float(played.abs()) == pytest.approx(float(closed.abs()), rel=1e-3)
+
+
+def _waveform_words(fields, subsequences=1):
+    """The words of the waveforms Pulserver's proxy sends for one file of a chain."""
+
+    def array(packed, dtype):
+        return np.frombuffer(base64.b64decode(packed), dtype=dtype)
+
+    kinds = array(fields["type"], "<i4")
+    count = kinds.size
+    header = np.concatenate(
+        (
+            np.asarray([1, fields["subsequence_index"], subsequences, count], "<u4"),
+            np.asarray([len(fields["rf_definitions"])], "<u4"),
+            np.asarray(
+                [fields["tr_duration_us"], fields["rf_raster_time_s"]], "<f8"
+            ).view("<u4"),
+        )
+    )
+    rows = np.empty((count, 10), "<u4")
+    rows[:, 0] = kinds
+    rows[:, 1:3] = array(fields["timestamp_us"], "<f8").view("<u4").reshape(count, 2)
+    rows[:, 3:] = array(fields["params"], "<f4").view("<u4").reshape(count, 7)
+    events = np.concatenate(
+        (np.asarray([fields["subsequence_index"], count], "<u4"), rows.reshape(-1))
+    )
+    pulses = []
+    for pulse in fields["rf_definitions"]:
+        shapes = [
+            array(pulse[name]["samples"], "<f4")
+            for name in ("magnitude", "phase", "time")
+        ]
+        words = [
+            np.asarray([fields["subsequence_index"], pulse["id"]], "<u4"),
+            np.asarray([pulse["bandwidth_hz"]], "<f4").view("<u4"),
+            np.asarray([pulse["num_bands"]], "<u4"),
+            np.asarray(
+                pulse["band_frequency_offsets_hz"] + [pulse["band_bandwidth_hz"], 0.0],
+                "<f4",
+            ).view("<u4"),
+        ]
+        for shape in shapes:
+            words.append(np.asarray([1, shape.size, shape.size], "<u4"))
+        words += [shape.view("<u4") for shape in shapes]
+        pulses.append(np.concatenate(words))
+    return [(1024, header), (1025, events)] + [(1026, words) for words in pulses]
+
+
+def _waveform_message(identifier, words):
+    data = np.concatenate((np.asarray([words.size], "<u4"), words))
+    head = bytearray(40)
+    struct.pack_into("<H", head, 28, data.size)
+    struct.pack_into("<H", head, 30, 1)
+    struct.pack_into("<H", head, 36, identifier)
+    return struct.pack("<H", 1026) + bytes(head) + data.tobytes()
+
+
+def test_the_physiological_waveforms_ahead_of_the_description_are_passed_over(written):
+    physio = _waveform_message(1, np.arange(8, dtype="<u4"))
+    stream = _stream([written], before=physio)
+    header, (described,) = read_mrd_description(stream)
+
+    assert header == HEADER
+    assert struct.unpack("<H", stream.read(2)) == (ACQUISITION,)
+    assert (
+        len(described.events)
+        == np.frombuffer(base64.b64decode(written["type"]), "<i4").size
+    )
+
+
+def test_a_kept_series_reads_its_description_from_its_waveforms(written):
+    """An HDF5 series hands its waveforms over as id and data."""
+    (described,) = description_from_waveforms(
+        [(0, np.zeros(4, "<u4"))]
+        + [
+            (i, np.concatenate(([w.size], w)).astype("<u4"))
+            for i, w in _waveform_words(written)
+        ]
+    )
+    assert (
+        len(described.events)
+        == np.frombuffer(base64.b64decode(written["type"]), "<i4").size
+    )
+
+
+def test_a_pulse_is_integrated_on_the_raster_its_description_states():
+    """Left to its default, the raster is the description's, not one microsecond."""
+    from blochsim.sequence import EpgEngine, TissueProperties
+
+    sequence = _gradient_echo()
+    sequence.system.rf_raster_time = 2e-6
+    fields = {**_rows(sequence), "rf_raster_time_s": 2e-6}
+    _, (described,) = read_mrd_description(_stream([fields]))
+    tissue = TissueProperties(t1_ms=torch.tensor([830.0]), t2_ms=torch.tensor([80.0]))
+    engine = EpgEngine()
+    default = engine.simulate(described, tissue, repetitions=3).signal
+    stated = engine.simulate(
+        described, tissue, repetitions=3, rf_raster_time_s=2e-6
+    ).signal
+    one_us = engine.simulate(
+        described, tissue, repetitions=3, rf_raster_time_s=1e-6
+    ).signal
+
+    torch.testing.assert_close(default, stated)
+    assert (default - one_us).abs().max() > 1e-3
