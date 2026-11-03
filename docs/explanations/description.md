@@ -56,7 +56,7 @@ wire format are in {doc}`../developer-guide/internals/description`.
 - **Decodes the description pulserver sends on an MRD stream, one per file of the sequence chain, in play order.**
 
   :::{dropdown} Show code and tests
-  Code: {func}`~blochsim.read_mrd_description`. Tests: *a written stream reads back into the rows it was built from*; *every file of a chain is read in play order*; *a stream whose data arrives first is refused* (`test_mrd_reader.py`).
+  Code: {func}`~blochsim.read_mrd_description`, {func}`~blochsim.description_from_waveforms`. Tests: *a written stream reads back into the rows it was built from*; *every file of a chain is read in play order*; *a stream whose data arrives first is refused*; *a stream of description waveforms reads as the text message does*; *a kept series reads its description from its waveforms*; *a pulse is integrated on the raster its description states* (`test_mrd_reader.py`).
   :::
 - **Reproduces the spoiled gradient-echo steady state from a description read either way.**
 

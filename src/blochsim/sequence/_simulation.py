@@ -370,7 +370,7 @@ class EpgEngine:
         record: RecordMode = "all",
         nstates: int | None = None,
         across_slice: ExactSliceProfile | None = None,
-        rf_raster_time_s: float = 1e-6,
+        rf_raster_time_s: float | None = None,
         device: torch.device | str | None = None,
         events: Any = None,
         _every: bool = False,
@@ -388,11 +388,17 @@ class EpgEngine:
         a caller that holds the structure fixed and rebuilds only what varies;
         see :mod:`blochsim.optim`. It must be the packing of ``description``.
 
+        ``rf_raster_time_s`` is the raster the RF sample times count in, the
+        description's own ``rf_raster_time_s`` by default: a pulse integrated
+        on another raster turns through another angle.
+
         Raises
         ------
             RuntimeError: if no fused kernel can take this tissue -- a device
                 that has none, or a build without the extension.
         """
+        if rf_raster_time_s is None:
+            rf_raster_time_s = description.rf_raster_time_s
         if repetitions == AUTO:
             return self._settled(
                 description,
@@ -498,7 +504,7 @@ def simulate_subspace(
     record: RecordMode = "all",
     nstates: int | None = None,
     across_slice: ExactSliceProfile | None = None,
-    rf_raster_time_s: float = 1e-6,
+    rf_raster_time_s: float | None = None,
     device: torch.device | str | None = None,
 ) -> Subspace:
     """Simulate a dictionary and return its leading temporal basis."""

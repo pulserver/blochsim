@@ -154,20 +154,33 @@ echo flag is set.
 
 Pulserver's reconstruction proxy reads the sequence file a series was played
 from and sends its description after the MRD XML header and before the first
-acquisition, as one `TEXT` message: a JSON object under the key
-`pulserver_sequence_description`, holding one entry per file of the sequence
-chain. {func}`~blochsim.read_mrd_description` reads the stream up to that
-message, returns the XML header and the descriptions in play order, and leaves
-the stream at the first acquisition. A message other than a filename, config,
-header or text before the description is refused.
+acquisition, as ISMRMRD waveforms, which every MRD writer keeps with the series:
+per file of the sequence chain a header (`waveform_id` 1024) and an event list
+(1025), and one waveform per RF definition (1026). Each carries one vector of
+32-bit words led by its length, over as many channels as keep a channel within
+65 535 samples; floats are bit-cast and float64 values take two words, low then
+high.
 
-Each entry holds `subsequence_index`, `tr_duration_us`, `rf_raster_time_s`,
-the events as three base64 arrays -- `type` (int32), `timestamp_us`
-(float64) and `params` (float32, seven per event, in the wire order above) --
-and `rf_definitions`, each with its bandwidth, bands, and Pulseq-compressed
-magnitude, phase and time shapes. The stream carries no shim definitions, no
-per-sample slice-select gradient, no crusher dephasing or voxel size, and no
-event actions.
+- Header: format version, subsequence index, number of subsequences, number of
+  events, number of RF definitions, `tr_duration_us`, `rf_raster_time_s`.
+- Event list: subsequence index, number of events, then ten words an event:
+  type, `timestamp_us` (float64), and the seven float32 parameters in the wire
+  order above.
+- RF definition: subsequence index, id, bandwidth, number of bands, eight band
+  offsets, band bandwidth, a word left 0, then for the magnitude, phase and time
+  shapes whether each is given and its uncompressed and stored sample counts,
+  then the samples of those given.
+
+{func}`~blochsim.read_mrd_description` reads the stream up to the last of
+them, passing the physiological waveforms over, returns the XML header and the
+descriptions in play order, and leaves the stream at the first acquisition;
+{func}`~blochsim.description_from_waveforms` reads them off the waveforms of a
+stored series. Earlier proxies sent one `TEXT` message instead, a JSON object
+under the key `pulserver_sequence_description` holding the same fields with the
+arrays in base64, which is read too. A message other than a filename, config,
+header, text or waveform before the description is refused. The description
+carries no shim definitions, no per-sample slice-select gradient, no crusher
+dephasing or voxel size, and no event actions.
 
 ## Gradients
 

@@ -394,3 +394,39 @@ def test_a_table_takes_the_first_order_kernel_on_the_card(state_count) -> None:
     assert largest > 0.0
     for reference, result in zip(expected, fast, strict=True):
         assert float((reference - result).abs().max()) / largest < 1e-5
+
+
+def _under_gradient(description, gradient_hz_per_m):
+    """The description with every pulse played under ``gradient_hz_per_m``."""
+    from dataclasses import replace
+
+    events = tuple(
+        replace(event, params=tuple(event.params[:6]) + (gradient_hz_per_m,))
+        if event.type.name == "RF"
+        else event
+        for event in description.events
+    )
+    return replace(description, events=events)
+
+
+def test_a_slab_thicker_than_the_threshold_is_profiled_as_its_centre() -> None:
+    """A slab past NONSELECTIVE_THICKNESS_M is resolved by the encoding, not averaged over."""
+    from blochsim.sequence._accelerators import NONSELECTIVE_THICKNESS_M
+
+    bandwidth = 4.0e3
+    slab = _under_gradient(
+        _describe(definition=_sinc(bandwidth)),
+        bandwidth / (5 * NONSELECTIVE_THICKNESS_M),
+    )
+    slice_ = _under_gradient(
+        _describe(definition=_sinc(bandwidth)),
+        bandwidth / (0.25 * NONSELECTIVE_THICKNESS_M),
+    )
+    centre = _signal(slab)
+
+    assert (_signal(slab, exact_slice_profile(15)) - centre).abs().max() < 1e-5 * (
+        centre.abs().max()
+    )
+    assert (_signal(slice_, exact_slice_profile(15)) - centre).abs().max() > 0.05 * (
+        centre.abs().max()
+    )

@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__: list[str] = []
 
 import functools
+import math
 import os
 import weakref
 from collections import OrderedDict
@@ -288,6 +289,40 @@ def _pack_for(
     )
 
 
+#: Thickness in m above which a pulse is taken as non-selective: a slab this
+#: thick is resolved by the encoding, so each position of it sees the pulse's
+#: centre rotation, not a profile across it.
+NONSELECTIVE_THICKNESS_M = 20e-3
+
+
+def _selected_thickness_m(description: SequenceDescription) -> dict[int, float]:
+    """The thinnest slice each RF definition is played over, in m; 0 where unknown.
+
+    A definition's ``bandwidth_hz`` over the event's slice-select gradient. A
+    description that states no gradient or no bandwidth states no thickness,
+    and its pulse keeps the mode its waveform asks for.
+    """
+    thickness: dict[int, float] = {}
+    for event in description.events:
+        if event.type is not EventType.RF:
+            continue
+        key = event.rf_definition_id
+        bandwidth = float(description.rf_definitions[key].bandwidth_hz)
+        gradient = abs(float(event.slice_select_gradient_hz_per_m))
+        here = bandwidth / gradient if bandwidth > 0.0 and gradient > 0.0 else 0.0
+        thickness[key] = min(thickness.get(key, math.inf), here)
+    return thickness
+
+
+def _selective(description: SequenceDescription, key: int) -> bool:
+    """Whether a definition selects a slice thin enough to profile across, or states none."""
+    cached = getattr(description, "_thickness_cache", None)
+    if cached is None:
+        cached = _selected_thickness_m(description)
+        object.__setattr__(description, "_thickness_cache", cached)
+    return cached.get(key, math.inf) <= NONSELECTIVE_THICKNESS_M
+
+
 def _wants_a_table(description: SequenceDescription, slice_profile: Any) -> bool:
     """Whether the pulses are to be integrated into a rotation over the slice.
 
@@ -311,6 +346,7 @@ def _wants_a_table(description: SequenceDescription, slice_profile: Any) -> bool
         }
         cached = any(
             description.rf_definitions[key].rf_mode() is RfMode.PROFILED
+            and _selective(description, key)
             for key in driven
         )
         object.__setattr__(description, "_profiled_cache", cached)
@@ -327,7 +363,9 @@ def _pulse_shapes(
     different shapes get one each, and the event carries which it reads.
 
     Ordered by first use, so the row a definition takes does not depend on how
-    the description happened to number it.
+    the description happened to number it. A pulse selecting more than
+    :data:`NONSELECTIVE_THICKNESS_M` is tabulated with no bandwidth, so every
+    position reads its centre rotation.
 
     Raises
     ------
@@ -339,7 +377,10 @@ def _pulse_shapes(
             continue
         key = event.rf_definition_id
         if key not in used:
-            used[key] = description.rf_definitions[key]
+            definition = description.rf_definitions[key]
+            if not _selective(description, key):
+                definition = replace(definition, bandwidth_hz=0.0)
+            used[key] = definition
     if not used:
         raise ValueError(
             "a slice profile is the rotation a pulse performs across the "
