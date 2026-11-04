@@ -496,8 +496,9 @@
 <span class="sig-prename descclassname"><span class="pre">blochsim.</span></span><span class="sig-name descname"><span class="pre">read_mrd_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/blochsim/sequence/_mrd.html#read_mrd_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#blochsim.read_mrd_description" title="Link to this definition">#</a></dt>
 <dd><p>Read an MRD stream up to its sequence description.</p>
 <p>The messages ahead of the description – a config, a config file name, the
-XML header, other texts – are read and the stream is left at the message
-after the description, which is where its first acquisition is.</p>
+XML header, texts, other waveforms such as the physiological traces – are
+read and the stream is left at the message after the description’s last
+waveform, which is where its first acquisition is.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>stream</strong> (<em>binary file-like</em>) – The stream, read with <code class="docutils literal notranslate"><span class="pre">read(n)</span></code>: an open file, or a socket’s

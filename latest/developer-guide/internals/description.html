@@ -683,19 +683,31 @@ echo flag is set.</p>
 <h2>MRD stream<a class="headerlink" href="#mrd-stream" title="Link to this heading">#</a></h2>
 <p>Pulserver’s reconstruction proxy reads the sequence file a series was played
 from and sends its description after the MRD XML header and before the first
-acquisition, as one <code class="docutils literal notranslate"><span class="pre">TEXT</span></code> message: a JSON object under the key
-<code class="docutils literal notranslate"><span class="pre">pulserver_sequence_description</span></code>, holding one entry per file of the sequence
-chain. <a class="reference internal" href="../../generated/blochsim.read_mrd_description.html#blochsim.read_mrd_description" title="blochsim.read_mrd_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_mrd_description()</span></code></a> reads the stream up to that
-message, returns the XML header and the descriptions in play order, and leaves
-the stream at the first acquisition. A message other than a filename, config,
-header or text before the description is refused.</p>
-<p>Each entry holds <code class="docutils literal notranslate"><span class="pre">subsequence_index</span></code>, <code class="docutils literal notranslate"><span class="pre">tr_duration_us</span></code>, <code class="docutils literal notranslate"><span class="pre">rf_raster_time_s</span></code>,
-the events as three base64 arrays – <code class="docutils literal notranslate"><span class="pre">type</span></code> (int32), <code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code>
-(float64) and <code class="docutils literal notranslate"><span class="pre">params</span></code> (float32, seven per event, in the wire order above) –
-and <code class="docutils literal notranslate"><span class="pre">rf_definitions</span></code>, each with its bandwidth, bands, and Pulseq-compressed
-magnitude, phase and time shapes. The stream carries no shim definitions, no
-per-sample slice-select gradient, no crusher dephasing or voxel size, and no
-event actions.</p>
+acquisition, as ISMRMRD waveforms, which every MRD writer keeps with the series:
+per file of the sequence chain a header (<code class="docutils literal notranslate"><span class="pre">waveform_id</span></code> 1024) and an event list
+(1025), and one waveform per RF definition (1026). Each carries one vector of
+32-bit words led by its length, over as many channels as keep a channel within
+65 535 samples; floats are bit-cast and float64 values take two words, low then
+high.</p>
+<ul class="simple">
+<li><p>Header: format version, subsequence index, number of subsequences, number of
+events, number of RF definitions, <code class="docutils literal notranslate"><span class="pre">tr_duration_us</span></code>, <code class="docutils literal notranslate"><span class="pre">rf_raster_time_s</span></code>.</p></li>
+<li><p>Event list: subsequence index, number of events, then ten words an event:
+type, <code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code> (float64), and the seven float32 parameters in the wire
+order above.</p></li>
+<li><p>RF definition: subsequence index, id, bandwidth, number of bands, eight band
+offsets, band bandwidth, a word left 0, then for the magnitude, phase and time
+shapes whether each is given and its uncompressed and stored sample counts,
+then the samples of those given.</p></li>
+</ul>
+<p><a class="reference internal" href="../../generated/blochsim.read_mrd_description.html#blochsim.read_mrd_description" title="blochsim.read_mrd_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_mrd_description()</span></code></a> reads the stream up to the last of
+them, passing the physiological waveforms over, returns the XML header and the
+descriptions in play order, and leaves the stream at the first acquisition;
+<code class="xref py py-func docutils literal notranslate"><span class="pre">description_from_waveforms()</span></code> reads them off the waveforms of a
+stored series. A message other than a filename, config, header, text or
+waveform before the description is refused. The description
+carries no shim definitions, no per-sample slice-select gradient, no crusher
+dephasing or voxel size, and no event actions.</p>
 </section>
 <section id="gradients">
 <h2>Gradients<a class="headerlink" href="#gradients" title="Link to this heading">#</a></h2>

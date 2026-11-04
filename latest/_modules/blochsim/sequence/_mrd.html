@@ -419,19 +419,19 @@
 
 <span class="sd">Pulserver's reconstruction proxy infers the description from the sequence file</span>
 <span class="sd">a series was played from and sends it after the MRD XML header and before the</span>
-<span class="sd">first acquisition, as one ``TEXT`` message: a JSON object under the key</span>
-<span class="sd">``pulserver_sequence_description``, holding one entry per file of the sequence</span>
-<span class="sd">chain. What is read here is mechanical; which signal model the rows drive is</span>
-<span class="sd">chosen by whoever reads them.</span>
+<span class="sd">first acquisition, as ISMRMRD waveforms that every MRD writer keeps with the</span>
+<span class="sd">series: per file of the sequence chain a header (``waveform_id`` 1024) and an</span>
+<span class="sd">event list (1025), and one waveform per RF definition (1026), each one vector</span>
+<span class="sd">of 32-bit words led by its length. What is read here is mechanical; which</span>
+<span class="sd">signal model the rows drive is chosen by whoever reads them.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"read_mrd_description"</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"description_from_waveforms"</span><span class="p">,</span> <span class="s2">"read_mrd_description"</span><span class="p">]</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">BinaryIO</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -447,12 +447,19 @@
     <span class="n">_trapezoid</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1">#: The key the description's JSON object opens with.</span>
-<span class="n">MESSAGE_KEY</span> <span class="o">=</span> <span class="s2">"pulserver_sequence_description"</span>
-
 <span class="c1"># MRD streaming message identifiers, and the fixed size of a FILENAME message.</span>
 <span class="n">_FILENAME</span><span class="p">,</span> <span class="n">_CONFIG</span><span class="p">,</span> <span class="n">_HEADER</span><span class="p">,</span> <span class="n">_CLOSE</span><span class="p">,</span> <span class="n">_TEXT</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span>
+<span class="n">_WAVEFORM</span> <span class="o">=</span> <span class="mi">1026</span>
 <span class="n">_FILENAME_BYTES</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="c1"># An ISMRMRD waveform header: its size, and where it holds the sample count,</span>
+<span class="c1"># the channel count and the waveform id.</span>
+<span class="n">_WAVEFORM_HEADER_BYTES</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">_SAMPLES_AT</span><span class="p">,</span> <span class="n">_CHANNELS_AT</span><span class="p">,</span> <span class="n">_ID_AT</span> <span class="o">=</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">36</span>
+
+<span class="c1">#: Waveform ids of a description: header, event list, RF definition.</span>
+<span class="n">HEADER_ID</span><span class="p">,</span> <span class="n">EVENTS_ID</span><span class="p">,</span> <span class="n">RF_DEFINITION_ID</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">1025</span><span class="p">,</span> <span class="mi">1026</span>
+<span class="c1">#: Words an event takes in the event list.</span>
+<span class="n">_EVENT_WORDS</span> <span class="o">=</span> <span class="mi">10</span>
 
 
 <div class="viewcode-block" id="read_mrd_description">
@@ -463,8 +470,9 @@
 <span class="w">    </span><span class="sd">"""Read an MRD stream up to its sequence description.</span>
 
 <span class="sd">    The messages ahead of the description -- a config, a config file name, the</span>
-<span class="sd">    XML header, other texts -- are read and the stream is left at the message</span>
-<span class="sd">    after the description, which is where its first acquisition is.</span>
+<span class="sd">    XML header, texts, other waveforms such as the physiological traces -- are</span>
+<span class="sd">    read and the stream is left at the message after the description's last</span>
+<span class="sd">    waveform, which is where its first acquisition is.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -489,6 +497,7 @@
 <span class="sd">        description.</span>
 <span class="sd">    """</span>
     <span class="n">header</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">collected</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="p">(</span><span class="n">identifier</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">"&lt;H"</span><span class="p">,</span> <span class="n">_exactly</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">identifier</span> <span class="o">==</span> <span class="n">_FILENAME</span><span class="p">:</span>
@@ -498,10 +507,16 @@
             <span class="n">text</span> <span class="o">=</span> <span class="n">_exactly</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\0</span><span class="s2">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">identifier</span> <span class="o">==</span> <span class="n">_HEADER</span><span class="p">:</span>
                 <span class="n">header</span> <span class="o">=</span> <span class="n">text</span>
-            <span class="k">elif</span> <span class="n">identifier</span> <span class="o">==</span> <span class="n">_TEXT</span> <span class="ow">and</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'{"'</span> <span class="o">+</span> <span class="n">MESSAGE_KEY</span> <span class="o">+</span> <span class="s1">'"'</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">header</span><span class="p">,</span> <span class="p">[</span>
-                    <span class="n">_description</span><span class="p">(</span><span class="n">each</span><span class="p">)</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)[</span><span class="n">MESSAGE_KEY</span><span class="p">]</span>
-                <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">identifier</span> <span class="o">==</span> <span class="n">_WAVEFORM</span><span class="p">:</span>
+            <span class="n">head</span> <span class="o">=</span> <span class="n">_exactly</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">_WAVEFORM_HEADER_BYTES</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">samples</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;H"</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">_SAMPLES_AT</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">channels</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;H"</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">_CHANNELS_AT</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">waveform_id</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;H"</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">_ID_AT</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">_exactly</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">samples</span> <span class="o">*</span> <span class="n">channels</span><span class="p">),</span> <span class="s2">"&lt;u4"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">waveform_id</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HEADER_ID</span><span class="p">,</span> <span class="n">EVENTS_ID</span><span class="p">,</span> <span class="n">RF_DEFINITION_ID</span><span class="p">):</span>
+                <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">waveform_id</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">_complete</span><span class="p">(</span><span class="n">collected</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">header</span><span class="p">,</span> <span class="n">description_from_waveforms</span><span class="p">(</span><span class="n">collected</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"MRD message </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> arrived before the sequence description"</span>
@@ -509,35 +524,128 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_exactly</span><span class="p">(</span><span class="n">stream</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-    <span class="n">read</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">read</span><span class="p">)</span> <span class="o">!=</span> <span class="n">count</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the MRD stream ended before the sequence description"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">read</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">description_from_waveforms</span><span class="p">(</span><span class="n">waveforms</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SequenceDescription</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Read the descriptions a series' waveforms carry.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    waveforms : iterable</span>
+<span class="sd">        The series' waveforms: ``ismrmrd.Waveform`` objects, as an HDF5 file</span>
+<span class="sd">        read with ``ismrmrd.Dataset.read_waveform`` gives them, or</span>
+<span class="sd">        ``(waveform_id, data)`` pairs. Those of other ids, such as the</span>
+<span class="sd">        physiological traces, are passed over.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of SequenceDescription</span>
+<span class="sd">        One per file of the sequence chain, in play order; empty when the</span>
+<span class="sd">        waveforms carry none.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a description's header names more RF definitions or events than</span>
+<span class="sd">        its waveforms carry.</span>
+<span class="sd">    """</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">events</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">definitions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">waveforms</span><span class="p">:</span>
+        <span class="n">identifier</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">waveform_id</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">_words</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">HEADER_ID</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">words</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">EVENTS_ID</span><span class="p">:</span>
+            <span class="n">events</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">words</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">RF_DEFINITION_ID</span><span class="p">:</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">_from_words</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">),</span> <span class="n">definitions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+    <span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_array</span><span class="p">(</span><span class="n">packed</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">packed</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_words</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The word vector of a description waveform, its leading length dropped."""</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"&lt;u4"</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flat</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_description</span><span class="p">(</span><span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SequenceDescription</span><span class="p">:</span>
-    <span class="n">kinds</span> <span class="o">=</span> <span class="n">_array</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span> <span class="s2">"&lt;i4"</span><span class="p">)</span>
-    <span class="n">times_us</span> <span class="o">=</span> <span class="n">_array</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"timestamp_us"</span><span class="p">],</span> <span class="s2">"&lt;f8"</span><span class="p">)</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">_array</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="s2">"&lt;f4"</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">kinds</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
-    <span class="n">raster_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"rf_raster_time_s"</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_complete</span><span class="p">(</span><span class="n">collected</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether every subsequence's header, events and RF definitions have arrived."""</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">_words</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">collected</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">HEADER_ID</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">headers</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">kind</span> <span class="o">==</span> <span class="n">EVENTS_ID</span> <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">collected</span><span class="p">)</span>
+    <span class="n">definitions</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">kind</span> <span class="o">==</span> <span class="n">RF_DEFINITION_ID</span> <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">collected</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">events</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span> <span class="ow">and</span> <span class="n">definitions</span> <span class="o">==</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_from_words</span><span class="p">(</span>
+    <span class="n">header</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">events</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SequenceDescription</span><span class="p">:</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="mi">4</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"subsequence </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">: the header names </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span><span class="si">}</span><span class="s2"> RF definitions "</span>
+            <span class="sa">f</span><span class="s2">"and its waveforms carry </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span><span class="si">}</span><span class="s2">, with "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'no'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'an'</span><span class="si">}</span><span class="s2"> event list"</span>
+        <span class="p">)</span>
+    <span class="n">tr_duration_us</span><span class="p">,</span> <span class="n">raster_s</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">"&lt;f8"</span><span class="p">))</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">_EVENT_WORDS</span><span class="p">)</span>
+    <span class="n">kinds</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">times_us</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">"&lt;f8"</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">"&lt;f4"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">SequenceDescription</span><span class="p">(</span>
-        <span class="n">subsequence_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"subsequence_index"</span><span class="p">]),</span>
-        <span class="n">tr_duration_us</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"tr_duration_us"</span><span class="p">]),</span>
+        <span class="n">subsequence_index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">tr_duration_us</span><span class="o">=</span><span class="n">tr_duration_us</span><span class="p">,</span>
         <span class="n">events</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
             <span class="n">_event</span><span class="p">(</span><span class="n">EventType</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">kind</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="n">time_us</span><span class="p">),</span> <span class="n">row</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">time_us</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">kinds</span><span class="p">,</span> <span class="n">times_us</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">),</span>
         <span class="n">rf_definitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="nb">int</span><span class="p">(</span><span class="n">each</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]):</span> <span class="n">_definition</span><span class="p">(</span><span class="n">each</span><span class="p">,</span> <span class="n">raster_s</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="s2">"rf_definitions"</span><span class="p">]</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="n">_definition_from_words</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">raster_s</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">words</span> <span class="ow">in</span> <span class="n">definitions</span>
         <span class="p">},</span>
         <span class="n">rf_raster_time_s</span><span class="o">=</span><span class="n">raster_s</span><span class="p">,</span>
     <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_definition_from_words</span><span class="p">(</span><span class="n">words</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">raster_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RfDefinition</span><span class="p">:</span>
+    <span class="n">floats</span> <span class="o">=</span> <span class="n">words</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s2">"&lt;f4"</span><span class="p">)</span>
+    <span class="n">at</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">given</span><span class="p">,</span> <span class="n">uncompressed</span><span class="p">,</span> <span class="n">stored</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">words</span><span class="p">[</span><span class="n">at</span> <span class="p">:</span> <span class="n">at</span> <span class="o">+</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="n">counts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">uncompressed</span><span class="p">,</span> <span class="n">stored</span><span class="p">)</span> <span class="k">if</span> <span class="n">given</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">at</span> <span class="o">+=</span> <span class="mi">3</span>
+    <span class="n">shapes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RfShape</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">floats</span><span class="p">[</span><span class="n">at</span> <span class="p">:</span> <span class="n">at</span> <span class="o">+</span> <span class="n">count</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+        <span class="n">at</span> <span class="o">+=</span> <span class="n">count</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">magnitude</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">shapes</span>
+    <span class="k">return</span> <span class="n">_built_definition</span><span class="p">(</span>
+        <span class="n">identifier</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">bandwidth_hz</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">floats</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="n">num_bands</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+        <span class="n">band_offsets</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">floats</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">12</span><span class="p">]),</span>
+        <span class="n">band_bandwidth_hz</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">floats</span><span class="p">[</span><span class="mi">12</span><span class="p">]),</span>
+        <span class="n">magnitude</span><span class="o">=</span><span class="n">magnitude</span><span class="p">,</span>
+        <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+        <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
+        <span class="n">raster_s</span><span class="o">=</span><span class="n">raster_s</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_exactly</span><span class="p">(</span><span class="n">stream</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">read</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">read</span><span class="p">)</span> <span class="o">!=</span> <span class="n">count</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the MRD stream ended before the sequence description"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">read</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_event</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="n">EventType</span><span class="p">,</span> <span class="n">time_us</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SequenceEvent</span><span class="p">:</span>
@@ -562,15 +670,18 @@
     <span class="k">return</span> <span class="n">SequenceEvent</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">time_us</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_shape</span><span class="p">(</span><span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RfShape</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">RfShape</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"num_uncompressed"</span><span class="p">]),</span> <span class="n">_array</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">],</span> <span class="s2">"&lt;f4"</span><span class="p">))</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_definition</span><span class="p">(</span><span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">raster_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RfDefinition</span><span class="p">:</span>
-    <span class="n">magnitude</span> <span class="o">=</span> <span class="n">_shape</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"magnitude"</span><span class="p">])</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">_shape</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"time"</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_built_definition</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">identifier</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">bandwidth_hz</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">num_bands</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">band_offsets</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="n">band_bandwidth_hz</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">magnitude</span><span class="p">:</span> <span class="n">RfShape</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">RfShape</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">RfShape</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">raster_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RfDefinition</span><span class="p">:</span>
     <span class="n">envelope</span> <span class="o">=</span> <span class="n">magnitude</span><span class="o">.</span><span class="n">decompress</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">time_s</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">envelope</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">raster_s</span>
@@ -578,17 +689,15 @@
         <span class="k">else</span> <span class="n">time</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">raster_s</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">RfDefinition</span><span class="p">(</span>
-        <span class="nb">id</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]),</span>
-        <span class="n">bandwidth_hz</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"bandwidth_hz"</span><span class="p">]),</span>
-        <span class="n">num_bands</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"num_bands"</span><span class="p">]),</span>
-        <span class="n">band_frequency_offsets_hz</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
-            <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="s2">"band_frequency_offsets_hz"</span><span class="p">]</span>
-        <span class="p">),</span>
-        <span class="n">band_bandwidth_hz</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"band_bandwidth_hz"</span><span class="p">]),</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span>
+        <span class="n">bandwidth_hz</span><span class="o">=</span><span class="n">bandwidth_hz</span><span class="p">,</span>
+        <span class="n">num_bands</span><span class="o">=</span><span class="n">num_bands</span><span class="p">,</span>
+        <span class="n">band_frequency_offsets_hz</span><span class="o">=</span><span class="n">band_offsets</span><span class="p">,</span>
+        <span class="n">band_bandwidth_hz</span><span class="o">=</span><span class="n">band_bandwidth_hz</span><span class="p">,</span>
         <span class="c1"># Not carried by the stream: the stored envelope's squared integral.</span>
         <span class="n">total_b1sq_power</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">_trapezoid</span><span class="p">(</span><span class="n">envelope</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">time_s</span><span class="p">)),</span>
         <span class="n">magnitude</span><span class="o">=</span><span class="n">magnitude</span><span class="p">,</span>
-        <span class="n">phase</span><span class="o">=</span><span class="n">_shape</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">]),</span>
+        <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
         <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
