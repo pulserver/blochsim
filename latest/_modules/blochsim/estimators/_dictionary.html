@@ -827,6 +827,18 @@
                 <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_scaled</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">indices</span><span class="p">),</span>
             <span class="p">)</span>
 
+        <span class="n">fused</span> <span class="o">=</span> <span class="n">_best_on_card</span><span class="p">(</span>
+            <span class="n">normalized_signals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalized_dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">fused</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indices</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="n">fused</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">indices</span><span class="p">,</span>
+                <span class="n">scores</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_density</span><span class="p">(</span><span class="n">signal_norm</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">indices</span><span class="p">),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_scaled</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">indices</span><span class="p">),</span>
+            <span class="p">)</span>
+
         <span class="n">score_chunks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">index_chunks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">normalized_signals</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_chunk_size</span><span class="p">):</span>
@@ -920,6 +932,62 @@
 
 
 <span class="c1"># %% private module subroutines</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_best_on_card</span><span class="p">(</span>
+    <span class="n">signals</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The exhaustive best match in one kernel on the card, or ``None`` where it does not apply.</span>
+
+<span class="sd">    The kernel (``_match.cu``) scores every signal against every atom and keeps</span>
+<span class="sd">    only the best, so the voxels-by-atoms scores are never stored: one launch</span>
+<span class="sd">    per chunk instead of a matrix product, an absolute value and a reduction</span>
+<span class="sd">    per chunk of atoms, each through memory. It takes one candidate, real</span>
+<span class="sd">    single-precision atoms and float32 or complex64 signals on a card where</span>
+<span class="sd">    the GPU kernels are installed; anything else is matched in tensors.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">top_k</span> <span class="o">!=</span> <span class="mi">1</span>
+        <span class="ow">or</span> <span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">"cuda"</span>
+        <span class="ow">or</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">signals</span><span class="o">.</span><span class="n">device</span>
+        <span class="ow">or</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span>
+        <span class="ow">or</span> <span class="n">signals</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">signals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span>
+        <span class="ow">or</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span>
+        <span class="ow">or</span> <span class="n">signals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">_gpu_launch</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_gpu_launch</span><span class="o">.</span><span class="n">available</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">_gpu_launch</span><span class="o">.</span><span class="n">_module</span><span class="p">(</span><span class="s2">"cuda"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">"match_best"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">is_complex</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">is_complex</span><span class="p">()</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">view_as_real</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_complex</span> <span class="k">else</span> <span class="n">signals</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="n">voxels</span><span class="p">,</span> <span class="n">contrasts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">voxels</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">voxels</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_stream</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">queued</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">match_best</span><span class="p">(</span>
+        <span class="n">flat</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">(),</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">(),</span>
+        <span class="n">voxels</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">contrasts</span><span class="p">,</span>
+        <span class="n">is_complex</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">(),</span>
+        <span class="n">scores</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">(),</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">if</span> <span class="n">signals</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">(),</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">cuda_stream</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">queued</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">scores</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_parameters</span><span class="p">(</span>
