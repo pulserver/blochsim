@@ -1,9 +1,14 @@
 [
   {
-    "name": "v0.0.15 (stable)",
-    "version": "v0.0.15",
-    "url": "https://pulserver.github.io/blochsim/v0.0.15/",
+    "name": "v0.0.17 (stable)",
+    "version": "v0.0.17",
+    "url": "https://pulserver.github.io/blochsim/v0.0.17/",
     "preferred": true
+  },
+  {
+    "name": "v0.0.15",
+    "version": "v0.0.15",
+    "url": "https://pulserver.github.io/blochsim/v0.0.15/"
   },
   {
     "name": "v0.0.14",
