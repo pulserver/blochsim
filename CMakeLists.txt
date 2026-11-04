@@ -120,7 +120,7 @@ if(BLOCHSIM_CUDA)
         _pooled_kernel _pooled_adjoint_kernel
         _regress_kernel _regress_vjp_kernel
     )
-    set(_blochsim_gpu_sources src/blochsim/_gpu.cu)
+    set(_blochsim_gpu_sources src/blochsim/_gpu.cu src/blochsim/_match.cu)
     foreach(NAME IN LISTS _blochsim_kernels)
         set(_source "${CMAKE_CURRENT_BINARY_DIR}/kernels/${NAME}.cu")
         configure_file(src/blochsim/_gpu_kernel.cu.in "${_source}" @ONLY)

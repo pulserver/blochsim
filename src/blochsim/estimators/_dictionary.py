@@ -405,6 +405,18 @@ class DictionaryMatcher(Estimator):
                 *self._scaled(signals, indices),
             )
 
+        fused = _best_on_card(
+            normalized_signals, self.normalized_dictionary, self.top_k
+        )
+        if fused is not None:
+            indices, scores = fused
+            return (
+                indices,
+                scores,
+                self._density(signal_norm, scores, indices),
+                *self._scaled(signals, indices),
+            )
+
         score_chunks = []
         index_chunks = []
         for query in normalized_signals.split(self.query_chunk_size):
@@ -497,6 +509,62 @@ class DictionaryMatcher(Estimator):
 
 
 # %% private module subroutines
+
+
+def _best_on_card(
+    signals: torch.Tensor, dictionary: torch.Tensor, top_k: int
+) -> tuple[torch.Tensor, torch.Tensor] | None:
+    """The exhaustive best match in one kernel on the card, or ``None`` where it does not apply.
+
+    The kernel (``_match.cu``) scores every signal against every atom and keeps
+    only the best, so the voxels-by-atoms scores are never stored: one launch
+    per chunk instead of a matrix product, an absolute value and a reduction
+    per chunk of atoms, each through memory. It takes one candidate, real
+    single-precision atoms and float32 or complex64 signals on a card where
+    the GPU kernels are installed; anything else is matched in tensors.
+    """
+    if (
+        top_k != 1
+        or signals.device.type != "cuda"
+        or dictionary.device != signals.device
+        or dictionary.dtype != torch.float32
+        or signals.dtype not in (torch.float32, torch.complex64)
+        or signals.ndim != 2
+        or dictionary.ndim != 2
+        or signals.shape[0] == 0
+    ):
+        return None
+    from .. import _gpu_launch
+
+    if not _gpu_launch.available():
+        return None
+    module = _gpu_launch._module("cuda")
+    if not hasattr(module, "match_best"):
+        return None
+    is_complex = signals.is_complex()
+    flat = (torch.view_as_real(signals) if is_complex else signals).contiguous()
+    atoms = dictionary.contiguous()
+    voxels, contrasts = int(signals.shape[0]), int(signals.shape[1])
+    indices = torch.empty((voxels, 1), dtype=torch.int64, device=signals.device)
+    scores = torch.empty((voxels, 1), dtype=torch.float32, device=signals.device)
+    stream = torch.cuda.current_stream(signals.device)
+    queued = module.match_best(
+        flat.data_ptr(),
+        atoms.data_ptr(),
+        voxels,
+        int(atoms.shape[0]),
+        contrasts,
+        is_complex,
+        indices.data_ptr(),
+        scores.data_ptr(),
+        signals.device.index
+        if signals.device.index is not None
+        else torch.cuda.current_device(),
+        stream.cuda_stream,
+    )
+    if not queued:
+        return None
+    return indices, scores
 
 
 def _prepare_parameters(
