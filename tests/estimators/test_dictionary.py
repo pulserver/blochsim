@@ -186,3 +186,45 @@ def test_a_coarse_search_follows_the_matcher_to_another_device() -> None:
     assert moved.lattice.table.device == moved.dictionary.device
     found = moved.match(dictionary[:5].to(moved.dictionary.device))
     torch.testing.assert_close(found.indices[:, 0].cpu(), torch.arange(5))
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
+@pytest.mark.parametrize("dtype", [torch.float32, torch.complex64])
+@pytest.mark.parametrize("contrasts", [3, 7, 16, 17])
+def test_the_card_kernel_finds_the_tensor_match(
+    dtype: torch.dtype, contrasts: int
+) -> None:
+    from blochsim.estimators import _dictionary
+
+    g = torch.Generator().manual_seed(contrasts)
+    atoms = torch.randn(1500, contrasts, generator=g).abs()
+    signals = atoms[torch.randint(0, 1500, (5000,), generator=g)]
+    signals = signals + 0.05 * torch.randn(signals.shape, generator=g)
+    if dtype.is_complex:
+        signals = signals * torch.polar(
+            torch.ones(5000, 1), torch.rand(5000, 1, generator=g) * 6.28
+        )
+    signals = signals.to(dtype).cuda()
+    matcher = DictionaryMatcher(dictionary=atoms.cuda(), query_chunk_size=1024)
+
+    fused = matcher.match(signals)
+    called = []
+    original = _dictionary._best_on_card
+    _dictionary._best_on_card = lambda *args: called.append(1)  # the tensor path
+    try:
+        tensors = matcher.match(signals)
+    finally:
+        _dictionary._best_on_card = original
+    assert called
+    if contrasts <= 16:
+        assert (
+            original(
+                signals / signals.norm(dim=-1, keepdim=True),
+                matcher.normalized_dictionary,
+                1,
+            )
+            is not None
+        )
+    assert torch.equal(fused.indices, tensors.indices)
+    torch.testing.assert_close(fused.scores, tensors.scores, rtol=1e-5, atol=1e-6)
+    torch.testing.assert_close(fused.scales, tensors.scales, rtol=1e-5, atol=1e-6)

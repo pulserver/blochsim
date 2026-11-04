@@ -9,6 +9,12 @@
   k-th value along each parameter, then the `2k + 1` values around the winner
   along each; `refine=False` stops after the coarse pass. A 3 % (T1, T2) grid
   of about 37 000 atoms at `coarse=3` scores about 4 200 + 49 atoms per voxel.
+- **Exhaustive matching in one kernel on the card.** Without groups or a
+  lattice, a `DictionaryMatcher` with `top_k=1`, real float32 atoms and up to
+  16 contrasts matches float32 or complex64 signals on a card in one launch
+  (`_match.cu`): every signal against every atom, keeping only the best, so the
+  voxels-by-atoms scores are never written. Indices, scores and scales are the
+  tensor path's. Anything else is matched in tensors as before.
 
 ### Fixed
 

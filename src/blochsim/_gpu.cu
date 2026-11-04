@@ -10,6 +10,7 @@
 
 #include "_launch.hpp"
 #include "_layout.hpp"
+#include "_match.hpp"
 
 #include <cuda_runtime.h>
 
@@ -136,7 +137,41 @@ PyObject* pooled_layout_floats(PyObject*, PyObject* args) {
     return PyLong_FromLongLong(blochsim_layout::pooled_adjoint_floats(problems, event_count, n, m, width, dual != 0));
 }
 
+PyObject* match_best(PyObject*, PyObject* args) {
+    unsigned long long signals = 0, atoms = 0, index = 0, score = 0, stream = 0;
+    long long voxels = 0, count = 0;
+    int contrasts = 0, is_complex = 0, device = 0;
+    if (!PyArg_ParseTuple(args, "KKLLipKKiK", &signals, &atoms, &voxels, &count, &contrasts, &is_complex, &index,
+                          &score, &device, &stream)) {
+        return nullptr;
+    }
+    if (contrasts < 1 || contrasts > blochsim_match::MAX_CONTRASTS) {
+        Py_RETURN_FALSE;  // the caller matches in tensors
+    }
+    int previous = 0;
+    cudaError_t status = cudaGetDevice(&previous);
+    if (status == cudaSuccess && previous != device) {
+        status = cudaSetDevice(device);
+    }
+    if (status != cudaSuccess) {
+        return cuda_error(status, "selecting the device");
+    }
+    const int queued = blochsim_match::launch(
+        reinterpret_cast<const float*>(signals), reinterpret_cast<const float*>(atoms), voxels, count, contrasts,
+        is_complex != 0, reinterpret_cast<long long*>(index), reinterpret_cast<float*>(score),
+        reinterpret_cast<void*>(stream));
+    if (previous != device) {
+        cudaSetDevice(previous);
+    }
+    if (queued != cudaSuccess) {
+        return cuda_error(static_cast<cudaError_t>(queued), "matching");
+    }
+    Py_RETURN_TRUE;
+}
+
 PyMethodDef METHODS[] = {
+    {"match_best", match_best, METH_VARARGS,
+     "Queue the exhaustive best-atom match of normalized signals; False where it is not built for them."},
     {"kernels", blochsim_launch::kernel_table, METH_NOARGS,
      "Each kernel's parameter names and kinds."},
     {"launch", launch, METH_VARARGS,
