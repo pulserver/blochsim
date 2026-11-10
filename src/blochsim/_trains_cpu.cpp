@@ -43,8 +43,8 @@ namespace subspace = blochsim::real_subspace;
 constexpr double PI = 3.14159265358979323846;
 
 // A train is tens of microseconds of work, so a worker is worth waking only
-// for a few of them.
-constexpr std::int64_t TRAINS_PER_WORKER = 8;
+// for the best part of a millisecond of them.
+constexpr std::int64_t TRAINS_PER_WORKER = 64;
 
 // What every train of a batch shares: the batch's shape, and the relaxation
 // over half an echo interval -- the first interval's, and every later one's.
