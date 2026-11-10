@@ -77,8 +77,8 @@ def main() -> int:
     if root is None:
         raise SystemExit("blochsim is not installed")
     kernels = extensions(root, "_*_cpu.*")
-    if len(kernels) != 2:
-        raise SystemExit(f"expected two kernels in {root}, found {kernels}")
+    if len(kernels) != 3:
+        raise SystemExit(f"expected three kernels in {root}, found {kernels}")
     for path in kernels:
         load(path, "blochsim", LARGEST_REASONABLE_BYTES)
     # A build from source keeps the card's module beside the package.

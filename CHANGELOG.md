@@ -4,6 +4,16 @@
 
 ### Added
 
+- **Refocusing trains from a prescribed echo signal.** `blochsim.trains` is
+  new: `prescribed_flips` inverts the phase graph of a CPMG train one echo at
+  a time, with or without relaxation; `busse_flips` designs the
+  variable-flip-angle trains of long 3D fast spin echo readouts (Busse 2006,
+  2008) from a lowest, a centre and a highest angle; `busse_centre_echo`
+  places the centre echo for a contrast-equivalent echo time, trying every
+  centre in one batch; `effective_te` gives that echo time for any train.
+  They run in a new double-precision C++ extension (`_trains_cpu`) on the
+  host, take and return NumPy arrays, and solve a batch of trains across
+  threads.
 - **Coarse-to-fine dictionary search.** `DictionaryMatcher(coarse=k)` places
   the atoms on the lattice their parameters were simulated on, scores every
   k-th value along each parameter, then the `2k + 1` values around the winner
@@ -28,6 +38,14 @@
 
 ### Changed
 
+- **`import blochsim` no longer imports PyTorch.** It imports
+  `blochsim.trains` alone; the simulators, estimators and design tools are
+  imported the first time any of them is asked for, by attribute, by
+  `from blochsim import ...` or by submodule. `import blochsim.trains` costs
+  what NumPy costs.
+- **A forked child starts its own worker pool.** The CPU kernels' pool is
+  tied to the process that created it, so a process forked after a threaded
+  call no longer waits on workers it does not have.
 - **Every GPU, a bounded share of it, by default.** `execution="auto"` is the
   default of a simulator, an estimator's `map` and a `ModelOperator`. A call
   too small to repay a launch, or a simulator call carrying a gradient, runs
@@ -124,6 +142,14 @@
 
 ### Changed
 
+- **`import blochsim` no longer imports PyTorch.** It imports
+  `blochsim.trains` alone; the simulators, estimators and design tools are
+  imported the first time any of them is asked for, by attribute, by
+  `from blochsim import ...` or by submodule. `import blochsim.trains` costs
+  what NumPy costs.
+- **A forked child starts its own worker pool.** The CPU kernels' pool is
+  tied to the process that created it, so a process forked after a threaded
+  call no longer waits on workers it does not have.
 - **Both adjoint kernels compile one sweep at a time.** A reverse pass records
   a trajectory through the events and then walks it back, and the walk back is
   where the kernel's mass is: in the forward-over-reverse kernel at three
@@ -352,6 +378,14 @@
 
 ### Changed
 
+- **`import blochsim` no longer imports PyTorch.** It imports
+  `blochsim.trains` alone; the simulators, estimators and design tools are
+  imported the first time any of them is asked for, by attribute, by
+  `from blochsim import ...` or by submodule. `import blochsim.trains` costs
+  what NumPy costs.
+- **A forked child starts its own worker pool.** The CPU kernels' pool is
+  tied to the process that created it, so a process forked after a threaded
+  call no longer waits on workers it does not have.
 - **The PERK example says how sure it is.** The regression maps a slice in
   hundredths of a second, so the estimator's noise sensitivity is answered by
   running it: two dozen noise realizations of the same measurement, mapped
@@ -589,6 +623,14 @@
 
 ### Changed
 
+- **`import blochsim` no longer imports PyTorch.** It imports
+  `blochsim.trains` alone; the simulators, estimators and design tools are
+  imported the first time any of them is asked for, by attribute, by
+  `from blochsim import ...` or by submodule. `import blochsim.trains` costs
+  what NumPy costs.
+- **A forked child starts its own worker pool.** The CPU kernels' pool is
+  tied to the process that created it, so a process forked after a threaded
+  call no longer waits on workers it does not have.
 - **A property whose term the run leaves out is not laid out per voxel, and
   neither is one given as a single value.** Every tissue property was broadcast
   to the voxel count and materialized, so a model naming two relaxation times
@@ -1125,6 +1167,14 @@
 
 ### Changed
 
+- **`import blochsim` no longer imports PyTorch.** It imports
+  `blochsim.trains` alone; the simulators, estimators and design tools are
+  imported the first time any of them is asked for, by attribute, by
+  `from blochsim import ...` or by submodule. `import blochsim.trains` costs
+  what NumPy costs.
+- **A forked child starts its own worker pool.** The CPU kernels' pool is
+  tied to the process that created it, so a process forked after a threaded
+  call no longer waits on workers it does not have.
 - **The documentation has a User Guide and a Developer Guide** in place of
   *Getting Started* and *Miscellaneous*. The user guide installs PyTorch first
   -- the build depends on hardware pip cannot see -- with tabs for the isolated

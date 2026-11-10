@@ -19,17 +19,8 @@
 #endif
 
 #include "_ifunc.hpp"
+#include "_real_subspace.hpp"
 #include "_threads.hpp"
-
-// MSVC rejects the GNU spelling of both of these outright, and the kernel is
-// built by whichever compiler the platform ships.
-#if defined(_MSC_VER)
-#define BLOCHSIM_ALWAYS_INLINE __forceinline
-#define BLOCHSIM_RESTRICT __restrict
-#else
-#define BLOCHSIM_ALWAYS_INLINE __attribute__((always_inline)) inline
-#define BLOCHSIM_RESTRICT __restrict__
-#endif
 
 namespace {
 
@@ -3010,20 +3001,10 @@ __attribute__((target_clones("default", "sse4.2", "avx2", "avx512f")))
 inline void shift_real(
     std::vector<float>& plus, std::vector<float>& minus, const std::size_t states
 ) {
-    // No states is impossible -- every entry point rejects a state count
-    // below one -- but not provable here, and the loops below count down
-    // from ``states - 1``.
-    if (states == 0) {
-        return;
-    }
-    for (std::size_t state = 0; state + 1 < states; ++state) {
-        minus[state] = minus[state + 1];
-    }
-    minus[states - 1] = 0.0F;
-    for (std::size_t state = states - 1; state > 0; --state) {
-        plus[state] = plus[state - 1];
-    }
-    plus[0] = -minus[0];
+    blochsim::real_subspace::shift(
+        plus.data(), minus.data(), states,
+        blochsim::real_subspace::ACROSS_AXIS<float>
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -3096,17 +3077,10 @@ void simulate_real_range(
                     const float alpha = view.flip[event] * b1;
                     const float cosine = std::cos(alpha);
                     const float sine = std::sin(alpha);
-                    const float cosine_half_sq = 0.5F * (1.0F + cosine);
-                    const float sine_half_sq = 0.5F * (1.0F - cosine);
-                    const float half_sine = 0.5F * sine;
-                    for (std::size_t state = 0; state < states; ++state) {
-                        const float p = plus[state];
-                        const float m = minus[state];
-                        const float z = longitudinal[state];
-                        plus[state] = cosine_half_sq * p + sine_half_sq * m - sine * z;
-                        minus[state] = sine_half_sq * p + cosine_half_sq * m + sine * z;
-                        longitudinal[state] = half_sine * p - half_sine * m + cosine * z;
-                    }
+                    blochsim::real_subspace::rotate(
+                        plus.data(), minus.data(), longitudinal.data(), states,
+                        cosine, sine
+                    );
                 }
             } else if (buffers.kind[event] == 2 && (action & RECORD) != 0) {
                 const std::int64_t index =
