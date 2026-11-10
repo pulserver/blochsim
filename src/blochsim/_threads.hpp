@@ -5,6 +5,7 @@
 #define BLOCHSIM_THREADS_HPP
 
 #include <algorithm>
+#include <atomic>
 #include <condition_variable>
 #include <cstdint>
 #include <functional>
@@ -14,6 +15,15 @@
 
 #if defined(__linux__)
 #include <sched.h>
+#endif
+
+// Whether a process can be forked, and so find itself holding a pool whose
+// workers it does not have.
+#if defined(__unix__) || defined(__APPLE__)
+#include <unistd.h>
+#define BLOCHSIM_HAS_FORK 1
+#else
+#define BLOCHSIM_HAS_FORK 0
 #endif
 
 namespace blochsim {
@@ -59,8 +69,26 @@ public:
         // Deliberately never destroyed. An extension can be torn down with
         // threads still parked, and joining them there risks a deadlock at
         // interpreter exit for no benefit.
-        static WorkerPool* const pool = new WorkerPool();
-        return *pool;
+        static std::atomic<WorkerPool*> pool{new WorkerPool()};
+        WorkerPool* current = pool.load(std::memory_order_acquire);
+#if BLOCHSIM_HAS_FORK
+        // A fork copies the pool's bookkeeping and none of its threads: the
+        // child would hand slots to workers that are not there and wait on
+        // them for good. It starts a pool of its own instead, and the one it
+        // inherited is left alone -- its locks may have been held across the
+        // fork by threads that will never release them here.
+        if (current->owner_ != ::getpid()) {
+            WorkerPool* const fresh = new WorkerPool();
+            if (pool.compare_exchange_strong(
+                    current, fresh, std::memory_order_acq_rel
+                )) {
+                current = fresh;
+            } else {
+                delete fresh;
+            }
+        }
+#endif
+        return *current;
     }
 
     void run(const unsigned int slots, const std::function<void(unsigned int)>& task) {
@@ -116,6 +144,9 @@ private:
         }
     }
 
+#if BLOCHSIM_HAS_FORK
+    const pid_t owner_ = ::getpid();
+#endif
     std::mutex submission_mutex_;
     std::mutex mutex_;
     std::condition_variable ready_;
