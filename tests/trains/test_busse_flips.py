@@ -110,6 +110,48 @@ def test_a_train_centred_on_its_first_acquired_echo_is_found():
     np.testing.assert_allclose(np.diff(echoes[40:], 2), 0.0, atol=1e-11)
 
 
+@pytest.fixture
+def hybrid_calls(monkeypatch):
+    """Count the trains handed to the MINPACK fallback."""
+    from blochsim.trains._busse import _Trains
+
+    calls = []
+    hybrid = _Trains.hybrid
+
+    def counted(self, row):
+        calls.append(row)
+        return hybrid(self, row)
+
+    monkeypatch.setattr(_Trains, "hybrid", counted)
+    return calls
+
+
+def test_a_train_the_newton_steps_stall_on_is_found_by_the_fallback(hybrid_calls):
+    prescription = {"min_flip": 15.0, "centre_flip": 80.0, "max_flip": 170.0}
+    flip = busse_flips(66, centre_echo=6, **prescription)
+    assert hybrid_calls == [0]
+    np.testing.assert_allclose(
+        [flip[1:6].min(), flip[6], flip[-1]], [15, 80, 170], atol=1e-8
+    )
+    assert flip.min() >= 15.0 - 1e-8
+    assert flip.max() <= 170.0 + 1e-8
+    # The echoes are the prescription's: linear past the centre.
+    echoes = cpmg_echoes(flip).real
+    np.testing.assert_allclose(np.diff(echoes[40:], 2), 0.0, atol=1e-11)
+    # In a batch only the stalled train goes to the fallback, and it comes
+    # back as it does alone.
+    del hybrid_calls[:]
+    both = busse_flips(66, centre_echo=[30, 6], **prescription)
+    assert hybrid_calls == [1]
+    np.testing.assert_array_equal(both[1], flip)
+
+
+def test_a_train_the_fallback_cannot_find_either_is_refused(hybrid_calls):
+    with pytest.raises(ValueError, match="no Busse train"):
+        busse_flips(30, min_flip=15.0, centre_flip=100.0, max_flip=150.0, centre_echo=6)
+    assert hybrid_calls == [0]
+
+
 def test_a_prescription_no_train_meets_is_refused():
     with pytest.raises(ValueError, match="no Busse train"):
         busse_flips(66, max_flip=100.0, centre_echo=6)

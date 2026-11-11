@@ -478,8 +478,17 @@ def busse_flips(
     True
 
     """
+    # The centre and the startup echoes shape the batch like the rest.
+    every = [length, min_flip, centre_flip, max_flip, initial_decay, startup_echoes]
+    if centre_echo is not None:
+        every.append(centre_echo)
+    shape = np.broadcast_shapes(*(np.shape(value) for value in every))
     shape, lengths, wanted, decay = _prescription(
-        length, min_flip, centre_flip, max_flip, initial_decay
+        np.broadcast_to(_integers(length, "length"), shape),
+        min_flip,
+        centre_flip,
+        max_flip,
+        initial_decay,
     )
     startup = np.broadcast_to(_integers(startup_echoes, "startup_echoes"), shape)
     startup = startup.reshape(-1)

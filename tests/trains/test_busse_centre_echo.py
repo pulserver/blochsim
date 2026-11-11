@@ -60,6 +60,11 @@ def test_the_echo_time_is_the_first_train_s():
     assert centre < 45
 
 
+def test_trains_no_centre_suits_are_refused():
+    with pytest.raises(ValueError, match="no centre echo"):
+        busse_centre_echo(20.0, 8, 3.4, min_flip=60.0, centre_flip=65.0, max_flip=70.0)
+
+
 def test_startup_echoes_are_not_centres():
     centre, _ = busse_centre_echo(1.0, 66, startup_echoes=12, **TIMING)
     assert centre == 12

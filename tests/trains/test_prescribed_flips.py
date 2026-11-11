@@ -96,6 +96,9 @@ def test_trains_of_a_batch_are_solved_as_they_are_alone():
     [
         {"signal": []},
         {"signal": 0.5},
+        {"signal": [0.5, np.nan, 0.5]},
+        {"signal": [0.5, np.inf]},
+        {"first_flip": np.nan},
         {"T2": 80.0},
         {"first_ESP": 5.0},
         {"ESP": 0.0},
@@ -109,3 +112,16 @@ def test_trains_of_a_batch_are_solved_as_they_are_alone():
 def test_an_invalid_prescription_is_refused(arguments):
     with pytest.raises(ValueError):
         prescribed_flips(**({"signal": np.full(8, 0.5)} | arguments))
+
+
+def test_what_is_not_a_number_stays_one_in_the_kernel():
+    # The Busse solver hands the kernel trial prescriptions that may not be
+    # numbers; no angle after one may pass for a solution.
+    from blochsim.trains._prescribed import inverse_rows
+
+    target = np.full((1, 6), 0.5)
+    target[0, 2] = np.nan
+    flip, achieved = inverse_rows(target, np.array([6]), None, (1.0, 1.0, 1.0, 1.0))
+    assert np.all(np.isfinite(flip[0, :2]))
+    assert np.all(np.isnan(flip[0, 2:]))
+    assert np.all(np.isnan(achieved[0, 2:]))

@@ -187,7 +187,8 @@ def prescribed_flips(
     Raises
     ------
     ValueError
-        If the timing, the relaxation times or the lengths are not valid.
+        If an amplitude or a first angle is not finite, or the timing, the
+        relaxation times or the lengths are not valid.
 
     Notes
     -----
@@ -209,10 +210,14 @@ def prescribed_flips(
     """
     target, shape = _rows(signal, "signal")
     count, echoes = target.shape
+    if not np.all(np.isfinite(target)):
+        raise ValueError("signal must be finite")
     relax = relaxation(ESP, first_ESP, T1, T2)
     first = None
     if first_flip is not None:
         first = np.deg2rad(np.broadcast_to(first_flip, shape).reshape(count))
+        if not np.all(np.isfinite(first)):
+            raise ValueError("first_flip must be finite")
     flip, achieved = inverse_rows(
         target, _lengths(lengths, shape, echoes), first, relax, threads
     )

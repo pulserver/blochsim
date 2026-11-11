@@ -115,8 +115,10 @@ inline double refocusing_angle(
     const double plus, const double minus, const double longitudinal,
     const double target, const double e2
 ) {
-    if (std::isnan(target)) {
-        return target;
+    // A prescription that is not a number has no angle, and neither has
+    // any echo after it: the states it leaves are not numbers either.
+    if (!std::isfinite(target)) {
+        return NAN;
     }
     const double a = 0.5 * (plus + minus);
     const double b = 0.5 * (minus - plus);
@@ -135,7 +137,7 @@ inline double refocusing_angle(
     const double echoes[8] = {
         a + b, a - b, a + radius, a - radius, met, met, met, met,
     };
-    double best = 0.0;
+    double best = NAN;
     double best_score = INFINITY;
     for (int candidate = 0; candidate < 8; ++candidate) {
         const double angle = angles[candidate];

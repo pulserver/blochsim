@@ -65,6 +65,49 @@ def test_a_star_import_names_what_the_package_exports():
         assert getattr(blochsim, name) is not None
 
 
+@pytest.mark.parametrize(
+    ("first_use", "meanwhile"),
+    [
+        ("blochsim.Simulator", "blochsim.estimators"),
+        ("blochsim.fse_sim", "blochsim.simulators"),
+        ("blochsim.__all__", "blochsim.optim"),
+    ],
+)
+def test_two_threads_load_the_package_without_waiting_on_each_other(
+    first_use, meanwhile
+):
+    # One thread asks the package for a name while another imports one of
+    # its subpackages, which asks it for an optional module in turn.
+    code = f"""
+import threading
+import blochsim
+threads = [
+    threading.Thread(target=lambda: {first_use}),
+    threading.Thread(target=lambda: __import__({meanwhile!r})),
+]
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()
+print(blochsim.Simulator.__name__, blochsim.estimators.__name__)
+"""
+    done = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, timeout=120
+    )
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.split() == ["Simulator", "blochsim.estimators"]
+
+
+def test_an_optional_module_that_was_not_built_does_not_load_the_package():
+    out = run(
+        "import sys, blochsim\n"
+        "try:\n    from blochsim import _no_such_module\n"
+        "except ImportError:\n    pass\n"
+        "print('torch' in sys.modules)"
+    )
+    assert out == ["False"]
+
+
 def test_what_the_package_lacks_is_an_attribute_error():
     with pytest.raises(AttributeError):
         _ = blochsim.no_such_thing
