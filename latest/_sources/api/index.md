@@ -12,6 +12,7 @@ the per-voxel nonlinear least-squares fit, are bartorch's.
 | {doc}`sequence` | `blochsim` | Operators, sequence descriptions, RF definitions |
 | {doc}`estimators` | `blochsim.estimators` | Dictionary matching, lookup tables, PERK |
 | {doc}`optim` | `blochsim.optim` | Sequence parameter optimization |
+| {doc}`trains` | `blochsim.trains` | Refocusing trains from a prescribed echo signal |
 
 ```{toctree}
 :hidden:
@@ -22,4 +23,5 @@ simulators
 sequence
 estimators
 optim
+trains
 ```

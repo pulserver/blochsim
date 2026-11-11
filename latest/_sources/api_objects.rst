@@ -103,3 +103,14 @@ from.
    mpnrage_sim
    mrf_sim
 
+.. currentmodule:: blochsim.trains
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+
+   prescribed_flips
+   effective_te
+   busse_flips
+   busse_centre_echo
+

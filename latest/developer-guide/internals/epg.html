@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=a20394c5" />
   
   <!-- So that users can add custom icons -->
@@ -53,7 +53,7 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'developer-guide/internals/epg';</script>
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/sequence.html">Sequences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/estimators.html">Parameter estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/optim.html">Sequence design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/trains.html">Refocusing trains</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -545,9 +546,7 @@ imaging. A gradient acts on the ensemble only by changing <span class="math notr
 the voxel is a sum of spatial harmonics labelled by <span class="math notranslate nohighlight">\(k\)</span>. With
 <span class="math notranslate nohighlight">\(M^{+}(r) = M_x + iM_y\)</span>, the <strong>configuration states</strong> are</p>
 <div class="math notranslate nohighlight">
-\[
-\tilde F^{+}(k) = \int_V M^{+}(r)\, e^{-ikr}\, \mathrm{d}^3r ,
-\]</div>
+\[\tilde F^{+}(k) = \int_V M^{+}(r)\, e^{-ikr}\, \mathrm{d}^3r ,\]</div>
 <p>and the measured signal is <span class="math notranslate nohighlight">\(\tilde F^{+}(0)\)</span>. This is the configuration-state
 treatment of echo trains of Hennig <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <figure class="align-default" id="id11">
@@ -589,12 +588,10 @@ of its own in the shift.</span><a class="headerlink" href="#id12" title="Link to
 <p>A hard pulse of flip angle <span class="math notranslate nohighlight">\(\alpha\)</span> and phase <span class="math notranslate nohighlight">\(\varphi\)</span> acts identically on
 every order, as one 3x3 matrix applied to each column:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}
-\begin{pmatrix}\tilde F^{+}\\ \tilde F^{-}\\ \tilde Z\end{pmatrix}
+\[\begin{split}\begin{pmatrix}\tilde F^{+}\\ \tilde F^{-}\\ \tilde Z\end{pmatrix}
 \leftarrow
 \mathbf{T}(\alpha, \varphi)
-\begin{pmatrix}\tilde F^{+}\\ \tilde F^{-}\\ \tilde Z\end{pmatrix} .
-\end{split}\]</div>
+\begin{pmatrix}\tilde F^{+}\\ \tilde F^{-}\\ \tilde Z\end{pmatrix} .\end{split}\]</div>
 <figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="../../_images/rf_operator.png"><img alt="The magnitude of the EPG rotation matrix at 30, 90 and 180 degrees." src="../../_images/rf_operator.png" style="width: 100%;" />
 </a>
@@ -671,10 +668,8 @@ pulse is refused.</p>
 <h2>Gradients<a class="headerlink" href="#gradients" title="Link to this heading">#</a></h2>
 <p>A gradient changes the winding, which in this basis is a shift by whole orders:</p>
 <div class="math notranslate nohighlight">
-\[
-\tilde F^{+}(k) \rightarrow \tilde F^{+}(k + \Delta k), \qquad
-\tilde Z(k) \rightarrow \tilde Z(k).
-\]</div>
+\[\tilde F^{+}(k) \rightarrow \tilde F^{+}(k + \Delta k), \qquad
+\tilde Z(k) \rightarrow \tilde Z(k).\]</div>
 <figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="../../_images/shift_operator.png"><img alt="Transverse state populations before and after a one-order shift." src="../../_images/shift_operator.png" style="width: 100%;" />
 </a>
@@ -796,18 +791,14 @@ with <span class="math notranslate nohighlight">\(Z \leftarrow \mathbf{E}_1 Z\)<
 taken in closed form: for a 2x2 generator <span class="math notranslate nohighlight">\(\mathbf{L}\)</span>, with
 <span class="math notranslate nohighlight">\(\tau = \operatorname{tr}\mathbf{L}/2\)</span>, <span class="math notranslate nohighlight">\(d^2 = \tau^2 - \det\mathbf{L}\)</span>,</p>
 <div class="math notranslate nohighlight">
-\[
-e^{\mathbf{L}} = e^{\tau}\left[\cosh d\,\mathbf{I} + \frac{\sinh d}{d}(\mathbf{L} - \tau\mathbf{I})\right],
-\]</div>
+\[e^{\mathbf{L}} = e^{\tau}\left[\cosh d\,\mathbf{I} + \frac{\sinh d}{d}(\mathbf{L} - \tau\mathbf{I})\right],\]</div>
 <p>and <span class="math notranslate nohighlight">\(d^2\)</span> is a sum of non-negative terms, so no complex branch arises.</p>
 <p>RF saturates the pool at a rate set by the pulse power and the absorption
 lineshape at the pulse’s offset less the voxel’s <span class="math notranslate nohighlight">\(B_0\)</span>. The lineshape is the
 super-Lorentzian,</p>
 <div class="math notranslate nohighlight">
-\[
-G(\Delta f) = \int_0^1 \sqrt{2/\pi}\, \frac{T_{2b}}{|3u^2 - 1|}
-\exp\!\left[-2\left(\frac{2\pi\,\Delta f\, T_{2b}}{3u^2 - 1}\right)^2\right] \mathrm{d}u ,
-\]</div>
+\[G(\Delta f) = \int_0^1 \sqrt{2/\pi}\, \frac{T_{2b}}{|3u^2 - 1|}
+\exp\!\left[-2\left(\frac{2\pi\,\Delta f\, T_{2b}}{3u^2 - 1}\right)^2\right] \mathrm{d}u ,\]</div>
 <p>with <span class="math notranslate nohighlight">\(T_{2b} = 12\)</span> µs a model constant, tabulated over <span class="math notranslate nohighlight">\(|\Delta f|\)</span> and read by
 cubic Hermite interpolation. Inside a cutoff near resonance, where the
 integral diverges, the table is filled by a spline mirrored about resonance,

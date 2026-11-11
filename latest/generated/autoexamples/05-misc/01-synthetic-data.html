@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a20394c5" />
   
   <!-- So that users can add custom icons -->
@@ -53,7 +53,7 @@
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/05-misc/01-synthetic-data';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api/sequence.html">Sequences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/optim.html">Sequence design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/trains.html">Refocusing trains</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -573,34 +574,34 @@ the home directory.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath"><span class="n">CACHE</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.home" title="pathlib.Path.home"><span class="n">Path</span><span class="o">.</span><span class="n">home</span></a><span class="p">(</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;</span><span class="s2">.cache</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="s2">&quot;</span><span class="s2">blochsim</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="s2">&quot;</span><span class="s2">ixi-tiny</span><span class="s2">&quot;</span><span class="w">
 </span><span class="n">subject</span> <span class="o">=</span> <a class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-class reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="typing.Generic"><span class="n">tio</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">IXITiny</span></a><span class="p">(</span><span class="nb">str</span><span class="p">(</span><a class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath"><span class="n">CACHE</span></a><span class="p">)</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmp6l7vzhmx.zip
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmp5owos99g.zip
 
 0it [00:00, ?it/s]
   0%|          | 0/233926107 [00:01&lt;?, ?it/s]
-  3%|▎         | 7118848/233926107 [00:01&lt;00:03, 71186171.79it/s]
-  7%|▋         | 16351232/233926107 [00:01&lt;00:02, 83613994.71it/s]
- 11%|█         | 25886720/233926107 [00:01&lt;00:02, 84206925.52it/s]
- 15%|█▌        | 35659776/233926107 [00:01&lt;00:02, 89365967.89it/s]
- 19%|█▉        | 44843008/233926107 [00:01&lt;00:02, 87258850.57it/s]
- 23%|██▎       | 53092352/233926107 [00:02&lt;00:02, 64464775.82it/s]
- 26%|██▌       | 59990016/233926107 [00:02&lt;00:02, 62885721.19it/s]
- 28%|██▊       | 66576384/233926107 [00:02&lt;00:02, 56537577.00it/s]
- 31%|███       | 72491008/233926107 [00:02&lt;00:03, 50457977.50it/s]
- 36%|███▋      | 85229568/233926107 [00:02&lt;00:02, 68890504.69it/s]
- 42%|████▏     | 98181120/233926107 [00:02&lt;00:01, 84120219.01it/s]
- 48%|████▊     | 112279552/233926107 [00:02&lt;00:01, 99272279.21it/s]
- 54%|█████▎    | 125444096/233926107 [00:02&lt;00:01, 107432038.07it/s]
- 58%|█████▊    | 136757248/233926107 [00:03&lt;00:00, 107522226.29it/s]
- 63%|██████▎   | 147914752/233926107 [00:03&lt;00:00, 101520117.40it/s]
- 68%|██████▊   | 158400512/233926107 [00:03&lt;00:00, 97610189.67it/s]
- 72%|███████▏  | 168411136/233926107 [00:03&lt;00:00, 98093866.75it/s]
- 76%|███████▋  | 178397184/233926107 [00:03&lt;00:00, 86596757.79it/s]
- 81%|████████  | 188317696/233926107 [00:03&lt;00:00, 86762427.65it/s]
- 85%|████████▍ | 198139904/233926107 [00:03&lt;00:00, 89769200.11it/s]
- 89%|████████▊ | 207323136/233926107 [00:03&lt;00:00, 87530994.32it/s]
- 93%|█████████▎| 216580096/233926107 [00:03&lt;00:00, 88910357.71it/s]
- 97%|█████████▋| 226213888/233926107 [00:04&lt;00:00, 87393058.30it/s]
-233930752it [00:04, 54710259.24it/s]
+  3%|▎         | 6930432/233926107 [00:01&lt;00:03, 61495044.70it/s]
+  8%|▊         | 18857984/233926107 [00:01&lt;00:02, 93614622.30it/s]
+ 13%|█▎        | 29261824/233926107 [00:01&lt;00:02, 98232636.68it/s]
+ 16%|█▋        | 38486016/233926107 [00:01&lt;00:02, 93533541.79it/s]
+ 21%|██        | 48398336/233926107 [00:01&lt;00:01, 95440835.82it/s]
+ 25%|██▍       | 57450496/233926107 [00:01&lt;00:01, 89387280.74it/s]
+ 29%|██▉       | 67928064/233926107 [00:01&lt;00:01, 94189904.63it/s]
+ 33%|███▎      | 77176832/233926107 [00:02&lt;00:01, 89998387.07it/s]
+ 37%|███▋      | 86917120/233926107 [00:02&lt;00:01, 90420643.51it/s]
+ 42%|████▏     | 97435648/233926107 [00:02&lt;00:01, 91186397.15it/s]
+ 46%|████▌     | 106512384/233926107 [00:02&lt;00:01, 90702773.71it/s]
+ 50%|████▉     | 116391936/233926107 [00:02&lt;00:01, 89369713.16it/s]
+ 54%|█████▍    | 126910464/233926107 [00:02&lt;00:01, 91866824.22it/s]
+ 58%|█████▊    | 136093696/233926107 [00:02&lt;00:01, 89622099.14it/s]
+ 62%|██████▏   | 145866752/233926107 [00:02&lt;00:00, 89063480.35it/s]
+ 67%|██████▋   | 156385280/233926107 [00:02&lt;00:00, 90809308.54it/s]
+ 71%|███████▏  | 166920192/233926107 [00:03&lt;00:00, 91080701.61it/s]
+ 76%|███████▌  | 177438720/233926107 [00:03&lt;00:00, 93339745.43it/s]
+ 80%|████████  | 187973632/233926107 [00:03&lt;00:00, 93149415.97it/s]
+ 85%|████████▍ | 198492160/233926107 [00:03&lt;00:00, 93609212.97it/s]
+ 89%|████████▉ | 209018880/233926107 [00:03&lt;00:00, 96856797.09it/s]
+ 94%|█████████▎| 218734592/233926107 [00:03&lt;00:00, 93946176.96it/s]
+ 98%|█████████▊| 228155392/233926107 [00:03&lt;00:00, 92310805.67it/s]
+233930752it [00:04, 48552353.29it/s]
 </pre></div>
 </div>
 </section>
@@ -619,30 +620,30 @@ phantom contains partial volume.</p>
 </span>    <span class="n">run_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_01-synthetic-data_001.png" srcset="../../../_images/sphx_glr_01-synthetic-data_001.png" alt="T1w, grey, white, CSF" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_bbox_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_bbox_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_nogm_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_nogm_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_0_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_0_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_1_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_1_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_2_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_2_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_3_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_3_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_4_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_4_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_5_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_5_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_6_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_6_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_7_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_7_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_8_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_8_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_9_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_9_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_10_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_10_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_11_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_11_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_12_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_12_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_13_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_13_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_14_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_14_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_15_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_15_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_16_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_16_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_17_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_17_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_model.pt
-Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/warp_model.pt to /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/deepmriprep/data/models/warp_model.pt
-128x128 slice, 5735 brain voxels; 92% are a mixture of two tissues or more
+<img src="../../../_images/sphx_glr_01-synthetic-data_001.png" srcset="../../../_images/sphx_glr_01-synthetic-data_001.png" alt="T1w, grey, white, CSF" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_bbox_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_bbox_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/brain_extraction_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/brain_extraction_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_nogm_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_nogm_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_0_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_0_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_1_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_1_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_2_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_2_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_3_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_3_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_4_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_4_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_5_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_5_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_6_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_6_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_7_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_7_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_8_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_8_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_9_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_9_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_10_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_10_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_11_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_11_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_12_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_12_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_13_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_13_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_14_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_14_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_15_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_15_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_16_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_16_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_17_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_17_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_model.pt
+Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/warp_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/warp_model.pt
+128x128 slice, 5733 brain voxels; 92% are a mixture of two tissues or more
 </pre></div>
 </div>
 <p>The figure shows the T1-weighted contrast and the three probabilities.</p>
@@ -656,9 +657,9 @@ subject would fill the table from data.</p>
 </span><span class="n">class_T2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="p">[</span><span class="mf">95.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">]</span><span class="p">)</span>  <span class="c1"># ms</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>tissue           voxels     M0  T1 (ms)  T2 (ms)
-grey matter        2427   0.80     1100     95.0
-white matter       2294   0.70      650     70.0
-CSF                 571   1.00     4000   2000.0
+grey matter        2428   0.80     1100     95.0
+white matter       2297   0.70      650     70.0
+CSF                 568   1.00     4000   2000.0
 </pre></div>
 </div>
 </section>
@@ -673,7 +674,7 @@ one call, as three EPG runs instead of one per voxel.</p>
 </span><span class="w">
 </span><span class="n">per_class</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><a class="sphx-glr-backref-module-blochsim-simulators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator" title="blochsim.simulators.MRFSimulator"><span class="n">simulator</span></a><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">flip</span><span class="o">=</span><span class="n">schedule</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>3 classes x 400 frames in 0.4s -&gt; (3, 400)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>3 classes x 400 frames in 0.3s -&gt; (3, 400)
 </pre></div>
 </div>
 </section>
@@ -717,7 +718,7 @@ acquisitions.</p>
 </span>    <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">frame</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">FRAMES</span></a><span class="p">)</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>400 arms built in 26.4s
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>400 arms built in 25.7s
 </pre></div>
 </div>
 <p>The forward transform takes the coil-weighted image of each frame to k-space:</p>
@@ -727,7 +728,7 @@ acquisitions.</p>
 </span>    <span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">arms</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">frame</span></a><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="n">coil_series</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">frame</span></a><span class="p">]</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">frame</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">FRAMES</span></a><span class="p">)</span><span class="p">]</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../../_images/sphx_glr_01-synthetic-data_002.png" srcset="../../../_images/sphx_glr_01-synthetic-data_002.png" alt="coil 0, coil 1, coil 2, coil 3, 3 of 400 arms" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>forward NUFFT 11.6s -&gt; (400, 8, 768)
+<img src="../../../_images/sphx_glr_01-synthetic-data_002.png" srcset="../../../_images/sphx_glr_01-synthetic-data_002.png" alt="coil 0, coil 1, coil 2, coil 3, 3 of 400 arms" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>forward NUFFT 8.1s -&gt; (400, 8, 768)
 </pre></div>
 </div>
 <p>The figure shows four of the eight coil sensitivities and three of the arms.</p>
@@ -745,7 +746,7 @@ estimates them.</p>
 </span>    <span class="n">weights</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>adjoint and combine 11.2s
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>adjoint and combine 8.3s
 </pre></div>
 </div>
 </section>
@@ -756,8 +757,8 @@ fully sampled series <code class="docutils literal notranslate"><span class="pre
 aliasing in a single frame exceeds the signal, but the time course of each
 voxel retains the fingerprint, which is what a fingerprinting reconstruction
 uses. Both series are normalised to their peak magnitude.</p>
-<img src="../../../_images/sphx_glr_01-synthetic-data_003.png" srcset="../../../_images/sphx_glr_01-synthetic-data_003.png" alt="frame 0, frame 200, one voxel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>per-frame error inside the brain :  60.7%
-time-course agreement            : median 0.893, tenth percentile 0.714
+<img src="../../../_images/sphx_glr_01-synthetic-data_003.png" srcset="../../../_images/sphx_glr_01-synthetic-data_003.png" alt="frame 0, frame 200, one voxel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>per-frame error inside the brain :  60.3%
+time-course agreement            : median 0.894, tenth percentile 0.715
 </pre></div>
 </div>
 <p>The printed error is the mean per-frame error in the brain. The time-course
@@ -832,7 +833,7 @@ each frame by the adjoint and a coil combination. Report the per-frame error
 and the time-course agreement, and save the pair with the maps and schedule.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 59.016 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 31.053 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-05-misc-01-synthetic-data-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/notebooks/generated/autoexamples/05-misc/01-synthetic-data.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo4.svg" style="width: 150px;" />

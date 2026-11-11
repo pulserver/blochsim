@@ -1,0 +1,1130 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>blochsim.trains._busse &#8212; BlochSim Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=6a604523" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a20394c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=b1def801"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../_static/design-tabs.js?v=fcb327ea"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/blochsim/trains/_busse';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pulserver.github.io/blochsim/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://pulserver.github.io/blochsim/latest/_modules/blochsim/trains/_busse.html" />
+    <link rel="icon" href="../../../_static/blochsim-mark.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="latest" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/blochsim-mark.svg" class="logo__image only-light" alt="blochsim"/>
+    <img src="../../../_static/blochsim-mark-dark.svg" class="logo__image only-dark pst-js-only" alt="blochsim"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../../index.html">
+                    Homepage
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer-guide/index.html">Developer guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer-guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer-guide/workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer-guide/style.html">Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer-guide/documentation.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer-guide/terminology.html">Terminology</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../developer-guide/internals/index.html">Internals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer-guide/internals/epg.html">Extended phase graphs: operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer-guide/internals/description.html">Sequence description: reading rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer-guide/internals/kernels.html">Kernels</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explanations/index.html">Explanations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/signal-model.html">Signal model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/epg.html">Extended phase graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/description.html">Sequence description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/derivatives.html">Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/execution.html">Execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/parameter-estimation.html">Parameter estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/model-based-reconstruction.html">Model-based reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explanations/sequence-design.html">Sequence design</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../examples/index.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../examples/course.html">Course</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/01-framework/01-first-simulation.html">1. Your first simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/01-framework/02-advanced-physics.html">2. Advanced physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/01-framework/03-custom-signal-model.html">3. Custom signal model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/01-framework/04-description-based-simulation.html">4. Description-based simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/01-framework/05-custom-operator.html">5. Custom operator</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../examples/applications.html">Applications</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/02-parameter-inference/01-dictionary-matching.html">Dictionary matching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/02-parameter-inference/02-lookup-table.html">MP2RAGE lookup table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares.html">T2 mapping by nonlinear least squares</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/02-parameter-inference/04-perk.html">PERK: kernel ridge regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/03-sequence-optimization/01-echo-train-design.html">Echo train design for sharpness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/03-sequence-optimization/02-joint-relaxometry.html">Joint relaxometry protocol design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/03-sequence-optimization/03-rf-pulse-design.html">RF pulse design by optimal control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/04-model-based-imaging/01-linear-subspace.html">Subspace reconstruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion.html">Nonlinear inversion from k-space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/autoexamples/05-misc/01-synthetic-data.html">Synthetic fingerprint</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/model.html">Signal models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/simulators.html">Simulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/sequence.html">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/optim.html">Sequence design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/trains.html">Refocusing trains</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/license.html">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/related.html">Related Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/contributors.html">Contributors</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/pulserver/blochsim" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/pulserver/blochsim/issues/new?title=Issue%20on%20page%20%2F_modules/blochsim/trains/_busse.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for blochsim.trains._busse</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Busse refocusing trains: a prescribed pseudo-steady-state signal, inverted."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"busse_centre_echo"</span><span class="p">,</span> <span class="s2">"busse_flips"</span><span class="p">]</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">index</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._prescribed</span><span class="w"> </span><span class="kn">import</span> <span class="n">AUTO_THREADS</span><span class="p">,</span> <span class="n">equivalent_te</span><span class="p">,</span> <span class="n">inverse_rows</span><span class="p">,</span> <span class="n">relaxation</span>
+
+<span class="c1">#: No relaxation: the prescription is of coherence, not of a tissue's signal.</span>
+<span class="n">_FREE</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="c1">#: Echoes the opening transient is given before the ramp to the centre starts.</span>
+<span class="n">_RAMP_START</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1">#: The step the shooting Jacobian is differenced over, in degrees.</span>
+<span class="n">_STEP_DEG</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="c1">#: Newton steps a train is given, the halvings a step is, the steps a</span>
+<span class="c1">#: bracket is closed in, and the residual a train stops at, in degrees.</span>
+<span class="n">_NEWTON_STEPS</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">_HALVINGS</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">_BRACKET_STEPS</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">_CONVERGED_DEG</span> <span class="o">=</span> <span class="mf">1e-10</span>
+<span class="c1">#: What a solved train is held to: its three angles, in degrees, and the</span>
+<span class="c1">#: echoes it gives against the ones prescribed.</span>
+<span class="n">_ANGLE_TOLERANCE_DEG</span> <span class="o">=</span> <span class="mf">1e-6</span>
+<span class="n">_SIGNAL_TOLERANCE</span> <span class="o">=</span> <span class="mf">1e-10</span>
+<span class="c1">#: Degrees of residual a unit of echo out of reach counts for.</span>
+<span class="n">_SHORTFALL_DEG</span> <span class="o">=</span> <span class="mf">360.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pss</span><span class="p">(</span><span class="n">flip_deg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Pseudo-steady-state echo amplitude of a constant train of one flip angle.</span>
+
+<span class="sd">    ``sqrt(s) * P(s * (1 + sin(alpha)**2 / (8 * s**4)))`` with ``s`` the sine of</span>
+<span class="sd">    half the angle and ``P`` the Legendre function of degree -1/2, which is</span>
+<span class="sd">    the reciprocal of an arithmetic-geometric mean.</span>
+<span class="sd">    """</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">flip_deg</span><span class="p">)</span>
+    <span class="n">sine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">argument</span> <span class="o">=</span> <span class="n">sine</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">sine</span><span class="o">**</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">arithmetic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+        <span class="n">geometric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">argument</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="n">arithmetic</span><span class="p">,</span> <span class="n">geometric</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">arithmetic</span> <span class="o">+</span> <span class="n">geometric</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">arithmetic</span> <span class="o">*</span> <span class="n">geometric</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sine</span><span class="p">)</span> <span class="o">/</span> <span class="n">arithmetic</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_target</span><span class="p">(</span>
+    <span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">lengths</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">centres</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">max_flip</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">decay</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">echoes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The prescribed echoes of ``(trains, 3)`` pseudo-steady-state controls.</span>
+
+<span class="sd">    The controls are flip angles whose pseudo-steady-state amplitudes the</span>
+<span class="sd">    signal passes through: the first at the end of the opening transient, the</span>
+<span class="sd">    second at the centre echo, the third at the last echo.</span>
+<span class="sd">    """</span>
+    <span class="n">low</span><span class="p">,</span> <span class="n">middle</span><span class="p">,</span> <span class="n">final</span> <span class="o">=</span> <span class="n">_pss</span><span class="p">(</span><span class="n">controls</span><span class="o">.</span><span class="n">T</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">echo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">echoes</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">centre</span> <span class="o">=</span> <span class="n">centres</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">ramp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">echo</span> <span class="o">-</span> <span class="n">_RAMP_START</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">centre</span> <span class="o">-</span> <span class="n">_RAMP_START</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.5</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">low</span> <span class="o">+</span> <span class="p">(</span><span class="n">middle</span> <span class="o">-</span> <span class="n">low</span><span class="p">)</span> <span class="o">*</span> <span class="n">ramp</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">echo</span> <span class="o">&gt;</span> <span class="n">centre</span><span class="p">,</span>
+            <span class="n">middle</span>
+            <span class="o">+</span> <span class="p">(</span><span class="n">final</span> <span class="o">-</span> <span class="n">middle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">echo</span> <span class="o">-</span> <span class="n">centre</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">lengths</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">centre</span><span class="p">),</span>
+            <span class="n">signal</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">max_flip</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">signal</span> <span class="o">+</span> <span class="p">(</span><span class="n">first</span> <span class="o">-</span> <span class="n">low</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">echo</span> <span class="o">/</span> <span class="n">decay</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Trains</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A batch of trains to solve: what each is asked for, and how to try it.</span>
+
+<span class="sd">    The inversion is causal: the angles up to an echo answer to the echoes</span>
+<span class="sd">    prescribed up to it and to nothing after. So the first two controls, which</span>
+<span class="sd">    shape the prescription up to the centre echo, are solved against the</span>
+<span class="sd">    lowest angle before the centre and the angle at it, on the trains cut at</span>
+<span class="sd">    their centres; the third, which only sets the rise past the centre, is</span>
+<span class="sd">    then solved against the last angle alone.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lengths</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">centres</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">wanted</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">decay</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span> <span class="o">=</span> <span class="n">lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centres</span> <span class="o">=</span> <span class="n">centres</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wanted</span> <span class="o">=</span> <span class="n">wanted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decay</span> <span class="o">=</span> <span class="n">decay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">threads</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">opening</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Try ``controls`` on the trains ``rows``, which may repeat.</span>
+
+<span class="sd">        Returns the three angles each trial plays less the ones it is asked</span>
+<span class="sd">        for, with what its echoes fall short by added in; its flip angles in</span>
+<span class="sd">        degrees; its echoes; and the echoes prescribed. With ``opening`` the</span>
+<span class="sd">        trains are cut after their centre echoes, which is all the first two</span>
+<span class="sd">        controls reach, and the third residual is not formed.</span>
+
+<span class="sd">        An echo out of reach gets the nearest angle whatever the controls</span>
+<span class="sd">        are, so the angles alone stop answering to them. What the echoes</span>
+<span class="sd">        fall short by does not, and it is added where the level it answers</span>
+<span class="sd">        to is: before the centre, at it, and past it. A train that meets its</span>
+<span class="sd">        prescription falls short of nothing, so the roots are the same.</span>
+<span class="sd">        """</span>
+        <span class="n">centres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">centres</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="n">centres</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">opening</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
+        <span class="n">wanted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wanted</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
+        <span class="n">echoes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lengths</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">_target</span><span class="p">(</span>
+            <span class="n">controls</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
+            <span class="n">centres</span><span class="p">,</span>
+            <span class="n">wanted</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
+            <span class="n">echoes</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">flip</span><span class="p">,</span> <span class="n">achieved</span> <span class="o">=</span> <span class="n">inverse_rows</span><span class="p">(</span>
+            <span class="n">target</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">wanted</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">_FREE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span>
+        <span class="p">)</span>
+        <span class="n">flip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">flip</span><span class="p">)</span>
+        <span class="n">echo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">echoes</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">centre</span> <span class="o">=</span> <span class="n">centres</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">each</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">))</span>
+        <span class="n">short</span> <span class="o">=</span> <span class="n">_SHORTFALL_DEG</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">echo</span> <span class="o">&lt;</span> <span class="n">lengths</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">target</span> <span class="o">-</span> <span class="n">achieved</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">)</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">echo</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">echo</span> <span class="o">&lt;</span> <span class="n">centre</span><span class="p">),</span> <span class="n">flip</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">echo</span> <span class="o">&lt;</span> <span class="n">centre</span><span class="p">,</span> <span class="n">short</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">flip</span><span class="p">[</span><span class="n">each</span><span class="p">,</span> <span class="n">centres</span><span class="p">]</span> <span class="o">+</span> <span class="n">short</span><span class="p">[</span><span class="n">each</span><span class="p">,</span> <span class="n">centres</span><span class="p">],</span>
+                <span class="n">flip</span><span class="p">[</span><span class="n">each</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">echo</span> <span class="o">&gt;</span> <span class="n">centre</span><span class="p">,</span> <span class="n">short</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">residual</span> <span class="o">-</span> <span class="n">wanted</span><span class="p">,</span> <span class="n">flip</span><span class="p">,</span> <span class="n">achieved</span><span class="p">,</span> <span class="n">target</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">accepted</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Whether each trial is a train that meets its prescription, and its flips."""</span>
+        <span class="n">residual</span><span class="p">,</span> <span class="n">flip</span><span class="p">,</span> <span class="n">achieved</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+        <span class="n">wanted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wanted</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
+        <span class="n">played</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">flip</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">played</span><span class="p">,</span> <span class="n">flip</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">_ANGLE_TOLERANCE_DEG</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">played</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">achieved</span> <span class="o">-</span> <span class="n">target</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+                    <span class="o">&lt;</span> <span class="n">_SIGNAL_TOLERANCE</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                        <span class="n">played</span><span class="p">,</span> <span class="n">flip</span> <span class="o">&gt;=</span> <span class="n">wanted</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">_ANGLE_TOLERANCE_DEG</span><span class="p">,</span> <span class="kc">True</span>
+                    <span class="p">),</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                        <span class="n">played</span><span class="p">,</span> <span class="n">flip</span> <span class="o">&lt;=</span> <span class="n">wanted</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">:]</span> <span class="o">+</span> <span class="n">_ANGLE_TOLERANCE_DEG</span><span class="p">,</span> <span class="kc">True</span>
+                    <span class="p">),</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">controls</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">controls</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">180</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">valid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">played</span><span class="p">,</span> <span class="n">flip</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_opening</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The two residuals the first two controls answer to."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">opening</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">newton</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The first two controls of ``rows`` by damped Newton steps, in place.</span>
+
+<span class="sd">        The Jacobian is differenced, and a step is halved until it brings</span>
+<span class="sd">        the residual down: the residual has kinks, where the lowest angle</span>
+<span class="sd">        moves to another echo or an echo comes within reach. A train stops</span>
+<span class="sd">        at its own residual and takes no further part, so what it converges</span>
+<span class="sd">        to does not depend on the batch it was solved in. Returns which</span>
+<span class="sd">        trains converged.</span>
+<span class="sd">        """</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">))</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opening</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="n">_STEP_DEG</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_NEWTON_STEPS</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">base</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">_CONVERGED_DEG</span>
+            <span class="n">converged</span><span class="p">[</span><span class="n">active</span><span class="p">[</span><span class="n">done</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">active</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="n">active</span><span class="p">[</span><span class="o">~</span><span class="n">done</span><span class="p">],</span> <span class="n">base</span><span class="p">[</span><span class="o">~</span><span class="n">done</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">active</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">probes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">controls</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="n">offsets</span><span class="p">])</span>
+            <span class="n">probed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opening</span><span class="p">(</span><span class="n">probes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="n">active</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">jacobian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">(</span><span class="n">probed</span><span class="p">[:</span><span class="n">count</span><span class="p">]</span> <span class="o">-</span> <span class="n">base</span><span class="p">)</span> <span class="o">/</span> <span class="n">_STEP_DEG</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">probed</span><span class="p">[</span><span class="n">count</span><span class="p">:]</span> <span class="o">-</span> <span class="n">base</span><span class="p">)</span> <span class="o">/</span> <span class="n">_STEP_DEG</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+                <span class="n">determinant</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">jacobian</span><span class="p">)</span>
+                <span class="n">solvable</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">determinant</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">determinant</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-300</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">base</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">active</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="n">active</span><span class="p">[</span><span class="n">solvable</span><span class="p">],</span> <span class="n">base</span><span class="p">[</span><span class="n">solvable</span><span class="p">]</span>
+            <span class="n">correction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">jacobian</span><span class="p">[</span><span class="n">solvable</span><span class="p">],</span> <span class="n">base</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span>
+            <span class="p">)</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">pending</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">active</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">taken</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">active</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">halving</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_HALVINGS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pending</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">trial</span> <span class="o">=</span> <span class="n">controls</span><span class="p">[</span><span class="n">active</span><span class="p">[</span><span class="n">pending</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">trial</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">correction</span><span class="p">[</span><span class="n">pending</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">halving</span>
+                <span class="n">tried</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opening</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">rows</span><span class="p">[</span><span class="n">active</span><span class="p">[</span><span class="n">pending</span><span class="p">]])</span>
+                <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+                    <span class="n">better</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">tried</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">[</span><span class="n">pending</span><span class="p">]</span>
+                <span class="n">controls</span><span class="p">[</span><span class="n">active</span><span class="p">[</span><span class="n">pending</span><span class="p">[</span><span class="n">better</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">trial</span><span class="p">[</span><span class="n">better</span><span class="p">]</span>
+                <span class="n">base</span><span class="p">[</span><span class="n">pending</span><span class="p">[</span><span class="n">better</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tried</span><span class="p">[</span><span class="n">better</span><span class="p">]</span>
+                <span class="n">taken</span><span class="p">[</span><span class="n">pending</span><span class="p">[</span><span class="n">better</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">pending</span> <span class="o">=</span> <span class="n">pending</span><span class="p">[</span><span class="o">~</span><span class="n">better</span><span class="p">]</span>
+            <span class="c1"># A train no step improves has stalled, and is left where it is.</span>
+            <span class="n">active</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="n">active</span><span class="p">[</span><span class="n">taken</span><span class="p">],</span> <span class="n">base</span><span class="p">[</span><span class="n">taken</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">converged</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hybrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The first two controls of one train from MINPACK's hybrid method.</span>
+
+<span class="sd">        It follows a root across kinks a damped Newton step can stall at.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">root</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">row</span><span class="p">])</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wanted</span><span class="p">[</span><span class="n">row</span> <span class="p">:</span> <span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">trial</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">controls</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opening</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">rows</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">trial</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wanted</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">return</span> <span class="n">trial</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">closing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The third control of ``rows``, in place, bracketed and closed in on.</span>
+
+<span class="sd">        Between the second control, where the prescription is flat past the</span>
+<span class="sd">        centre, and 180 degrees, where it rises to the whole echo, the last</span>
+<span class="sd">        angle crosses the one asked for. The bracket is closed by false</span>
+<span class="sd">        position with the Illinois correction, which cannot leave it.</span>
+<span class="sd">        """</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">last</span><span class="p">(</span><span class="n">third</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">which</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">trial</span> <span class="o">=</span> <span class="n">controls</span><span class="p">[</span><span class="n">which</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">trial</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">third</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">rows</span><span class="p">[</span><span class="n">which</span><span class="p">])[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">every</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">))</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="n">controls</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="mf">180.0</span> <span class="o">-</span> <span class="mf">1e-9</span><span class="p">)</span>
+        <span class="n">at_low</span><span class="p">,</span> <span class="n">at_high</span> <span class="o">=</span> <span class="n">last</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">every</span><span class="p">),</span> <span class="n">last</span><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="n">every</span><span class="p">)</span>
+        <span class="c1"># Which end the last step left in place: -1 the low one, 1 the high.</span>
+        <span class="n">kept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+            <span class="n">active</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">((</span><span class="n">at_low</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">at_high</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">controls</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_BRACKET_STEPS</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">low</span><span class="p">[</span><span class="n">active</span><span class="p">],</span> <span class="n">high</span><span class="p">[</span><span class="n">active</span><span class="p">]</span>
+            <span class="n">fa</span><span class="p">,</span> <span class="n">fb</span> <span class="o">=</span> <span class="n">at_low</span><span class="p">[</span><span class="n">active</span><span class="p">],</span> <span class="n">at_high</span><span class="p">[</span><span class="n">active</span><span class="p">]</span>
+            <span class="n">third</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">fb</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fb</span> <span class="o">-</span> <span class="n">fa</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">last</span><span class="p">(</span><span class="n">third</span><span class="p">,</span> <span class="n">active</span><span class="p">)</span>
+            <span class="n">controls</span><span class="p">[</span><span class="n">active</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">third</span>
+            <span class="n">below</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span>
+            <span class="c1"># An end left in place twice running has its value halved, or</span>
+            <span class="c1"># it would hold the bracket open while the other end crept up.</span>
+            <span class="n">again</span> <span class="o">=</span> <span class="n">kept</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">below</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">at_high</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">below</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">again</span><span class="p">,</span> <span class="n">fb</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">fb</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">at_low</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">below</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">again</span><span class="p">,</span> <span class="n">fa</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">fa</span><span class="p">))</span>
+            <span class="n">high</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">below</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">third</span><span class="p">)</span>
+            <span class="n">low</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">below</span><span class="p">,</span> <span class="n">third</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+            <span class="n">kept</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">below</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+                <span class="n">active</span> <span class="o">=</span> <span class="n">active</span><span class="p">[</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_CONVERGED_DEG</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">high</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">-</span> <span class="n">low</span><span class="p">[</span><span class="n">active</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1e-13</span><span class="p">)</span>
+                <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Flip angles in degrees, zero past each train, and which trains exist."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="p">))</span>
+        <span class="n">controls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wanted</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">newton</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="o">~</span><span class="n">converged</span><span class="p">):</span>
+            <span class="n">one</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="n">row</span> <span class="p">:</span> <span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hybrid</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">newton</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">one</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">controls</span><span class="p">[</span><span class="n">one</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closing</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">rows</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_integers</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""``values`` as integers, refusing what only rounds to one."""</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">_is_index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be an integer"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_index</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_prescription</span><span class="p">(</span>
+    <span class="n">length</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">min_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">centre_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">max_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">initial_decay</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The batch shape, and each train's length, three angles and decay."""</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">_integers</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="s2">"length"</span><span class="p">)</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span>
+        <span class="n">lengths</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">min_flip</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">centre_flip</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">max_flip</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">initial_decay</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">wanted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">decay</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">lengths</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"length must be positive"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">ordered</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">wanted</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">wanted</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">wanted</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">wanted</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">wanted</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">wanted</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">wanted</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">180</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">ordered</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"flip angles must satisfy 0 &lt; min_flip &lt; centre_flip &lt; max_flip &lt; 180"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">decay</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">decay</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"initial_decay must be positive and finite"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">shape</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">wanted</span><span class="p">,</span> <span class="n">decay</span>
+
+
+<div class="viewcode-block" id="busse_flips">
+<a class="viewcode-back" href="../../../generated/blochsim.trains.busse_flips.html#blochsim.trains.busse_flips">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">busse_flips</span><span class="p">(</span>
+    <span class="n">length</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">min_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span>
+    <span class="n">centre_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">70.0</span><span class="p">,</span>
+    <span class="n">max_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">120.0</span><span class="p">,</span>
+    <span class="n">centre_echo</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">startup_echoes</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="n">initial_decay</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">1.3</span><span class="p">,</span>
+    <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AUTO_THREADS</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Variable refocusing flip angles of a long echo train, after Busse.</span>
+
+<span class="sd">    The echo signal is prescribed without relaxation: an opening transient</span>
+<span class="sd">    from the first echo, a rise through the centre echo, and a linear rise to</span>
+<span class="sd">    the last one, each level the pseudo-steady-state amplitude of a flip</span>
+<span class="sd">    angle [1]_ [2]_. :func:`prescribed_flips` inverts it, and the three levels</span>
+<span class="sd">    are found by shooting so that the angles played are the ones asked for:</span>
+<span class="sd">    the lowest before the centre is ``min_flip``, the centre echo's is</span>
+<span class="sd">    ``centre_flip``, and the first and the last are ``max_flip``.</span>
+
+<span class="sd">    Every argument may be an array; they broadcast, and each element is a</span>
+<span class="sd">    train of its own. The trains are solved together.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    length : int or array-like</span>
+<span class="sd">        Refocusing pulses of the train, startup pulses included.</span>
+<span class="sd">    min_flip : float or array-like, default=25.0</span>
+<span class="sd">        Lowest flip angle before the centre echo, in degrees.</span>
+<span class="sd">    centre_flip : float or array-like, default=70.0</span>
+<span class="sd">        Flip angle at the centre echo, in degrees.</span>
+<span class="sd">    max_flip : float or array-like, default=120.0</span>
+<span class="sd">        Flip angle of the first and the last pulse, in degrees.</span>
+<span class="sd">    centre_echo : int or array-like, default=None</span>
+<span class="sd">        Zero-based index of the pulse whose echo samples the centre of</span>
+<span class="sd">        k-space, startup pulses included. By default the middle of what</span>
+<span class="sd">        follows the startup pulses,</span>
+<span class="sd">        ``startup_echoes + (length - startup_echoes - 1) // 2``.</span>
+<span class="sd">    startup_echoes : int or array-like, default=6</span>
+<span class="sd">        Leading pulses whose echoes are not acquired; they only place the</span>
+<span class="sd">        default centre echo.</span>
+<span class="sd">    initial_decay : float or array-like, default=1.3</span>
+<span class="sd">        Time constant of the opening transient, in echoes.</span>
+<span class="sd">    threads : int, default=0</span>
+<span class="sd">        Threads to spread the trains over; 0 sizes the pool to the batch.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Flip angles in degrees: shape ``(length,)`` for one train, and</span>
+<span class="sd">        ``(..., max(length))`` for a batch, zero past each train's last pulse.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a count or an angle is not valid, a centre echo is not after the</span>
+<span class="sd">        sixth pulse and before the last, or no train meets a prescription.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The rise to the centre follows a power of 1.5 and the one after it is</span>
+<span class="sd">    linear [2]_. The flip angles do not depend on the echo spacing; what</span>
+<span class="sd">    relaxation makes of them is :func:`effective_te`'s and the simulators'.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Busse RF, Hariharan H, Vu A, Brittain JH. Fast spin echo sequences</span>
+<span class="sd">       with very long echo trains: design of variable refocusing flip angle</span>
+<span class="sd">       schedules and generation of clinical T2 contrast. Magn Reson Med.</span>
+<span class="sd">       2006;55:1030-1037.</span>
+<span class="sd">    .. [2] Busse RF, Brau ACS, Vu A, et al. Effects of refocusing flip angle</span>
+<span class="sd">       modulation and view ordering in 3D fast spin echo. Magn Reson Med.</span>
+<span class="sd">       2008;60:640-649.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from blochsim.trains import busse_flips</span>
+<span class="sd">    &gt;&gt;&gt; flip = busse_flips(106)</span>
+<span class="sd">    &gt;&gt;&gt; bool(np.allclose([flip[1:55].min(), flip[55], flip[-1]], [25, 70, 120]))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    """</span>
+    <span class="c1"># The centre and the startup echoes shape the batch like the rest.</span>
+    <span class="n">every</span> <span class="o">=</span> <span class="p">[</span><span class="n">length</span><span class="p">,</span> <span class="n">min_flip</span><span class="p">,</span> <span class="n">centre_flip</span><span class="p">,</span> <span class="n">max_flip</span><span class="p">,</span> <span class="n">initial_decay</span><span class="p">,</span> <span class="n">startup_echoes</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">centre_echo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">every</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">centre_echo</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">every</span><span class="p">))</span>
+    <span class="n">shape</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">wanted</span><span class="p">,</span> <span class="n">decay</span> <span class="o">=</span> <span class="n">_prescription</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">_integers</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="s2">"length"</span><span class="p">),</span> <span class="n">shape</span><span class="p">),</span>
+        <span class="n">min_flip</span><span class="p">,</span>
+        <span class="n">centre_flip</span><span class="p">,</span>
+        <span class="n">max_flip</span><span class="p">,</span>
+        <span class="n">initial_decay</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">startup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">_integers</span><span class="p">(</span><span class="n">startup_echoes</span><span class="p">,</span> <span class="s2">"startup_echoes"</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="n">startup</span> <span class="o">=</span> <span class="n">startup</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">startup</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">startup</span> <span class="o">&gt;=</span> <span class="n">lengths</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"startup_echoes must lie in [0, length)"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">centre_echo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">centres</span> <span class="o">=</span> <span class="n">startup</span> <span class="o">+</span> <span class="p">(</span><span class="n">lengths</span> <span class="o">-</span> <span class="n">startup</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">centres</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">_integers</span><span class="p">(</span><span class="n">centre_echo</span><span class="p">,</span> <span class="s2">"centre_echo"</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span>
+        <span class="n">centres</span> <span class="o">=</span> <span class="n">centres</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">centres</span> <span class="o">&lt;=</span> <span class="n">_RAMP_START</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">centres</span> <span class="o">&gt;=</span> <span class="n">lengths</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"centre_echo must be after the sixth pulse and before the last"</span>
+        <span class="p">)</span>
+    <span class="n">flip</span><span class="p">,</span> <span class="n">feasible</span> <span class="o">=</span> <span class="n">_Trains</span><span class="p">(</span><span class="n">lengths</span><span class="p">,</span> <span class="n">centres</span><span class="p">,</span> <span class="n">wanted</span><span class="p">,</span> <span class="n">decay</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">feasible</span><span class="p">):</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="o">~</span><span class="n">feasible</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"no Busse train meets the prescription of "</span>
+            <span class="o">+</span> <span class="p">(</span>
+                <span class="s2">"the train"</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"trains </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">missing</span><span class="p">[:</span><span class="mi">8</span><span class="p">]))</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">flip</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">flip</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="busse_centre_echo">
+<a class="viewcode-back" href="../../../generated/blochsim.trains.busse_centre_echo.html#blochsim.trains.busse_centre_echo">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">busse_centre_echo</span><span class="p">(</span>
+    <span class="n">TE</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">length</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ESP</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">first_ESP</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">min_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span>
+    <span class="n">centre_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">70.0</span><span class="p">,</span>
+    <span class="n">max_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="mf">120.0</span><span class="p">,</span>
+    <span class="n">startup_echoes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="n">initial_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.3</span><span class="p">,</span>
+    <span class="n">T1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+    <span class="n">T2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+    <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AUTO_THREADS</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The centre echo whose contrast-equivalent echo time is nearest ``TE``.</span>
+
+<span class="sd">    A Busse train is designed around its centre echo, so moving the centre</span>
+<span class="sd">    changes the train and with it the contrast the centre is acquired at.</span>
+<span class="sd">    Every centre the trains allow is tried at once: the train is designed for</span>
+<span class="sd">    it, and :func:`effective_te` of its centre echo is compared with ``TE``.</span>
+
+<span class="sd">    ``length`` and the three angles broadcast to several trains that share</span>
+<span class="sd">    the centre echo -- the trains of a shot-dependent schedule. A centre is</span>
+<span class="sd">    kept only when every one of them can be designed for it, and the echo</span>
+<span class="sd">    time is that of the first.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    TE : float</span>
+<span class="sd">        Contrast-equivalent echo time asked for, in ms.</span>
+<span class="sd">    length : int or array-like</span>
+<span class="sd">        Refocusing pulses of each train, startup pulses included.</span>
+<span class="sd">    ESP : float</span>
+<span class="sd">        Echo spacing, in ms.</span>
+<span class="sd">    first_ESP : float, default=None</span>
+<span class="sd">        Time from the excitation to the first echo, in ms; ``ESP`` by default.</span>
+<span class="sd">    min_flip : float or array-like, default=25.0</span>
+<span class="sd">        Lowest flip angle before the centre echo, in degrees.</span>
+<span class="sd">    centre_flip : float or array-like, default=70.0</span>
+<span class="sd">        Flip angle at the centre echo, in degrees.</span>
+<span class="sd">    max_flip : float or array-like, default=120.0</span>
+<span class="sd">        Flip angle of the first and the last pulse, in degrees.</span>
+<span class="sd">    startup_echoes : int, default=6</span>
+<span class="sd">        Leading pulses whose echoes are not acquired. The centre is an</span>
+<span class="sd">        acquired echo.</span>
+<span class="sd">    initial_decay : float, default=1.3</span>
+<span class="sd">        Time constant of the opening transient, in echoes.</span>
+<span class="sd">    T1 : float, default=1000.0</span>
+<span class="sd">        Longitudinal relaxation time of the reference tissue, in ms.</span>
+<span class="sd">    T2 : float, default=100.0</span>
+<span class="sd">        Transverse relaxation time of the reference tissue, in ms.</span>
+<span class="sd">    threads : int, default=0</span>
+<span class="sd">        Threads to spread the trains over; 0 sizes the pool to the batch.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    centre_echo : int</span>
+<span class="sd">        Zero-based index of the centre pulse, startup pulses included. Of two</span>
+<span class="sd">        centres equally near, the earlier.</span>
+<span class="sd">    TE : float</span>
+<span class="sd">        Its contrast-equivalent echo time, in ms.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``TE``, the timing or a prescription is not valid, or no centre</span>
+<span class="sd">        gives every train a design.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from blochsim.trains import busse_centre_echo</span>
+<span class="sd">    &gt;&gt;&gt; centre, te = busse_centre_echo(60.0, 66, 3.672, max_flip=100.0)</span>
+<span class="sd">    &gt;&gt;&gt; centre</span>
+<span class="sd">    38</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">TE</span><span class="p">)</span> <span class="ow">or</span> <span class="n">TE</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"TE must be positive and finite"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">([</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">])):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the reference T1 and T2 must be finite"</span><span class="p">)</span>
+    <span class="n">relax</span> <span class="o">=</span> <span class="n">relaxation</span><span class="p">(</span><span class="n">ESP</span><span class="p">,</span> <span class="n">first_ESP</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">wanted</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_prescription</span><span class="p">(</span>
+        <span class="n">length</span><span class="p">,</span> <span class="n">min_flip</span><span class="p">,</span> <span class="n">centre_flip</span><span class="p">,</span> <span class="n">max_flip</span><span class="p">,</span> <span class="n">initial_decay</span>
+    <span class="p">)</span>
+    <span class="n">startup</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_integers</span><span class="p">(</span><span class="n">startup_echoes</span><span class="p">,</span> <span class="s2">"startup_echoes"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">startup</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"startup_echoes must not be negative"</span><span class="p">)</span>
+    <span class="c1"># Trains asked for twice are designed once; the first stays first.</span>
+    <span class="n">trains</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">lengths</span><span class="p">,</span> <span class="n">wanted</span><span class="p">))</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">trains</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+    <span class="n">lengths</span><span class="p">,</span> <span class="n">wanted</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">keep</span><span class="p">],</span> <span class="n">wanted</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">candidates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+        <span class="nb">max</span><span class="p">(</span><span class="n">startup</span><span class="p">,</span> <span class="n">_RAMP_START</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">lengths</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the trains are too short to have a centre echo"</span><span class="p">)</span>
+    <span class="n">trials</span><span class="p">,</span> <span class="n">shared</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
+    <span class="n">flip</span><span class="p">,</span> <span class="n">feasible</span> <span class="o">=</span> <span class="n">_Trains</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">lengths</span><span class="p">,</span> <span class="n">trials</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">shared</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">wanted</span><span class="p">,</span> <span class="p">(</span><span class="n">trials</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">trials</span> <span class="o">*</span> <span class="n">shared</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">initial_decay</span><span class="p">)),</span>
+        <span class="n">threads</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="n">feasible</span> <span class="o">=</span> <span class="n">feasible</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">trials</span><span class="p">,</span> <span class="n">shared</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">equivalent</span> <span class="o">=</span> <span class="n">equivalent_te</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">flip</span><span class="p">[::</span><span class="n">shared</span><span class="p">]),</span> <span class="n">candidates</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">relax</span><span class="p">,</span> <span class="n">T2</span><span class="p">,</span> <span class="n">threads</span>
+    <span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">trials</span><span class="p">),</span> <span class="n">candidates</span><span class="p">]</span>
+    <span class="n">usable</span> <span class="o">=</span> <span class="n">feasible</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">equivalent</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">usable</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"no centre echo gives every train a Busse design at these angles"</span>
+        <span class="p">)</span>
+    <span class="n">miss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">usable</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">equivalent</span> <span class="o">-</span> <span class="n">TE</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">miss</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">best</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">equivalent</span><span class="p">[</span><span class="n">best</span><span class="p">])</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By BlochSim Contributors
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, BlochSim Contributors.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

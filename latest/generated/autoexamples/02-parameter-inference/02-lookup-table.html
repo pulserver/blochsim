@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a20394c5" />
   
   <!-- So that users can add custom icons -->
@@ -53,7 +53,7 @@
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/02-parameter-inference/02-lookup-table';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api/sequence.html">Sequences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/optim.html">Sequence design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/trains.html">Refocusing trains</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -603,13 +604,13 @@ Times are the best of three passes over the slice.</p>
 <img src="../../../_images/sphx_glr_02-lookup-table_003.png" srcset="../../../_images/sphx_glr_02-lookup-table_003.png" alt="error, time" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span> points     match     table     match     table
             error     error      time      time
 -----------------------------------------------
-     30     7.93%     0.88%     1.7ms     0.6ms
-     60     3.29%     0.75%     2.2ms     0.6ms
-    120     0.78%     0.71%     3.2ms     0.6ms
-    250     0.80%     0.71%     5.3ms     0.6ms
-    500     0.62%     0.71%     9.4ms     0.7ms
-   1000     0.66%     0.71%    19.0ms     0.8ms
-   2000     0.71%     0.71%    38.2ms     0.8ms
+     30     7.93%     0.88%     1.3ms     0.4ms
+     60     3.29%     0.75%     1.6ms     0.4ms
+    120     0.78%     0.71%     2.2ms     0.4ms
+    250     0.80%     0.71%     3.7ms     0.4ms
+    500     0.62%     0.71%     6.9ms     0.5ms
+   1000     0.66%     0.71%    12.8ms     0.5ms
+   2000     0.71%     0.71%    28.6ms     0.6ms
 </pre></div>
 </div>
 <p>The error floor is set by the noise. The table is within 0.2 percentage
@@ -641,8 +642,8 @@ one inner product per voxel:</p>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>method                      train      map     model      peak      T1      M0
 ------------------------------------------------------------------------------
-lookup, 60 points           0.00s    0.6ms  0.00 MiB        --   0.75%   0.46%
-match, 2000 atoms           0.00s   39.4ms  0.05 MiB        --   0.71%   0.45%
+lookup, 60 points           0.00s    0.4ms  0.00 MiB        --   0.75%   0.46%
+match, 2000 atoms           0.00s   28.8ms  0.05 MiB        --   0.71%   0.45%
 </pre></div>
 </div>
 </section>
@@ -658,7 +659,7 @@ relative T1 error and the mapping time of both; derive M0 from the
 predicted blocks.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.907 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.356 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-02-parameter-inference-02-lookup-table-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/notebooks/generated/autoexamples/02-parameter-inference/02-lookup-table.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo1.svg" style="width: 150px;" />

@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a20394c5" />
   
   <!-- So that users can add custom icons -->
@@ -53,7 +53,7 @@
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api/sequence.html">Sequences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/optim.html">Sequence design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/trains.html">Refocusing trains</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -617,12 +618,12 @@ error is the median relative T2 error over the brain voxels.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>method                           atoms   train     map     model      peak      T2
 ----------------------------------------------------------------------------------
 match, T2 only                     400    0.0s   0.01s   0.1 MiB        --   17.9%
-match, T2 x 10 offsets            4000    0.0s   0.09s   0.5 MiB        --    1.8%
-match, T2 x 20 offsets            8000    0.0s   0.18s   1.1 MiB        --    1.8%
-match, T2 x 40 offsets           16000    0.0s   0.37s   2.1 MiB        --    1.8%
-match, T2 x 80 offsets           32000    0.0s   0.91s   4.3 MiB        --    1.7%
-fit, T2 + M0, floor known           --    0.0s   0.65s   0.0 MiB        --    0.6%
-fit, T2 + M0 + offset               --    0.0s   1.06s   0.0 MiB        --    1.8%
+match, T2 x 10 offsets            4000    0.0s   0.07s   0.5 MiB        --    1.8%
+match, T2 x 20 offsets            8000    0.0s   0.13s   1.1 MiB        --    1.8%
+match, T2 x 40 offsets           16000    0.0s   0.27s   2.1 MiB        --    1.8%
+match, T2 x 80 offsets           32000    0.0s   0.56s   4.3 MiB        --    1.7%
+fit, T2 + M0, floor known           --    0.0s   0.40s   0.0 MiB        --    0.6%
+fit, T2 + M0 + offset               --    0.0s   0.68s   0.0 MiB        --    1.8%
 </pre></div>
 </div>
 </section>
@@ -671,7 +672,7 @@ the offset and with 10 to 80 offset values on the grid. Report mapping
 time, estimator memory and median relative T2 error, and plot the maps.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.991 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.227 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-02-parameter-inference-03-nonlinear-least-squares-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/notebooks/generated/autoexamples/02-parameter-inference/03-nonlinear-least-squares.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo1.svg" style="width: 150px;" />

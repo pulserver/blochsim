@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a20394c5" />
   
   <!-- So that users can add custom icons -->
@@ -53,7 +53,7 @@
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion';</script>
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api/sequence.html">Sequences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/estimators.html">Parameter estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/optim.html">Sequence design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/trains.html">Refocusing trains</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../misc/index.html">Miscellaneous</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -632,7 +633,7 @@ reconstruction has no such step, because its result is the maps.</p>
 </span><span class="n">adjoint</span> <span class="o">=</span> <a class="sphx-glr-backref-module-blochsim-estimators sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../blochsim.estimators.DictionaryMatcher.html#blochsim.estimators.DictionaryMatcher" title="blochsim.estimators.DictionaryMatcher"><span class="n">mapping</span></a><span class="p">(</span><span class="n">gridded</span><span class="p">)</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>rank 3 of 8 keeps 0.999992 of the signal
-adjoint per echo       0.0s   T2 error  27.9 ms (20.3%)
+adjoint per echo       0.1s   T2 error  27.9 ms (20.3%)
 
 tensor([[ 48.9379,  20.7615,  32.1844,  ..., 164.6894, 400.0000, 400.0000],
         [ 87.0140,  54.2685,  61.8838,  ..., 400.0000, 400.0000, 400.0000],
@@ -640,7 +641,7 @@ tensor([[ 48.9379,  20.7615,  32.1844,  ..., 164.6894, 400.0000, 400.0000],
         ...,
         [400.0000, 400.0000, 305.5711,  ...,  23.0461,  43.6072,  27.6152],
         [ 78.6373,  84.7295, 190.5812,  ...,  20.0000,  39.0381,  39.7996],
-        [ 41.3226, 363.4469, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
+        [ 41.3226, 362.6854, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
 </pre></div>
 </div>
 <p>Gridding is the adjoint with density compensation. 16 spokes of 192 samples are
@@ -683,15 +684,15 @@ encoding are BART’s.</p>
 </span><span class="w">
 </span><span class="n">modelled</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">found</span><span class="p">)</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model-based            5.2s   T2 error  11.6 ms ( 9.4%)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model-based            3.0s   T2 error  11.6 ms ( 9.4%)
 
-tensor([[100.6485, 100.7202, 101.6285,  ..., 101.3273, 102.0833,  98.8517],
-        [100.9671,  98.9119,  97.5817,  ..., 101.4050,  98.1353,  95.5978],
-        [101.0628, 100.0185,  98.4362,  ..., 105.0742, 104.9474, 104.2501],
+tensor([[100.6599, 100.7362, 101.6446,  ..., 101.3332, 102.0920,  98.8412],
+        [100.9760,  98.9134,  97.5945,  ..., 101.4106,  98.1081,  95.5713],
+        [101.0719, 100.0212,  98.4344,  ..., 105.0602, 104.9652, 104.2936],
         ...,
-        [101.5603, 101.8524, 101.8485,  ..., 100.1827, 102.1851, 100.2868],
-        [100.4932, 100.6068, 101.2182,  ...,  99.1220, 104.5265, 106.3573],
-        [100.9880, 100.9246, 101.3378,  ...,  94.5218,  98.9739, 103.9938]])
+        [101.5598, 101.8553, 101.8542,  ..., 100.2069, 102.2180, 100.3509],
+        [100.4984, 100.6146, 101.2237,  ...,  99.1370, 104.5606, 106.4103],
+        [100.9966, 100.9298, 101.3413,  ...,  94.5250,  98.9798, 104.0367]])
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">found</span></code> holds the solved variables and <code class="docutils literal notranslate"><span class="pre">M.split</span></code> separates them into named
@@ -708,10 +709,10 @@ Timing the four shows which part a faster reconstruction has to speed up.</p>
 </span><span class="n">adjoint_image</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">kspace</span><span class="p">)</span><span class="o">.</span><span class="n">movedim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>per conjugate-gradient step, 3 channels solved for:
-  model    J  v      4.5 ms
-  model    J^H v     1.5 ms
-  encoding A         1.1 ms
-  encoding A^H       1.0 ms
+  model    J  v      2.3 ms
+  model    J^H v     1.1 ms
+  encoding A         0.8 ms
+  encoding A^H       0.8 ms
 the Jacobian this avoids holding: 1.7 MiB, against 0.6 MiB for a signal
 </pre></div>
 </div>
@@ -761,7 +762,7 @@ Report time and mean T2 error over the brain, the time of each Jacobian
 product, and the size of the Jacobian that the operator avoids storing.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.109 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.761 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-04-model-based-imaging-02-nonlinear-inversion-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/notebooks/generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo3.svg" style="width: 150px;" />
