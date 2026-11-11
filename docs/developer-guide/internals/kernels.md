@@ -119,6 +119,12 @@ specialization and the pool models -- and the two agree to float32 round-off.
 On Linux the same CUDA kernels are also compiled for the host (`_gpu_host`),
 which is how the suite checks them without a card.
 
+The train-design kernels (`_trains_cpu.cpp`, behind `blochsim.trains`) are a
+third extension on the same worker pool. They invert a CPMG train for a
+prescribed echo signal in double precision, on the host only, and share the
+real-subspace shift and rotation with the simulation kernels
+(`_real_subspace.hpp`), which use them at float.
+
 ### Layouts and compiles
 
 The EPG kernels on a card are written for their layouts (`_layout.hpp`). A

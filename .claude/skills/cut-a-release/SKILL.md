@@ -23,7 +23,7 @@ touches `pyproject.toml`, `CMakeLists.txt`, the `.cpp` sources, or the workflow.
 
 ## What gets built, and why there is so little of it
 
-Both kernels are plain CPython extensions against the **stable ABI** from 3.10
+The CPU kernels are plain CPython extensions against the **stable ABI** from 3.10
 on. They call no PyTorch API and link no PyTorch library. So:
 
 - one `cp310-abi3` wheel per platform serves every supported interpreter —

@@ -15,7 +15,7 @@ pip install -e ".[dev]" ; echo "exit: $?"
 run alone, `pip install -e ".[test]"` is enough and much smaller.
 
 An editable install puts the Python sources on the path, so an edit under
-`src/blochsim` takes effect on the next import. The two C++ extensions are
+`src/blochsim` takes effect on the next import. The C++ extensions are
 compiled artifacts and do not: re-run the install after editing any `.cpp`,
 `.hpp` or `.cu`.
 
