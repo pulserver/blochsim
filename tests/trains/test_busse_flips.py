@@ -29,9 +29,16 @@ def test_pseudo_steady_state_is_the_legendre_form():
     sine = np.sin(np.deg2rad(angle) / 2)
     argument = sine * (1 + np.sin(np.deg2rad(angle)) ** 2 / (8 * sine**4))
     np.testing.assert_allclose(
-        _pss(angle), np.sqrt(sine) * eval_legendre(-0.5, argument), rtol=1e-13
+        _pss(angle)[0], np.sqrt(sine) * eval_legendre(-0.5, argument), rtol=1e-13
     )
-    assert _pss(np.array(180.0)) == pytest.approx(1.0)
+    assert _pss(np.array(180.0))[0] == pytest.approx(1.0)
+
+
+def test_pseudo_steady_state_slope_is_its_derivative_per_degree():
+    angle = np.linspace(5.0, 175.0, 69)
+    step = 1e-6
+    central = (_pss(angle + step)[0] - _pss(angle - step)[0]) / (2 * step)
+    np.testing.assert_allclose(_pss(angle)[1], central, rtol=1e-7, atol=1e-10)
 
 
 def test_the_default_train_is_figure_1(figure1):
@@ -182,3 +189,43 @@ def test_a_prescription_no_train_meets_is_refused():
 def test_an_invalid_prescription_is_refused(arguments):
     with pytest.raises(ValueError):
         busse_flips(**({"length": 106} | arguments))
+
+
+@pytest.mark.parametrize(
+    "prescription",
+    [
+        {},
+        {"min_flip": 35.0, "centre_flip": 60.0, "max_flip": 140.0, "centre_echo": 30},
+    ],
+)
+def test_jacobian_is_the_derivative_of_the_design(prescription):
+    flip, jacobian = busse_flips(106, jacobian=True, **prescription)
+    np.testing.assert_array_equal(flip, busse_flips(106, **prescription))
+    angles = {"min_flip": 25.0, "centre_flip": 70.0, "max_flip": 120.0}
+    angles |= {name: prescription[name] for name in angles if name in prescription}
+    rest = {name: value for name, value in prescription.items() if name not in angles}
+    step = 1e-5
+    for column, name in enumerate(angles):
+        moved = [
+            busse_flips(106, **rest, **(angles | {name: angles[name] + sign * step}))
+            for sign in (1, -1)
+        ]
+        np.testing.assert_allclose(
+            jacobian[:, column], (moved[0] - moved[1]) / (2 * step), atol=1e-6
+        )
+
+
+def test_jacobian_plays_each_angle_asked_for_one_to_one():
+    flip, jacobian = busse_flips(106, jacobian=True)
+    lowest = 1 + int(np.argmin(flip[1:55]))
+    np.testing.assert_allclose(jacobian[lowest], [1.0, 0.0, 0.0], atol=1e-9)
+    np.testing.assert_allclose(jacobian[55], [0.0, 1.0, 0.0], atol=1e-9)
+    np.testing.assert_allclose(jacobian[[0, -1]], [[0, 0, 1], [0, 0, 1]], atol=1e-9)
+
+
+def test_jacobian_of_a_batch_is_zero_past_each_train():
+    flip, jacobian = busse_flips([66, 106], jacobian=True)
+    assert jacobian.shape == (2, 106, 3)
+    np.testing.assert_array_equal(jacobian[0, 66:], 0.0)
+    _, alone = busse_flips(66, jacobian=True)
+    np.testing.assert_allclose(jacobian[0, :66], alone, atol=1e-12)

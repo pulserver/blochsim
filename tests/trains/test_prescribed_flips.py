@@ -125,3 +125,63 @@ def test_what_is_not_a_number_stays_one_in_the_kernel():
     assert np.all(np.isfinite(flip[0, :2]))
     assert np.all(np.isnan(flip[0, 2:]))
     assert np.all(np.isnan(achieved[0, 2:]))
+
+
+@pytest.mark.parametrize(
+    "timing", [{}, {"ESP": 4.0, "first_ESP": 5.0, "T1": 900.0, "T2": 70.0}]
+)
+def test_flip_tangents_are_the_derivative_of_the_inversion(timing):
+    rng = np.random.default_rng(3)
+    target = np.stack([np.linspace(0.6, 0.35, 48), np.full(48, 0.5)])
+    first = np.array([150.0, 130.0])
+    signal_tangents = 0.01 * rng.standard_normal((3, *target.shape))
+    first_tangents = rng.standard_normal((3, 2))
+    flip, achieved, d_flip, d_achieved = prescribed_flips(
+        target,
+        first_flip=first,
+        signal_tangents=signal_tangents,
+        first_flip_tangents=first_tangents,
+        **timing,
+    )
+    np.testing.assert_array_equal(
+        (flip, achieved), prescribed_flips(target, first_flip=first, **timing)
+    )
+    for direction in range(3):
+        moved = [
+            prescribed_flips(
+                target + sign * 1e-6 * signal_tangents[direction],
+                first_flip=first + sign * 1e-6 * first_tangents[direction],
+                **timing,
+            )
+            for sign in (1, -1)
+        ]
+        np.testing.assert_allclose(
+            d_flip[direction], (moved[0][0] - moved[1][0]) / 2e-6, atol=1e-6
+        )
+        np.testing.assert_allclose(
+            d_achieved[direction], (moved[0][1] - moved[1][1]) / 2e-6, atol=1e-8
+        )
+
+
+def test_an_echo_out_of_reach_has_an_angle_that_ignores_its_target():
+    # The third echo asks for more than any angle gives, so it takes the
+    # nearest angle, which a change of that target does not move.
+    target = np.array([0.5, 0.5, 2.0, 0.5])
+    tangent = np.zeros((1, 4))
+    tangent[0, 2] = 1.0
+    _, _, d_flip, _ = prescribed_flips(target, signal_tangents=tangent)
+    np.testing.assert_array_equal(d_flip[0, :3], 0.0)
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"signal_tangents": np.zeros((2, 5))},
+        {"signal_tangents": np.zeros((1, 4)), "first_flip_tangents": [1.0]},
+        {"first_flip_tangents": [1.0], "first_flip": 120.0},
+        {"signal_tangents": np.full((1, 4), np.nan)},
+    ],
+)
+def test_tangents_not_shaped_as_the_signal_are_refused(arguments):
+    with pytest.raises(ValueError):
+        prescribed_flips(np.full(4, 0.5), **arguments)

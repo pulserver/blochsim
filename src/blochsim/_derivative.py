@@ -36,9 +36,7 @@ def forward_mode() -> None:
     if os.environ.get("PYTORCH_JIT", "1") != "1" or not __debug__:
         return
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore", message=r"`torch\.jit\.script`", category=DeprecationWarning
-        )
+        warnings.filterwarnings("ignore", message=r"`torch\.jit\.script`")
         try:
             importlib.import_module("torch._decomp.decompositions_for_jvp")
         except ImportError:

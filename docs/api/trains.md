@@ -17,6 +17,13 @@ on it the variable-flip-angle trains of long 3D fast spin echo readouts, and
 echo time, which {func}`effective_te` computes for any train. A batch of
 trains is solved in one call, across threads.
 
+Each of them also gives exact derivatives, for designing a train against a
+cost: {func}`prescribed_flips` along changes of the prescribed signal and of
+the first angle, {func}`effective_te` along changes of the flip angles, and
+{func}`busse_flips` with respect to its three angles. They are carried through
+the same echo-by-echo recursion in forward mode, one extra set of states per
+direction, so a few directions cost a few inversions.
+
 | Object | Description |
 | --- | --- |
 | {obj}`~blochsim.trains.prescribed_flips` | Flip angles whose echoes take prescribed amplitudes, and the echoes they give. |

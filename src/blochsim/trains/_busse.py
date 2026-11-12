@@ -9,14 +9,18 @@ from operator import index
 import numpy as np
 import numpy.typing as npt
 
-from ._prescribed import AUTO_THREADS, equivalent_te, inverse_rows, relaxation
+from ._prescribed import (
+    AUTO_THREADS,
+    equivalent_te,
+    inverse_rows,
+    inverse_rows_tangents,
+    relaxation,
+)
 
 #: No relaxation: the prescription is of coherence, not of a tissue's signal.
 _FREE = (1.0, 1.0, 1.0, 1.0)
 #: Echoes the opening transient is given before the ramp to the centre starts.
 _RAMP_START = 5
-#: The step the shooting Jacobian is differenced over, in degrees.
-_STEP_DEG = 1e-3
 #: Newton steps a train is given, the halvings a step is, the steps a
 #: bracket is closed in, and the residual a train stops at, in degrees.
 _NEWTON_STEPS = 40
@@ -31,25 +35,42 @@ _SIGNAL_TOLERANCE = 1e-10
 _SHORTFALL_DEG = 360.0
 
 
-def _pss(flip_deg: np.ndarray) -> np.ndarray:
+def _pss(flip_deg: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Pseudo-steady-state echo amplitude of a constant train of one flip angle.
 
     ``sqrt(s) * P(s * (1 + sin(alpha)**2 / (8 * s**4)))`` with ``s`` the sine of
     half the angle and ``P`` the Legendre function of degree -1/2, which is
-    the reciprocal of an arithmetic-geometric mean.
+    the reciprocal of an arithmetic-geometric mean. Returns the amplitude and
+    its derivative with respect to the angle, per degree, carried through the
+    same iteration.
     """
     angle = np.deg2rad(flip_deg)
     sine = np.sin(angle / 2)
+    d_sine = 0.5 * np.cos(angle / 2)
     with np.errstate(invalid="ignore", divide="ignore"):
-        argument = sine * (1 + np.sin(angle) ** 2 / (8 * sine**4))
+        excess = np.sin(angle) ** 2 / (8 * sine**4)
+        d_excess = (
+            2 * np.sin(angle) * np.cos(angle) / (8 * sine**4)
+            - 4 * excess * d_sine / sine
+        )
+        argument = sine * (1 + excess)
+        d_argument = d_sine * (1 + excess) + sine * d_excess
         arithmetic = np.ones_like(argument)
+        d_arithmetic = np.zeros_like(argument)
         geometric = np.sqrt((1 + argument) / 2)
+        d_geometric = d_argument / (4 * geometric)
         for _ in range(10):
-            arithmetic, geometric = (
+            mean = np.sqrt(arithmetic * geometric)
+            d_mean = (d_arithmetic * geometric + arithmetic * d_geometric) / (2 * mean)
+            arithmetic, d_arithmetic = (
                 (arithmetic + geometric) / 2,
-                np.sqrt(arithmetic * geometric),
+                (d_arithmetic + d_geometric) / 2,
             )
-        return np.sqrt(sine) / arithmetic
+            geometric, d_geometric = mean, d_mean
+        root = np.sqrt(sine)
+        value = root / arithmetic
+        slope = (d_sine / (2 * root) - value * d_arithmetic) / arithmetic
+        return value, np.deg2rad(1.0) * slope
 
 
 def _target(
@@ -59,27 +80,40 @@ def _target(
     max_flip: np.ndarray,
     decay: np.ndarray,
     echoes: int,
-) -> np.ndarray:
+) -> tuple[np.ndarray, np.ndarray]:
     """The prescribed echoes of ``(trains, 3)`` pseudo-steady-state controls.
 
     The controls are flip angles whose pseudo-steady-state amplitudes the
     signal passes through: the first at the end of the opening transient, the
-    second at the centre echo, the third at the last echo.
+    second at the centre echo, the third at the last echo. Returns the echoes,
+    ``(trains, echoes)``, and their derivatives, ``(trains, 4, echoes)``, per
+    degree of each control and of ``max_flip``.
     """
-    low, middle, final = _pss(controls.T)[:, :, None]
+    levels, slopes = _pss(controls.T)
+    low, middle, final = levels[:, :, None]
     echo = np.arange(echoes)[None, :]
     centre = centres[:, None]
     with np.errstate(invalid="ignore", divide="ignore"):
         ramp = np.clip((echo - _RAMP_START) / (centre - _RAMP_START), 0, 1) ** 1.5
-        signal = low + (middle - low) * ramp
+        rise = (echo - centre) / (lengths[:, None] - 1 - centre)
+        past = echo > centre
         signal = np.where(
-            echo > centre,
-            middle
-            + (final - middle) * (echo - centre) / (lengths[:, None] - 1 - centre),
-            signal,
+            past, middle + (final - middle) * rise, low + (middle - low) * ramp
         )
-        first = np.sin(np.deg2rad(max_flip[:, None] / 2)) ** 2
-        return signal + (first - low) * np.exp(-echo / decay[:, None])
+        half = np.deg2rad(max_flip[:, None] / 2)
+        first = np.sin(half) ** 2
+        transient = np.exp(-echo / decay[:, None])
+        target = signal + (first - low) * transient
+        derivatives = np.stack(
+            (
+                slopes[0][:, None] * (np.where(past, 0.0, 1 - ramp) - transient),
+                slopes[1][:, None] * np.where(past, 1 - rise, ramp),
+                slopes[2][:, None] * np.where(past, rise, 0.0),
+                np.deg2rad(0.5) * np.sin(2 * half) * transient,
+            ),
+            axis=1,
+        )
+        return target, derivatives
 
 
 class _Trains:
@@ -124,11 +158,41 @@ class _Trains:
         to is: before the centre, at it, and past it. A train that meets its
         prescription falls short of nothing, so the roots are the same.
         """
+        return self._trial(controls, rows, opening, None)[:4]
+
+    def slopes(
+        self,
+        controls: np.ndarray,
+        rows: np.ndarray,
+        directions: np.ndarray,
+        opening: bool = False,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """What :meth:`evaluate` returns first, with derivatives along ``directions``.
+
+        ``directions`` is ``(k, 4)``: each row a change of the three controls
+        and of the maximum angle, in degrees. Returns the residuals
+        ``(trains, 3)``, their derivatives ``(trains, 3, k)``, the flip angles
+        ``(trains, echoes)`` and their derivatives ``(trains, k, echoes)``,
+        all in degrees. The derivative of the residuals leaves out the angles
+        asked for, which they are taken less.
+        """
+        residual, flip, _, _, d_residual, d_flip = self._trial(
+            controls, rows, opening, directions
+        )
+        return residual, d_residual, flip, d_flip
+
+    def _trial(
+        self,
+        controls: np.ndarray,
+        rows: np.ndarray,
+        opening: bool,
+        directions: np.ndarray | None,
+    ) -> tuple:
         centres = self.centres[rows]
         lengths = centres + 1 if opening else self.lengths[rows]
         wanted = self.wanted[rows]
         echoes = int(lengths.max())
-        target = _target(
+        target, d_target = _target(
             controls,
             self.lengths[rows],
             centres,
@@ -136,26 +200,50 @@ class _Trains:
             self.decay[rows],
             echoes,
         )
-        flip, achieved = inverse_rows(
-            target, lengths, np.deg2rad(wanted[:, 2]), _FREE, self.threads
-        )
+        first = np.deg2rad(wanted[:, 2])
+        if directions is None:
+            flip, achieved = inverse_rows(target, lengths, first, _FREE, self.threads)
+        else:
+            d_target = np.einsum("kj,tje->tke", directions, d_target)
+            d_first = np.broadcast_to(
+                np.deg2rad(directions[:, 3]), (len(rows), len(directions))
+            )
+            flip, achieved, d_flip, d_achieved = inverse_rows_tangents(
+                target, d_target, lengths, first, d_first, _FREE, self.threads
+            )
+            d_flip = np.rad2deg(d_flip)
         flip = np.rad2deg(flip)
         echo = np.arange(echoes)[None, :]
         centre = centres[:, None]
         each = np.arange(len(rows))
-        short = _SHORTFALL_DEG * np.where(
-            echo < lengths[:, None], target - achieved, 0.0
-        )
+        played = echo < lengths[:, None]
+        short = _SHORTFALL_DEG * np.where(played, target - achieved, 0.0)
+        opened = np.where((echo >= 1) & (echo < centre), flip, np.inf)
+        lowest = opened.argmin(axis=1)
         residual = np.column_stack(
             (
-                np.where((echo >= 1) & (echo < centre), flip, np.inf).min(axis=1)
-                + np.where(echo < centre, short, 0.0).sum(axis=1),
+                opened[each, lowest] + np.where(echo < centre, short, 0.0).sum(axis=1),
                 flip[each, centres] + short[each, centres],
                 flip[each, lengths - 1]
                 + np.where(echo > centre, short, 0.0).sum(axis=1),
             )
         )
-        return residual - wanted, flip, achieved, target
+        if directions is None:
+            return residual - wanted, flip, achieved, target
+        d_short = _SHORTFALL_DEG * np.where(
+            played[:, None, :], d_target - d_achieved, 0.0
+        )
+        d_residual = np.stack(
+            (
+                d_flip[each, :, lowest]
+                + np.where(echo[:, None] < centre[:, None], d_short, 0.0).sum(axis=2),
+                d_flip[each, :, centres] + d_short[each, :, centres],
+                d_flip[each, :, lengths - 1]
+                + np.where(echo[:, None] > centre[:, None], d_short, 0.0).sum(axis=2),
+            ),
+            axis=1,
+        )
+        return residual - wanted, flip, achieved, target, d_residual, d_flip
 
     def accepted(
         self, controls: np.ndarray, rows: np.ndarray
@@ -198,34 +286,23 @@ class _Trains:
     def newton(self, controls: np.ndarray, rows: np.ndarray) -> np.ndarray:
         """The first two controls of ``rows`` by damped Newton steps, in place.
 
-        The Jacobian is differenced, and a step is halved until it brings
-        the residual down: the residual has kinks, where the lowest angle
-        moves to another echo or an echo comes within reach. A train stops
-        at its own residual and takes no further part, so what it converges
-        to does not depend on the batch it was solved in. Returns which
-        trains converged.
+        The Jacobian is carried through the inversion with the residual, and
+        a step is halved until it brings the residual down: the residual has
+        kinks, where the lowest angle moves to another echo or an echo comes
+        within reach. A train stops at its own residual and takes no further
+        part, so what it converges to does not depend on the batch it was
+        solved in. Returns which trains converged.
         """
         active = np.arange(len(rows))
-        base = self._opening(controls, rows)
         converged = np.zeros(len(rows), dtype=bool)
-        offsets = _STEP_DEG * np.eye(3)[:2]
         for _ in range(_NEWTON_STEPS):
+            if not active.size:
+                break
+            base, jacobian = self._opening_slopes(controls[active], rows[active])
             with np.errstate(invalid="ignore"):
                 done = np.abs(base).max(axis=1) < _CONVERGED_DEG
             converged[active[done]] = True
-            active, base = active[~done], base[~done]
-            if not active.size:
-                break
-            count = active.size
-            probes = np.concatenate([controls[active] + offset for offset in offsets])
-            probed = self._opening(probes, np.tile(rows[active], 2))
-            jacobian = np.stack(
-                [
-                    (probed[:count] - base) / _STEP_DEG,
-                    (probed[count:] - base) / _STEP_DEG,
-                ],
-                axis=-1,
-            )
+            active, base, jacobian = active[~done], base[~done], jacobian[~done]
             with np.errstate(invalid="ignore"):
                 determinant = np.linalg.det(jacobian)
                 solvable = (
@@ -249,12 +326,20 @@ class _Trains:
                 with np.errstate(invalid="ignore"):
                     better = np.linalg.norm(tried, axis=1) < size[pending]
                 controls[active[pending[better]]] = trial[better]
-                base[pending[better]] = tried[better]
                 taken[pending[better]] = True
                 pending = pending[~better]
             # A train no step improves has stalled, and is left where it is.
-            active, base = active[taken], base[taken]
+            active = active[taken]
         return converged
+
+    def _opening_slopes(
+        self, controls: np.ndarray, rows: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """The two residuals of :meth:`_opening`, and their 2 x 2 Jacobian."""
+        residual, d_residual, _, _ = self.slopes(
+            controls, rows, np.eye(4)[:2], opening=True
+        )
+        return residual[:, :2], d_residual[:, :2, :]
 
     def hybrid(self, row: int) -> np.ndarray:
         """The first two controls of one train from MINPACK's hybrid method.
@@ -266,11 +351,12 @@ class _Trains:
         rows = np.array([row])
         trial = self.wanted[row : row + 1].copy()
 
-        def residual(controls: np.ndarray) -> np.ndarray:
+        def residual(controls: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
             trial[0, :2] = controls
-            return self._opening(trial, rows)[0]
+            value, jacobian = self._opening_slopes(trial, rows)
+            return value[0], jacobian[0]
 
-        trial[0, :2] = root(residual, self.wanted[row, :2], tol=1e-9).x
+        trial[0, :2] = root(residual, self.wanted[row, :2], jac=True, tol=1e-9).x
         return trial
 
     def closing(self, controls: np.ndarray, rows: np.ndarray) -> None:
@@ -331,7 +417,29 @@ class _Trains:
             if self.newton(trial, one)[0]:
                 controls[one] = trial
         self.closing(controls, rows)
+        self.controls = controls
         return self.accepted(controls, rows)[::-1]
+
+    def jacobian(self) -> np.ndarray:
+        """Derivatives of the solved flip angles with respect to the three asked for.
+
+        The controls solve ``g(c, w) = w``, with ``g`` the three angles the
+        train plays; the maximum angle ``w[2]`` also enters ``g`` directly, as
+        the first pulse and through the opening transient. By the implicit
+        function theorem the controls move by ``G_c^-1 (I - G_w)`` and the
+        angles by ``F_c`` of that plus ``F_w``. Returns ``(trains, echoes,
+        3)``, in degrees per degree of the minimum, centre and maximum angle.
+        """
+        rows = np.arange(len(self.lengths))
+        _, d_residual, _, d_flip = self.slopes(self.controls, rows, np.eye(4))
+        moved = np.broadcast_to(np.eye(3), (len(rows), 3, 3)).copy()
+        moved[:, :, 2] -= d_residual[:, :, 3]
+        with np.errstate(invalid="ignore"):
+            controls = np.linalg.solve(d_residual[:, :, :3], moved)
+        slopes = np.einsum("tke,tkw->tew", d_flip[:, :3], controls)
+        slopes[..., 2] += d_flip[:, 3]
+        played = np.arange(d_flip.shape[2])[None, :] < self.lengths[:, None]
+        return np.where(played[..., None], slopes, 0.0)
 
 
 def _integers(values: npt.ArrayLike, name: str) -> np.ndarray:
@@ -404,7 +512,8 @@ def busse_flips(
     startup_echoes: npt.ArrayLike = 6,
     initial_decay: npt.ArrayLike = 1.3,
     threads: int = AUTO_THREADS,
-) -> np.ndarray:
+    jacobian: bool = False,
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     """Variable refocusing flip angles of a long echo train, after Busse.
 
     The echo signal is prescribed without relaxation: an opening transient
@@ -440,12 +549,20 @@ def busse_flips(
         Time constant of the opening transient, in echoes.
     threads : int, default=0
         Threads to spread the trains over; 0 sizes the pool to the batch.
+    jacobian : bool, default=False
+        Also return the derivatives of the flip angles with respect to
+        ``min_flip``, ``centre_flip`` and ``max_flip``.
 
     Returns
     -------
-    numpy.ndarray
+    flip : numpy.ndarray
         Flip angles in degrees: shape ``(length,)`` for one train, and
         ``(..., max(length))`` for a batch, zero past each train's last pulse.
+    jacobian : numpy.ndarray
+        Only with ``jacobian``: shape ``(..., max(length), 3)``, in degrees per
+        degree of ``min_flip``, ``centre_flip`` and ``max_flip``. It is exact,
+        carried through the inversion with the angles, and holds where the
+        lowest angle stays at the same echo.
 
     Raises
     ------
@@ -503,7 +620,8 @@ def busse_flips(
         raise ValueError(
             "centre_echo must be after the sixth pulse and before the last"
         )
-    flip, feasible = _Trains(lengths, centres, wanted, decay, threads).solve()
+    trains = _Trains(lengths, centres, wanted, decay, threads)
+    flip, feasible = trains.solve()
     if not np.all(feasible):
         missing = np.flatnonzero(~feasible)
         raise ValueError(
@@ -514,7 +632,10 @@ def busse_flips(
                 else f"trains {', '.join(map(str, missing[:8]))}"
             )
         )
-    return flip.reshape(*shape, flip.shape[-1])
+    flip = flip.reshape(*shape, flip.shape[-1])
+    if jacobian:
+        return flip, trains.jacobian().reshape(*flip.shape, 3)
+    return flip
 
 
 def busse_centre_echo(
