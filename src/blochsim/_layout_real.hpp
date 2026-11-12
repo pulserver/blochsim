@@ -23,7 +23,10 @@ struct Params {
     const float *d_t1, *d_t2, *d_m0, *d_b1, *d_inversion_efficiency, *d_diffusion, *d_duration, *d_flip;
     const int *kind, *output_index, *shim_index;
     const unsigned char* action;
-    float *output_real, *output_imag;
+    // Each sample as a complex number, real then imaginary; and the complex
+    // factor each sample is multiplied by, or null for none.
+    float* output;
+    const float* sample_factor;
     int atom_count, train_count, event_count, output_count, state_count, width;
     bool single_train, atom_stride, shimmed, diffusing, transmit, density, inverting;
 };
@@ -123,12 +126,15 @@ __device__ __forceinline__ void real_loop(const Params& p) {
     float held[Y];
     int run_start = 0, run_len = 0;
     auto flush = [&]() {
+        // The signal is i times what a thread holds, before its factor.
+        const float2 factor = p.sample_factor && state < run_len
+                                  ? reinterpret_cast<const float2*>(p.sample_factor)[run_start + state]
+                                  : make_float2(1.0f, 0.0f);
 #pragma unroll
         for (int y = 0; y < Y; ++y) {
             if (state < run_len && active[y]) {
                 const long at_out = static_cast<long>(problem[y]) * p.output_count + run_start + state;
-                p.output_real[at_out] = 0.0f;
-                p.output_imag[at_out] = held[y];
+                reinterpret_cast<float2*>(p.output)[at_out] = make_float2(-factor.y * held[y], factor.x * held[y]);
             }
         }
         run_len = 0;

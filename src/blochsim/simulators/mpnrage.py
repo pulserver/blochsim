@@ -4,8 +4,6 @@ from __future__ import annotations
 
 __all__ = ["MPnRAGESimulator"]
 
-from collections.abc import Mapping
-from typing import Any
 
 import numpy.typing as npt
 import torch
@@ -71,6 +69,7 @@ class MPnRAGESimulator(Simulator):
         operators=SPOILED,
     )
     states = 1
+    receiver = 1j
 
     def layout(
         self,
@@ -107,7 +106,3 @@ class MPnRAGESimulator(Simulator):
                 self.operators.readout(turns[index], duration_s=spacing_s[index])
             )
         return parts
-
-    def evaluate(self, properties: Mapping[str, Any], **sequence: Any) -> torch.Tensor:
-        """Return the signal at every shot."""
-        return 1j * super().evaluate(properties, **sequence)

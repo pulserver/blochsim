@@ -364,16 +364,20 @@ def simulate(
     dynamic: Any = None,
     features: frozenset[str] | None = None,
     pools: Any = None,
+    factor: torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Run a packed state machine on CUDA and return complex signals.
 
     ``real_axis`` of 1 selects the real-subspace kernel; see
     ``real_subspace_axis`` for when that is legitimate.
+
+    ``factor`` is a complex number per output sample, ``(output_count,)``,
+    that multiplies the signal; ``None`` leaves it as the kernels produce it.
     """
     if pools is not None:
         from . import _pools_gpu
 
-        return _pools_gpu.simulate(
+        signal = _pools_gpu.simulate(
             tissue,
             events,
             state_count=state_count,
@@ -385,13 +389,25 @@ def simulate(
             features=features,
             pools=pools,
         )
+        return signal if factor is None else signal * factor
     train_count = _train_count(events)
     atom_count = tissue[0].numel()
-    output_real = torch.empty(
-        _output_shape(train_count, atom_count, output_count),
-        dtype=torch.float32,
-        device=tissue[0].device,
-    )
+    shape = _output_shape(train_count, atom_count, output_count)
+    if real_axis == 1:
+        signal = torch.empty(shape, dtype=torch.complex64, device=tissue[0].device)
+        _simulate_real(
+            tissue,
+            events,
+            signal,
+            state_count=state_count,
+            output_count=output_count,
+            atom_count=atom_count,
+            geometry=geometry,
+            features=features,
+            factor=factor,
+        )
+        return signal
+    output_real = torch.empty(shape, dtype=torch.float32, device=tissue[0].device)
     output_imag = torch.empty_like(output_real)
     simulate_into(
         tissue,
@@ -400,7 +416,6 @@ def simulate(
         output_imag,
         state_count=state_count,
         output_count=output_count,
-        real_axis=real_axis,
         atom_count=atom_count,
         geometry=geometry,
         profile=profile,
@@ -409,7 +424,60 @@ def simulate(
         dynamic=dynamic,
         features=features,
     )
-    return torch.complex(output_real, output_imag)
+    signal = torch.complex(output_real, output_imag)
+    return signal if factor is None else signal * factor
+
+
+def _simulate_real(
+    tissue: tuple[torch.Tensor, ...],
+    events: tuple[torch.Tensor, ...],
+    signal: torch.Tensor,
+    *,
+    state_count: int,
+    output_count: int,
+    atom_count: int,
+    geometry: Geometry,
+    features: frozenset[str] | None,
+    factor: torch.Tensor | None,
+) -> None:
+    """Run the real-subspace kernel into a complex signal the caller owns.
+
+    The kernel writes each sample as a complex number with its ``factor``
+    already applied.
+    """
+    t1, t2, m0, b1, _, _, inversion_efficiency, diffusion = tissue[:8]
+    duration, kind, flip, _, action, output_index, shim_index = events[:7]
+    train_count = _train_count(events)
+    block_states = next_power_of_2(state_count)
+    problems = _problems_per_program(block_states, _epg_real_kernel)
+    grid = (cdiv(train_count * atom_count, problems),)
+    _epg_real_kernel[grid](
+        t1,
+        t2,
+        m0,
+        b1,
+        inversion_efficiency,
+        diffusion,
+        duration,
+        kind,
+        flip,
+        action,
+        output_index,
+        shim_index,
+        torch.view_as_real(signal),
+        None if factor is None else torch.view_as_real(factor.to(torch.complex64)),
+        atom_count,
+        train_count,
+        kind.numel(),
+        output_count,
+        state_count=state_count,
+        single_train=train_count == 1,
+        atom_stride=_atom_stride(tissue),
+        shimmed=_shim_count(tissue) > 1,
+        **_only_scalars(_feature_flags(features, geometry)),
+        block_states=block_states,
+        problems=problems,
+    )
 
 
 def simulate_into(
@@ -420,7 +488,6 @@ def simulate_into(
     *,
     state_count: int,
     output_count: int,
-    real_axis: int | None,
     atom_count: int,
     geometry: Geometry = NO_GEOMETRY,
     profile: Any = None,
@@ -473,9 +540,7 @@ def simulate_into(
     pools = _pool_flag(lineshape, exchanging)
     block_states = next_power_of_2(state_count)
     total = train_count * atom_count
-    problems = _problems_per_program(
-        block_states, _epg_real_kernel if real_axis == 1 else _epg_kernel
-    )
+    problems = _problems_per_program(block_states, _epg_kernel)
     grid = (cdiv(total, problems),)
     # A kernel argument has to be a tensor even where the branch reading it is
     # compiled out, so an unprofiled launch passes one it already has.
@@ -497,36 +562,6 @@ def simulate_into(
     # are taken once here, in double precision, rather than in every program.
     phase_cos = torch.cos(phase.double()).to(torch.float32)
     phase_sin = torch.sin(phase.double()).to(torch.float32)
-
-    if real_axis == 1:
-        _epg_real_kernel[grid](
-            t1,
-            t2,
-            m0,
-            b1,
-            inversion_efficiency,
-            diffusion,
-            duration,
-            kind,
-            flip,
-            action,
-            output_index,
-            shim_index,
-            output_real,
-            output_imag,
-            atom_count,
-            train_count,
-            kind.numel(),
-            output_count,
-            state_count=state_count,
-            single_train=train_count == 1,
-            atom_stride=_atom_stride(tissue),
-            shimmed=_shim_count(tissue) > 1,
-            **_only_scalars(_feature_flags(features, geometry)),
-            block_states=block_states,
-            problems=problems,
-        )
-        return
 
     _epg_kernel[grid](
         t1,
@@ -638,11 +673,23 @@ def simulate_jvp(
         )
     train_count = _train_count(events)
     atom_count = tissue[0].numel()
-    output_real = torch.empty(
-        _output_shape(train_count, atom_count, output_count),
-        dtype=torch.float32,
-        device=tissue[0].device,
-    )
+    shape = _output_shape(train_count, atom_count, output_count)
+    if real_axis == 1:
+        tangent = torch.empty(shape, dtype=torch.complex64, device=tissue[0].device)
+        _simulate_real_jvp(
+            tissue,
+            events,
+            tissue_tangents,
+            event_tangents,
+            tangent,
+            state_count=state_count,
+            output_count=output_count,
+            atom_count=atom_count,
+            geometry=geometry,
+            features=features,
+        )
+        return tangent
+    output_real = torch.empty(shape, dtype=torch.float32, device=tissue[0].device)
     output_imag = torch.empty_like(output_real)
     simulate_jvp_into(
         tissue,
@@ -653,7 +700,6 @@ def simulate_jvp(
         output_imag,
         state_count=state_count,
         output_count=output_count,
-        real_axis=real_axis,
         atom_count=atom_count,
         geometry=geometry,
         profile=profile,
@@ -666,6 +712,64 @@ def simulate_jvp(
     return torch.complex(output_real, output_imag)
 
 
+def _simulate_real_jvp(
+    tissue: tuple[torch.Tensor, ...],
+    events: tuple[torch.Tensor, ...],
+    tissue_tangents: tuple[torch.Tensor, ...],
+    event_tangents: tuple[torch.Tensor, torch.Tensor, torch.Tensor],
+    tangent: torch.Tensor,
+    *,
+    state_count: int,
+    output_count: int,
+    atom_count: int,
+    geometry: Geometry,
+    features: frozenset[str] | None,
+) -> None:
+    """Run the real-subspace Jacobian-vector product into a complex tangent."""
+    t1, t2, m0, b1, _, _, inversion_efficiency, diffusion = tissue[:8]
+    duration, kind, flip, _, action, output_index, shim_index = events[:7]
+    tangent_duration, tangent_flip, _ = event_tangents
+    train_count = _train_count(events)
+    block_states = next_power_of_2(state_count)
+    problems = _problems_per_program(block_states, _epg_real_jvp_kernel)
+    grid = (cdiv(train_count * atom_count, problems),)
+    _epg_real_jvp_kernel[grid](
+        t1,
+        t2,
+        m0,
+        b1,
+        inversion_efficiency,
+        diffusion,
+        duration,
+        kind,
+        flip,
+        action,
+        output_index,
+        shim_index,
+        tissue_tangents[0],
+        tissue_tangents[1],
+        tissue_tangents[2],
+        tissue_tangents[3],
+        tissue_tangents[6],
+        tissue_tangents[7],
+        tangent_duration,
+        tangent_flip,
+        torch.view_as_real(tangent),
+        None,
+        atom_count,
+        train_count,
+        kind.numel(),
+        output_count,
+        state_count=state_count,
+        single_train=train_count == 1,
+        atom_stride=_atom_stride(tissue, tissue_tangents),
+        shimmed=_shim_count(tissue) > 1,
+        **_only_scalars(_feature_flags(features, geometry)),
+        block_states=block_states,
+        problems=problems,
+    )
+
+
 def simulate_jvp_into(
     tissue: tuple[torch.Tensor, ...],
     events: tuple[torch.Tensor, ...],
@@ -676,7 +780,6 @@ def simulate_jvp_into(
     *,
     state_count: int,
     output_count: int,
-    real_axis: int | None,
     atom_count: int,
     geometry: Geometry = NO_GEOMETRY,
     profile: Any = None,
@@ -726,48 +829,8 @@ def simulate_jvp_into(
     shims = _shim_count(tissue)
     block_states = next_power_of_2(state_count)
     total = train_count * atom_count
-    problems = _problems_per_program(
-        block_states, _epg_real_jvp_kernel if real_axis == 1 else _epg_jvp_kernel
-    )
+    problems = _problems_per_program(block_states, _epg_jvp_kernel)
     grid = (cdiv(total, problems),)
-
-    if real_axis == 1:
-        _epg_real_jvp_kernel[grid](
-            t1,
-            t2,
-            m0,
-            b1,
-            inversion_efficiency,
-            diffusion,
-            duration,
-            kind,
-            flip,
-            action,
-            output_index,
-            shim_index,
-            tissue_tangents[0],
-            tissue_tangents[1],
-            tissue_tangents[2],
-            tissue_tangents[3],
-            tissue_tangents[6],
-            tissue_tangents[7],
-            tangent_duration,
-            tangent_flip,
-            output_real,
-            output_imag,
-            atom_count,
-            train_count,
-            kind.numel(),
-            output_count,
-            state_count=state_count,
-            single_train=train_count == 1,
-            atom_stride=_atom_stride(tissue, tissue_tangents),
-            shimmed=shims > 1,
-            **_only_scalars(_feature_flags(features, geometry)),
-            block_states=block_states,
-            problems=problems,
-        )
-        return
 
     table = None if profile is None else profile.packed(t1.device)
     pairs = None if dynamic is None else dynamic.packed(t1.device)

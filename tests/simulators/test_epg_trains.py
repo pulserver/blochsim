@@ -283,3 +283,30 @@ def test_trains_with_their_own_tr_each_settle_as_if_played_alone():
             flip=flips_deg[train], ESP=10.0, TR=float(tr_ms[train, 0])
         ).simulate(**TISSUE)
         _close(np.asarray(batched)[train], alone)
+
+
+@pytest.mark.parametrize("device", ["cpu", "cuda"])
+@pytest.mark.parametrize("flip", [10.0, 60.0])
+def test_a_fingerprinting_sample_after_an_inversion_is_real_and_turned_by_the_flip(
+    device, flip
+):
+    import torch
+
+    from blochsim.simulators import MRFSimulator
+
+    if device == "cuda" and not torch.cuda.is_available():
+        pytest.skip("no CUDA device")
+    tissue = torch.ones(64, device=device)
+    flips = torch.tensor([flip, flip])
+    signal = MRFSimulator(flip=flips, TR=1e-6).simulate(
+        T1=1e12 * tissue, T2=1e12 * tissue
+    )
+    first = math.sin(math.radians(flip))
+    # The first pulse turns the inverted magnetization into the transverse
+    # plane; the second reads what the first left along z, and the spoiler has
+    # moved the first pulse's transverse state off the echo.
+    expected = torch.tensor(
+        [first, first * math.cos(math.radians(flip))], device=device
+    ).expand(signal.shape)
+    torch.testing.assert_close(signal.abs(), expected)
+    assert torch.all(signal.imag.abs() < 1e-6)

@@ -4,8 +4,10 @@
 namespace blochsim_layout {
 namespace {
 
+// Held to the registers that let eight programs share an SM; uncapped, nvcc
+// spends more and fewer programs hide each other's latency.
 template <class T, bool MAPS, int Y, bool ONE_TRAIN>
-__global__ void __launch_bounds__(32 * WARPS) real_kernel(layout_real::Params p) {
+__global__ void __launch_bounds__(32 * WARPS, 8) real_kernel(layout_real::Params p) {
     layout_real::real_loop<T, MAPS, Y, ONE_TRAIN>(p);
 }
 

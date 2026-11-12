@@ -601,14 +601,28 @@ def _one_axis(packed: _PackedEvents) -> tuple[_PackedEvents, torch.Tensor | None
     if corrections is None:
         return packed, None
     out_by, flips, samples = corrections
-    return (
-        replace(
-            packed,
-            flip=(packed.flip * flips).contiguous(),
-            phase=(packed.phase - out_by * torch.pi).contiguous(),
-        ),
-        samples,
+
+    def turned() -> tuple[torch.Tensor, torch.Tensor]:
+        return (
+            (packed.flip * flips).contiguous(),
+            (packed.phase - out_by * torch.pi).contiguous(),
+        )
+
+    # The turned buffers are kept with the stream they came from, so what is
+    # remembered against them downstream -- the pulse axis above all, which is
+    # a device round trip -- is read once per stream rather than once per call.
+    # A buffer carrying a graph is turned afresh, so no call backpropagates
+    # through another's.
+    flip, phase = (
+        turned()
+        if packed.flip.requires_grad or packed.phase.requires_grad
+        else _remembered(
+            "turned onto one axis",
+            (packed.kind, packed.flip, packed.phase, packed.action),
+            turned,
+        )
     )
+    return replace(packed, flip=flip, phase=phase), samples
 
 
 def simulate_native(
@@ -630,6 +644,7 @@ def simulate_native(
     record_every: bool = False,
     pools: int = 0,
     extra_pools: tuple[torch.Tensor, ...] | None = None,
+    receiver: complex = 1.0,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor] | None:
     """Run a fused CPU/CUDA state machine with explicit AD rules.
 
@@ -650,6 +665,8 @@ def simulate_native(
     geometry, how far it winds -- so the two must describe the same sequence;
     what is skipped is walking the events again to rebuild what only their
     values changed.
+
+    ``receiver`` is the constant every recorded sample is multiplied by.
 
     ``pools`` counts the chemically exchanging pools the tissue carries from
     pool B on, and ``extra_pools`` holds the prepared buffers of pools C to E.
@@ -766,6 +783,7 @@ def simulate_native(
         features,
         pool_values,
         pool_index,
+        _sample_factor(samples, receiver, packed.output_count, device),
     )
     leading = (packed.train_count,) if packed.is_batched else ()
     if locations > 1:
@@ -775,8 +793,6 @@ def simulate_native(
     signal = signal.reshape(*leading, *output_shape, packed.output_count)
     if dephasing is not None:
         signal = signal * dephasing
-    if samples is not None:
-        signal = signal * samples
     return (
         signal,
         packed.time_us,
@@ -1491,6 +1507,7 @@ class _NativeEpg(torch.autograd.Function):
         features: frozenset[str] | None,
         pool_values: torch.Tensor | None = None,
         pool_index: torch.Tensor | None = None,
+        factor: torch.Tensor | None = None,
     ) -> torch.Tensor:
         tissue = (
             t1,
@@ -1535,6 +1552,7 @@ class _NativeEpg(torch.autograd.Function):
             exchanging=exchanging,
             features=features,
             pools=pools_of(pool_values, pool_index, exchanging),
+            factor=factor,
         )
 
     @staticmethod
@@ -1559,6 +1577,9 @@ class _NativeEpg(torch.autograd.Function):
         ctx.pool_index = (
             inputs[_PACKED_COUNT + 11] if len(inputs) > _PACKED_COUNT + 11 else None
         )
+        ctx.factor = (
+            inputs[_PACKED_COUNT + 12] if len(inputs) > _PACKED_COUNT + 12 else None
+        )
 
     @staticmethod
     @_under_recorded_policy
@@ -1570,7 +1591,7 @@ class _NativeEpg(torch.autograd.Function):
             else tangents[index].to(saved[index]).contiguous()
             for index in _FLOAT_INPUTS
         )
-        return _NativeEpgJvp.apply(
+        tangent = _NativeEpgJvp.apply(
             *saved,
             *float_tangents,
             ctx.state_count,
@@ -1593,12 +1614,15 @@ class _NativeEpg(torch.autograd.Function):
                 ctx.pool_values,
             ),
         )
+        return tangent if ctx.factor is None else tangent * ctx.factor
 
     @staticmethod
     @_under_recorded_policy
     def backward(ctx: Any, grad_output: torch.Tensor) -> tuple[Any, ...]:
         saved = ctx.saved_tensors
         wanted = _wanted(ctx.needs_input_grad)
+        if ctx.factor is not None:
+            grad_output = grad_output * ctx.factor.conj()
         fused = _NativeEpgVjp.apply(
             *saved,
             grad_output,
@@ -1636,6 +1660,7 @@ class _NativeEpg(torch.autograd.Function):
             None,
             None,
             pool_grad if _needs(ctx, _PACKED_COUNT + 10) else None,
+            None,
             None,
         )
 
@@ -3047,6 +3072,7 @@ def _run_packed(
     dynamic: Any = None,
     features: frozenset[str] | None = None,
     pools: PoolTables | None = None,
+    factor: torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Run the forward state machine.
 
@@ -3060,6 +3086,9 @@ def _run_packed(
 
     ``features`` names the terms the tissue gives anything to do, and the
     kernels carry those and no others. ``None`` leaves every term in.
+
+    ``factor`` is a complex number per output sample that multiplies the
+    signal.
     """
     profile = _tables(profile, events, dynamic)
     if real_axis is None:
@@ -3108,6 +3137,7 @@ def _run_packed(
                         dynamic=piece["dynamic"],
                         features=features,
                         pools=piece["pools"],
+                        factor=_on(factor, device),
                     ),
                 )
             from ._epg_gpu import simulate
@@ -3126,6 +3156,7 @@ def _run_packed(
                     dynamic=piece["dynamic"],
                     features=features,
                     pools=piece["pools"],
+                    factor=_on(factor, device),
                 ),
             )
 
@@ -3163,6 +3194,7 @@ def _run_packed(
                         lineshape=lineshape,
                         exchanging=exchanging,
                         features=features,
+                        factor=_on(factor, device),
                     ),
                 )
                 for begin, end, device in shards
@@ -3181,6 +3213,7 @@ def _run_packed(
             dynamic=dynamic,
             features=features,
             pools=pools,
+            factor=factor,
         )
     from blochsim import _epg_cpu
 
@@ -3225,7 +3258,33 @@ def _run_packed(
         feature_mask(features, geometry),
         *_pool_counts(pools),
     )
-    return torch.complex(output_real, output_imag)
+    signal = torch.complex(output_real, output_imag)
+    return signal if factor is None else signal * factor
+
+
+def _sample_factor(
+    samples: torch.Tensor | None,
+    receiver: complex,
+    output_count: int,
+    device: torch.device,
+) -> torch.Tensor | None:
+    """The complex number each recorded sample is multiplied by, or ``None``.
+
+    ``samples`` is the sign the packing moved off the pulses, one per sample,
+    and ``receiver`` the constant the caller asked for.
+    """
+    if samples is None and receiver == 1:
+        return None
+    if samples is None:
+        return torch.full(
+            (output_count,), complex(receiver), dtype=torch.complex64, device=device
+        )
+    return (samples * complex(receiver)).to(torch.complex64).contiguous()
+
+
+def _on(value: torch.Tensor | None, device: torch.device) -> torch.Tensor | None:
+    """``value`` on ``device``, or ``None``."""
+    return None if value is None else value.to(device)
 
 
 def _card_vjp(

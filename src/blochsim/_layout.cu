@@ -140,8 +140,8 @@ layout_real::Params real_params(const Reader& r) {
     p.output_index = r.ints("output_index");
     p.shim_index = r.ints("shim_index");
     p.action = static_cast<const unsigned char*>(r.a[r.at("action")].p);
-    p.output_real = r.outputs("output_real");
-    p.output_imag = r.outputs("output_imag");
+    p.output = r.outputs("output");
+    p.sample_factor = r.floats("sample_factor");
     p.atom_count = static_cast<int>(r.integer("atom_count"));
     p.train_count = static_cast<int>(r.integer("train_count"));
     p.event_count = static_cast<int>(r.integer("event_count"));
