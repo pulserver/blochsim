@@ -499,8 +499,9 @@
 turn from the refocusing pulses, each pulse midway between two echoes. The
 extended phase graph is inverted one echo at a time: the states before a
 pulse fix the echo after it as a function of its flip angle alone, and the
-smallest angle in [0, 180] degrees giving the prescribed amplitude is
-taken. An amplitude no angle reaches gets the angle that comes nearest,
+smallest angle in [0, 180] degrees, or in [0, <code class="docutils literal notranslate"><span class="pre">maximum_flip</span></code>], giving
+the prescribed amplitude is taken. An amplitude no angle reaches gets the
+angle that comes nearest,
 so the returned echoes are the test of a prescription: they equal it
 exactly where it can be met.</p>
 <dl class="field-list simple">
@@ -523,6 +524,10 @@ what follows a train’s last echo is returned as zero.</p></li>
 each a change of <code class="docutils literal notranslate"><span class="pre">signal</span></code>. Asks for the derivatives as well.</p></li>
 <li><p><strong>first_flip_tangents</strong> (<em>array-like</em><em>, </em><em>default=None</em>) – The change of <code class="docutils literal notranslate"><span class="pre">first_flip</span></code> along each direction, in degrees, shape
 <code class="docutils literal notranslate"><span class="pre">(directions,</span> <span class="pre">...)</span></code>; none by default. Needs <code class="docutils literal notranslate"><span class="pre">signal_tangents</span></code>.</p></li>
+<li><p><strong>maximum_flip</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em> or </em><em>array-like</em><em>, </em><em>default=None</em>) – Largest flip angle a solved pulse may take, in degrees, in (0, 180],
+one per train; 180 by default. A pulse held at it does not move with
+the prescription, so its derivative is zero. <code class="docutils literal notranslate"><span class="pre">first_flip</span></code> is not
+bounded by it.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

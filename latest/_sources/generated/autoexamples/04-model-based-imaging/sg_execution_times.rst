@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:08.182** total execution time for 2 files **from generated/autoexamples/04-model-based-imaging**:
+**00:05.656** total execution time for 2 files **from generated/autoexamples/04-model-based-imaging**:
 
 .. container::
 
@@ -33,8 +33,8 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_generated_autoexamples_04-model-based-imaging_02-nonlinear-inversion.py` (``02-nonlinear-inversion.py``)
-     - 00:05.320
+     - 00:03.491
      - 0.0
    * - :ref:`sphx_glr_generated_autoexamples_04-model-based-imaging_01-linear-subspace.py` (``01-linear-subspace.py``)
-     - 00:02.862
+     - 00:02.165
      - 0.0

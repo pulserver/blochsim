@@ -488,8 +488,12 @@
     <span class="n">first_rad</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">relax</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AUTO_THREADS</span><span class="p">,</span>
+    <span class="n">maximum_rad</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Flip angles (rad) and achieved echoes of ``(trains, echoes)`` targets."""</span>
+<span class="w">    </span><span class="sd">"""Flip angles (rad) and achieved echoes of ``(trains, echoes)`` targets.</span>
+
+<span class="sd">    ``maximum_rad``, one per train, bounds every solved angle; none is pi.</span>
+<span class="sd">    """</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lengths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
     <span class="n">count</span><span class="p">,</span> <span class="n">echoes</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">shape</span>
@@ -497,11 +501,14 @@
     <span class="n">achieved</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">first_rad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">first_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">first_rad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">maximum_rad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maximum_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">maximum_rad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">inverse</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">lengths</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">target</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="mi">0</span> <span class="k">if</span> <span class="n">first_rad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">first_rad</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="mi">0</span> <span class="k">if</span> <span class="n">maximum_rad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">maximum_rad</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">flip</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">achieved</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
         <span class="p">),</span>
@@ -521,6 +528,7 @@
     <span class="n">d_first_rad</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">relax</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AUTO_THREADS</span><span class="p">,</span>
+    <span class="n">maximum_rad</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""What :func:`inverse_rows` returns, and its derivatives along directions.</span>
 
@@ -545,11 +553,14 @@
         <span class="n">d_first_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">d_first_rad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">d_first_rad</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">directions</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"first-angle tangents must be (trains, directions)"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">maximum_rad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maximum_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">maximum_rad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">inverse_tangents</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">lengths</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">target</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="mi">0</span> <span class="k">if</span> <span class="n">first_rad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">first_rad</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="mi">0</span> <span class="k">if</span> <span class="n">maximum_rad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">maximum_rad</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">d_target</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="mi">0</span> <span class="k">if</span> <span class="n">d_first_rad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">d_first_rad</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">flip</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
@@ -654,6 +665,7 @@
     <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AUTO_THREADS</span><span class="p">,</span>
     <span class="n">signal_tangents</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">first_flip_tangents</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">maximum_flip</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Refocusing flip angles whose echoes take prescribed amplitudes.</span>
 
@@ -661,8 +673,9 @@
 <span class="sd">    turn from the refocusing pulses, each pulse midway between two echoes. The</span>
 <span class="sd">    extended phase graph is inverted one echo at a time: the states before a</span>
 <span class="sd">    pulse fix the echo after it as a function of its flip angle alone, and the</span>
-<span class="sd">    smallest angle in [0, 180] degrees giving the prescribed amplitude is</span>
-<span class="sd">    taken. An amplitude no angle reaches gets the angle that comes nearest,</span>
+<span class="sd">    smallest angle in [0, 180] degrees, or in [0, ``maximum_flip``], giving</span>
+<span class="sd">    the prescribed amplitude is taken. An amplitude no angle reaches gets the</span>
+<span class="sd">    angle that comes nearest,</span>
 <span class="sd">    so the returned echoes are the test of a prescription: they equal it</span>
 <span class="sd">    exactly where it can be met.</span>
 
@@ -695,6 +708,11 @@
 <span class="sd">    first_flip_tangents : array-like, default=None</span>
 <span class="sd">        The change of ``first_flip`` along each direction, in degrees, shape</span>
 <span class="sd">        ``(directions, ...)``; none by default. Needs ``signal_tangents``.</span>
+<span class="sd">    maximum_flip : float or array-like, default=None</span>
+<span class="sd">        Largest flip angle a solved pulse may take, in degrees, in (0, 180],</span>
+<span class="sd">        one per train; 180 by default. A pulse held at it does not move with</span>
+<span class="sd">        the prescription, so its derivative is zero. ``first_flip`` is not</span>
+<span class="sd">        bounded by it.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -750,10 +768,17 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">first</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"first_flip must be finite"</span><span class="p">)</span>
     <span class="n">played</span> <span class="o">=</span> <span class="n">_lengths</span><span class="p">(</span><span class="n">lengths</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">echoes</span><span class="p">)</span>
+    <span class="n">maximum</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">maximum_flip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maximum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">maximum_flip</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">maximum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">maximum</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"maximum_flip must lie in (0, 180] degrees"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">signal_tangents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">first_flip_tangents</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"first_flip_tangents needs signal_tangents"</span><span class="p">)</span>
-        <span class="n">flip</span><span class="p">,</span> <span class="n">achieved</span> <span class="o">=</span> <span class="n">inverse_rows</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">played</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">relax</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+        <span class="n">flip</span><span class="p">,</span> <span class="n">achieved</span> <span class="o">=</span> <span class="n">inverse_rows</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">played</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">relax</span><span class="p">,</span> <span class="n">threads</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">flip</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">echoes</span><span class="p">),</span>
             <span class="n">achieved</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">echoes</span><span class="p">),</span>
@@ -777,7 +802,7 @@
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"tangents must be finite"</span><span class="p">)</span>
     <span class="n">flip</span><span class="p">,</span> <span class="n">achieved</span><span class="p">,</span> <span class="n">d_flip</span><span class="p">,</span> <span class="n">d_achieved</span> <span class="o">=</span> <span class="n">inverse_rows_tangents</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">d_target</span><span class="p">,</span> <span class="n">played</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">d_first</span><span class="p">,</span> <span class="n">relax</span><span class="p">,</span> <span class="n">threads</span>
+        <span class="n">target</span><span class="p">,</span> <span class="n">d_target</span><span class="p">,</span> <span class="n">played</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">d_first</span><span class="p">,</span> <span class="n">relax</span><span class="p">,</span> <span class="n">threads</span><span class="p">,</span> <span class="n">maximum</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">back</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
