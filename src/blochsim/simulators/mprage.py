@@ -74,6 +74,7 @@ class MPRAGESimulator(Simulator):
     )
     states = 1
     record = "acquired"
+    receiver = 1j
 
     def layout(
         self,
@@ -125,7 +126,7 @@ class MPRAGESimulator(Simulator):
 
     def evaluate(self, properties: Mapping[str, Any], **sequence: Any) -> torch.Tensor:
         """Return the acquired sample."""
-        return 1j * super().evaluate(properties, **sequence)[..., 0]
+        return super().evaluate(properties, **sequence)[..., 0]
 
 
 # %% private module subroutines

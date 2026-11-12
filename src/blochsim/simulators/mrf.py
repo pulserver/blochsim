@@ -74,6 +74,7 @@ class MRFSimulator(Simulator):
         operators=UNBALANCED,
     )
     states = 10
+    receiver = 1j
 
     def layout(
         self,
@@ -101,4 +102,4 @@ class MRFSimulator(Simulator):
         signal = super().evaluate(properties, **sequence)
         played = self.played(**sequence)
         echoes = torch.atleast_1d(played["flip"]).shape[-1]
-        return 1j * signal[..., -echoes:]
+        return signal[..., -echoes:]

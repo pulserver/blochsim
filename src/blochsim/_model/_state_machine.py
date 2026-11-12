@@ -529,6 +529,9 @@ class Simulator(_SignalModel):
     across_slice: Any = None
     crusher_dephasing_rad: float = 0.0
     voxel_size_m: float | None = None
+    # The constant every recorded sample is multiplied by: the receiver phase
+    # that puts a sequence's signal on the axis its readers expect.
+    receiver: complex = 1.0
 
     # Every attribute the constructor sets has a value here as well, so a
     # closed form that writes an __init__ of its own -- taking the two blocks
@@ -1006,6 +1009,7 @@ class Simulator(_SignalModel):
                     nstates=states,
                     events=events,
                     across_slice=profile,
+                    _receiver=self.receiver,
                     **settings,
                 )
                 .signal

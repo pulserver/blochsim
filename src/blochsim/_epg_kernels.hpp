@@ -9154,7 +9154,7 @@ BSK_HD void _epg_real_vjp_jvp_kernel(float* t1, float* t2, float* m0, float* b1,
     bsk::atomic_add(((grad_tissue_tangent + ((7 + past_transmit) * atom_count)) + atom), grad_damping_tangent, active_atom);
 }
 
-BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* output_real, float* output_imag, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
+BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* output, float* sample_factor, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> alpha{};
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_damping{};
@@ -9302,8 +9302,13 @@ BSK_HD void _epg_real_kernel(float* t1, float* t2, float* m0, float* b1, float* 
             auto out_ = bsk::ld((output_index + event));
             auto output_offset = ((problem * output_count) + out_);
             auto output_mask = bsk::band(bsk::band(active_atom, (state == 0)), (out_ >= 0));
-            bsk::st(((output_real + output_offset) + state), empty, output_mask);
-            bsk::st(((output_imag + output_offset) + state), (atom_m0 * plus), output_mask);
+            auto output_at = (output + ((output_offset + state) * 2));
+            // The signal is i times the state, before its factor.
+            auto factor_real = (sample_factor == nullptr || out_ < 0) ? 1.0f : bsk::ld((sample_factor + (out_ * 2)));
+            auto factor_imag = (sample_factor == nullptr || out_ < 0) ? 0.0f : bsk::ld(((sample_factor + (out_ * 2)) + 1));
+            auto held = (atom_m0 * plus);
+            bsk::st(output_at, (-factor_imag * held), output_mask);
+            bsk::st((output_at + 1), (factor_real * held), output_mask);
         }
         if (bsk::truth((bsk::truth((bsk::band(event_action, 2) != 0)) || bsk::truth((bsk::band(event_action, 16) != 0))))) {
             auto t2_ = _shift_real(plus, minus, state, state_mask, state_count);
@@ -12008,7 +12013,7 @@ BSK_HD void _epg_vjp_kernel(float* t1, float* t2, float* m0, float* b1, float* b
     });
 }
 
-BSK_HD void _epg_real_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* tangent_t1, float* tangent_t2, float* tangent_m0, float* tangent_b1, float* tangent_inversion_efficiency, float* tangent_diffusion, float* tangent_duration, float* tangent_flip, float* output_real, float* output_imag, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
+BSK_HD void _epg_real_jvp_kernel(float* t1, float* t2, float* m0, float* b1, float* inversion_efficiency, float* diffusion, float* duration, std::int32_t* kind, float* flip, std::uint8_t* action, std::int32_t* output_index, std::int32_t* shim_index, float* tangent_t1, float* tangent_t2, float* tangent_m0, float* tangent_b1, float* tangent_inversion_efficiency, float* tangent_diffusion, float* tangent_duration, float* tangent_flip, float* output, float* sample_factor, bsk::index_t atom_count, bsk::index_t train_count, bsk::index_t event_count, bsk::index_t output_count, bsk::index_t state_count, bsk::index_t single_train, bsk::index_t atom_stride, bsk::index_t shimmed, bsk::index_t diffusing, bsk::index_t transmit, bsk::index_t density, bsk::index_t inverting, bsk::index_t block_states, bsk::index_t problems) {
     bsk::V<float, 2> atom_b1{};
     bsk::V<float, 2> atom_damping{};
     bsk::V<float, 2> atom_inversion{};
@@ -12201,8 +12206,13 @@ BSK_HD void _epg_real_jvp_kernel(float* t1, float* t2, float* m0, float* b1, flo
             auto output_offset = ((problem * output_count) + out_);
             auto output_mask = bsk::band(bsk::band(active_atom, (state == 0)), (out_ >= 0));
             auto signal_imag = ((dot_m0 * plus) + (atom_m0 * dot_plus));
-            bsk::st(((output_real + output_offset) + state), empty, output_mask);
-            bsk::st(((output_imag + output_offset) + state), signal_imag, output_mask);
+            auto output_at = (output + ((output_offset + state) * 2));
+            // The signal is i times the state, before its factor.
+            auto factor_real = (sample_factor == nullptr || out_ < 0) ? 1.0f : bsk::ld((sample_factor + (out_ * 2)));
+            auto factor_imag = (sample_factor == nullptr || out_ < 0) ? 0.0f : bsk::ld(((sample_factor + (out_ * 2)) + 1));
+            auto held = signal_imag;
+            bsk::st(output_at, (-factor_imag * held), output_mask);
+            bsk::st((output_at + 1), (factor_real * held), output_mask);
         }
         if (bsk::truth((bsk::truth((bsk::band(event_action, 2) != 0)) || bsk::truth((bsk::band(event_action, 16) != 0))))) {
             auto t4_ = _shift_real(plus, minus, state, state_mask, state_count);

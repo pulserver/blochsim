@@ -374,6 +374,7 @@ class EpgEngine:
         device: torch.device | str | None = None,
         events: Any = None,
         _every: bool = False,
+        _receiver: complex = 1.0,
     ) -> SimulationResult:
         """Walk an event stream and record selected ADC signals.
 
@@ -400,7 +401,7 @@ class EpgEngine:
         if rf_raster_time_s is None:
             rf_raster_time_s = description.rf_raster_time_s
         if repetitions == AUTO:
-            return self._settled(
+            settled = self._settled(
                 description,
                 tissue,
                 record=record,
@@ -409,6 +410,9 @@ class EpgEngine:
                 rf_raster_time_s=rf_raster_time_s,
                 device=device,
             )
+            if _receiver == 1:
+                return settled
+            return replace(settled, signal=settled.signal * _receiver)
         repetitions = _as_integer(repetitions, "repetitions")
         if repetitions < 1:
             raise ValueError("repetitions must be positive")
@@ -487,6 +491,7 @@ class EpgEngine:
             record_every=_every,
             pools=pools,
             extra_pools=extra_pools,
+            receiver=_receiver,
         )
         if accelerated is None:
             raise RuntimeError(
