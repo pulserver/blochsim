@@ -14,6 +14,14 @@
   They run in a new double-precision C++ extension (`_trains_cpu`) on the
   host, take and return NumPy arrays, and solve a batch of trains across
   threads.
+- **Exact derivatives of designed trains.** `prescribed_flips` takes
+  `signal_tangents` (and `first_flip_tangents`) and returns the derivatives of
+  the flip angles and echoes along them; `effective_te` takes `flip_tangents`;
+  `busse_flips(jacobian=True)` returns the derivatives of the train with
+  respect to its lowest, centre and highest angle. They are carried through
+  the kernel's echo-by-echo recursion in forward mode, at the cost of one more
+  state vector per direction, and the shooting that pins a Busse train's three
+  angles takes its Newton Jacobian from them.
 - **Coarse-to-fine dictionary search.** `DictionaryMatcher(coarse=k)` places
   the atoms on the lattice their parameters were simulated on, scores every
   k-th value along each parameter, then the `2k + 1` values around the winner
@@ -28,6 +36,9 @@
 
 ### Fixed
 
+- **Forward mode is quiet on every PyTorch.** The `torch.jit.script`
+  deprecation PyTorch prints when forward mode first loads is silenced
+  whatever warning class it is raised as (a `FutureWarning` on PyTorch 2.15).
 - **`Subspace` round-trips complex signals.** `project` is `signals @ basis.conj()`
   and `expand` is `coefficients @ basis.mT`, so a signal in the span comes back
   unchanged; `modes` is `basis.mH`, which mri-nufft's `MRISubspace` expands

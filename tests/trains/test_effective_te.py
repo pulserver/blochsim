@@ -66,3 +66,26 @@ def test_an_echo_without_signal_has_no_echo_time():
 def test_an_invalid_train_is_refused(arguments):
     with pytest.raises(ValueError):
         effective_te(**({"flip": [120.0, 90.0], "ESP": 4.0} | arguments))
+
+
+def test_tangents_are_the_derivative_of_the_echo_time():
+    rng = np.random.default_rng(4)
+    flip = 60.0 + 100.0 * rng.random((2, 30))
+    directions = rng.standard_normal((3, 2, 30))
+    timing = {"first_ESP": 5.0, "T1": 900.0, "T2": 70.0}
+    equivalent, slopes = effective_te(flip, 4.0, flip_tangents=directions, **timing)
+    np.testing.assert_array_equal(equivalent, effective_te(flip, 4.0, **timing))
+    step = 1e-6
+    for direction in range(3):
+        moved = [
+            effective_te(flip + sign * step * directions[direction], 4.0, **timing)
+            for sign in (1, -1)
+        ]
+        np.testing.assert_allclose(
+            slopes[direction], (moved[0] - moved[1]) / (2 * step), atol=1e-6
+        )
+
+
+def test_tangents_not_shaped_as_the_train_are_refused():
+    with pytest.raises(ValueError, match="flip_tangents"):
+        effective_te(np.full(4, 120.0), 4.0, flip_tangents=np.zeros((1, 5)))
