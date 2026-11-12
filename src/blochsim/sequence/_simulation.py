@@ -798,6 +798,11 @@ def _prepare_pools(
 def _as_float_tensor(value: Any, device: torch.device) -> torch.Tensor:
     if isinstance(value, torch.Tensor):
         return value.to(device=device, dtype=torch.float32)
+    if isinstance(value, (int, float)):
+        # Filled where it lives: a tissue carries some thirty properties left
+        # at a plain number, and a copy of each from the host would wait on
+        # the device every call.
+        return torch.full((), float(value), dtype=torch.float32, device=device)
     return torch.as_tensor(value, dtype=torch.float32, device=device)
 
 

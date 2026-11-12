@@ -93,11 +93,12 @@ endif()
 option(BLOCHSIM_CUDA "Compile the GPU kernels for the card" ${_blochsim_cuda_default})
 
 if(BLOCHSIM_CUDA)
-    # Machine code for 7.5, 8.0 and 9.0, and PTX for 9.0, which the driver
-    # compiles for a card newer than any listed. Code for 8.0 runs on every
-    # 8.x card, so 8.6 and 8.9 take it.
+    # Machine code for 7.5, 8.0, 8.6, 8.9 and 9.0, and PTX for 9.0, which the
+    # driver compiles for a card newer than any listed. An 8.6 or 8.9 card
+    # would run the 8.0 code, but the register allocation nvcc makes for its
+    # own generation is what the EPG kernels' speed turns on.
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-        set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 90)
+        set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90)
     endif()
     enable_language(CUDA)
     find_package(CUDAToolkit REQUIRED)

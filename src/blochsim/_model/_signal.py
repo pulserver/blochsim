@@ -229,16 +229,23 @@ class _SignalModel(ABC):
             return self._shaped(self.evaluate(declared, **sequence), batch)
 
         forward_mode()
-        columns = []
-        signal = None
-        for name in names:
-            tangents = tuple(
-                torch.ones_like(value) if other == name else torch.zeros_like(value)
-                for other, value in zip(names, primals, strict=True)
+        # One direction per property, batched: the signal is simulated once and
+        # only the directional derivatives are taken per property.
+        directions = tuple(
+            torch.stack(
+                [
+                    torch.ones_like(value) if other == name else torch.zeros_like(value)
+                    for name in names
+                ]
             )
-            signal, column = torch.func.jvp(along, primals, tangents)
-            columns.append(column)
-        jacobian = columns[0] if isinstance(diff, str) else torch.stack(columns, dim=-2)
+            for other, value in zip(names, primals, strict=True)
+        )
+
+        def column(*tangents: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+            return torch.func.jvp(along, primals, tangents)
+
+        signal, columns = torch.func.vmap(column, out_dims=(None, 0))(*directions)
+        jacobian = columns[0] if isinstance(diff, str) else columns.movedim(0, -2)
         return like(signal, backend), like(jacobian, backend)
 
     # -- what a subclass does not have to write -----------------------------
