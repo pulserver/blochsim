@@ -12,7 +12,7 @@ __all__ = ["effective_te", "prescribed_flips"]
 import numpy as np
 import numpy.typing as npt
 
-from .._trains_cpu import forward, inverse
+from .._trains_cpu import forward, forward_tangents, inverse, inverse_tangents
 
 #: Let the extension's pool size itself against the work.
 AUTO_THREADS = 0
@@ -95,6 +95,97 @@ def inverse_rows(
     return flip, achieved
 
 
+def inverse_rows_tangents(
+    target: np.ndarray,
+    d_target: np.ndarray,
+    lengths: np.ndarray,
+    first_rad: np.ndarray | None,
+    d_first_rad: np.ndarray | None,
+    relax: tuple[float, float, float, float],
+    threads: int = AUTO_THREADS,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """What :func:`inverse_rows` returns, and its derivatives along directions.
+
+    ``d_target`` is ``(trains, directions, echoes)`` and ``d_first_rad``
+    ``(trains, directions)``; the derivatives of the flip angles (rad) and of
+    the achieved echoes come back shaped like ``d_target``.
+    """
+    target = np.ascontiguousarray(target, dtype=np.float64)
+    d_target = np.ascontiguousarray(d_target, dtype=np.float64)
+    lengths = np.ascontiguousarray(lengths, dtype=np.int64)
+    count, echoes = target.shape
+    directions = d_target.shape[1]
+    if d_target.shape != (count, directions, echoes) or directions < 1:
+        raise ValueError("target tangents must be (trains, directions, echoes)")
+    flip = np.empty_like(target)
+    achieved = np.empty_like(target)
+    d_flip = np.empty_like(d_target)
+    d_achieved = np.empty_like(d_target)
+    if first_rad is not None:
+        first_rad = np.ascontiguousarray(first_rad, dtype=np.float64)
+    if d_first_rad is not None:
+        d_first_rad = np.ascontiguousarray(d_first_rad, dtype=np.float64)
+        if d_first_rad.shape != (count, directions):
+            raise ValueError("first-angle tangents must be (trains, directions)")
+    inverse_tangents(
+        (
+            lengths.ctypes.data,
+            target.ctypes.data,
+            0 if first_rad is None else first_rad.ctypes.data,
+            d_target.ctypes.data,
+            0 if d_first_rad is None else d_first_rad.ctypes.data,
+            flip.ctypes.data,
+            achieved.ctypes.data,
+            d_flip.ctypes.data,
+            d_achieved.ctypes.data,
+        ),
+        count,
+        echoes,
+        directions,
+        *relax,
+        threads,
+    )
+    return flip, achieved, d_flip, d_achieved
+
+
+def forward_rows_tangents(
+    flip_rad: np.ndarray,
+    d_flip_rad: np.ndarray,
+    lengths: np.ndarray,
+    relax: tuple[float, float, float, float],
+    threads: int = AUTO_THREADS,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Echoes of ``(trains, echoes)`` flip angles, and their derivatives.
+
+    ``d_flip_rad`` is ``(trains, directions, echoes)``, in radians; the
+    derivatives of the echoes come back in the same shape.
+    """
+    flip_rad = np.ascontiguousarray(flip_rad, dtype=np.float64)
+    d_flip_rad = np.ascontiguousarray(d_flip_rad, dtype=np.float64)
+    lengths = np.ascontiguousarray(lengths, dtype=np.int64)
+    count, echoes = flip_rad.shape
+    directions = d_flip_rad.shape[1]
+    if d_flip_rad.shape != (count, directions, echoes) or directions < 1:
+        raise ValueError("flip tangents must be (trains, directions, echoes)")
+    echo = np.empty_like(flip_rad)
+    d_echo = np.empty_like(d_flip_rad)
+    forward_tangents(
+        (
+            lengths.ctypes.data,
+            flip_rad.ctypes.data,
+            d_flip_rad.ctypes.data,
+            echo.ctypes.data,
+            d_echo.ctypes.data,
+        ),
+        count,
+        echoes,
+        directions,
+        *relax,
+        threads,
+    )
+    return echo, d_echo
+
+
 def forward_rows(
     flip_rad: np.ndarray,
     lengths: np.ndarray,
@@ -141,7 +232,9 @@ def prescribed_flips(
     T2: float = np.inf,
     lengths: npt.ArrayLike | None = None,
     threads: int = AUTO_THREADS,
-) -> tuple[np.ndarray, np.ndarray]:
+    signal_tangents: npt.ArrayLike | None = None,
+    first_flip_tangents: npt.ArrayLike | None = None,
+) -> tuple[np.ndarray, ...]:
     """Refocusing flip angles whose echoes take prescribed amplitudes.
 
     The train is the CPMG arrangement: an ideal 90 degree excitation a quarter
@@ -176,6 +269,12 @@ def prescribed_flips(
         what follows a train's last echo is returned as zero.
     threads : int, default=0
         Threads to spread the trains over; 0 sizes the pool to the batch.
+    signal_tangents : array-like, default=None
+        Directions to differentiate along, shape ``(directions, ..., echoes)``:
+        each a change of ``signal``. Asks for the derivatives as well.
+    first_flip_tangents : array-like, default=None
+        The change of ``first_flip`` along each direction, in degrees, shape
+        ``(directions, ...)``; none by default. Needs ``signal_tangents``.
 
     Returns
     -------
@@ -183,12 +282,19 @@ def prescribed_flips(
         Refocusing flip angles, in degrees, shaped like ``signal``.
     achieved : numpy.ndarray
         The echo amplitudes those angles give, shaped like ``signal``.
+    flip_tangents : numpy.ndarray
+        Only with ``signal_tangents``: the derivative of ``flip`` along each
+        direction, in degrees, shaped like ``signal_tangents``.
+    achieved_tangents : numpy.ndarray
+        Only with ``signal_tangents``: the derivative of ``achieved`` along
+        each direction, shaped like ``signal_tangents``.
 
     Raises
     ------
     ValueError
-        If an amplitude or a first angle is not finite, or the timing, the
-        relaxation times or the lengths are not valid.
+        If an amplitude or a first angle is not finite, the timing, the
+        relaxation times or the lengths are not valid, or the tangents are
+        not shaped as described.
 
     Notes
     -----
@@ -196,6 +302,11 @@ def prescribed_flips(
     refocusing axis and refocuses at the pulses, not at the echoes, so an
     echo holds none of it: T1 enters only through the decay of what the
     train stores along z.
+
+    The derivatives are exact: each angle is solved in closed form from the
+    states before its pulse, and the derivatives of those states are carried
+    through the train alongside them. An echo out of reach takes the angle of
+    the nearest one, which moves with the states and not with the target.
 
     Examples
     --------
@@ -218,12 +329,45 @@ def prescribed_flips(
         first = np.deg2rad(np.broadcast_to(first_flip, shape).reshape(count))
         if not np.all(np.isfinite(first)):
             raise ValueError("first_flip must be finite")
-    flip, achieved = inverse_rows(
-        target, _lengths(lengths, shape, echoes), first, relax, threads
+    played = _lengths(lengths, shape, echoes)
+    if signal_tangents is None:
+        if first_flip_tangents is not None:
+            raise ValueError("first_flip_tangents needs signal_tangents")
+        flip, achieved = inverse_rows(target, played, first, relax, threads)
+        return (
+            np.rad2deg(flip).reshape(*shape, echoes),
+            achieved.reshape(*shape, echoes),
+        )
+    tangents = np.asarray(signal_tangents, dtype=np.float64)
+    if tangents.ndim < 2 or tangents.shape[1:] != (*shape, echoes):
+        raise ValueError("signal_tangents must be shaped (directions, *signal.shape)")
+    directions = tangents.shape[0]
+    d_target = np.moveaxis(tangents.reshape(directions, count, echoes), 0, 1)
+    d_first = None
+    if first_flip_tangents is not None:
+        if first is None:
+            raise ValueError("first_flip_tangents needs first_flip")
+        d_first = np.deg2rad(
+            np.broadcast_to(first_flip_tangents, (directions, *shape))
+            .reshape(directions, count)
+            .T
+        )
+    if not np.all(np.isfinite(d_target)) or (
+        d_first is not None and not np.all(np.isfinite(d_first))
+    ):
+        raise ValueError("tangents must be finite")
+    flip, achieved, d_flip, d_achieved = inverse_rows_tangents(
+        target, d_target, played, first, d_first, relax, threads
     )
+
+    def back(values: np.ndarray) -> np.ndarray:
+        return np.moveaxis(values, 1, 0).reshape(directions, *shape, echoes)
+
     return (
         np.rad2deg(flip).reshape(*shape, echoes),
         achieved.reshape(*shape, echoes),
+        np.rad2deg(back(d_flip)),
+        back(d_achieved),
     )
 
 
@@ -235,7 +379,8 @@ def effective_te(
     T1: float = 1000.0,
     T2: float = 100.0,
     threads: int = AUTO_THREADS,
-) -> np.ndarray:
+    flip_tangents: npt.ArrayLike | None = None,
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     """Contrast-equivalent echo time of every echo of a refocusing train.
 
     The echo of a train of reduced flip angles has decayed less than its echo
@@ -259,18 +404,26 @@ def effective_te(
         Transverse relaxation time of the reference tissue, in ms.
     threads : int, default=0
         Threads to spread the trains over; 0 sizes the pool to the batch.
+    flip_tangents : array-like, default=None
+        Directions to differentiate along, in degrees, shape
+        ``(directions, ..., echoes)``: each a change of ``flip``. Asks for the
+        exact derivatives as well.
 
     Returns
     -------
-    numpy.ndarray
+    TE : numpy.ndarray
         Contrast-equivalent echo times, in ms, shaped like ``flip``. An echo
         with no signal has none, and is ``nan``.
+    TE_tangents : numpy.ndarray
+        Only with ``flip_tangents``: the derivative of ``TE`` along each
+        direction, in ms per degree, shaped like ``flip_tangents``.
 
     Raises
     ------
     ValueError
-        If an angle is outside [0, 180] degrees, or the timing or the
-        relaxation times are not positive and finite.
+        If an angle is outside [0, 180] degrees, the timing or the relaxation
+        times are not positive and finite, or the tangents are not shaped as
+        described.
 
     Notes
     -----
@@ -295,7 +448,29 @@ def effective_te(
         raise ValueError("the reference T1 and T2 must be finite")
     relax = relaxation(ESP, first_ESP, T1, T2)
     echoes = angles.shape[-1]
-    equivalent = equivalent_te(
-        np.deg2rad(angles), _lengths(None, shape, echoes), relax, T2, threads
+    lengths = _lengths(None, shape, echoes)
+    if flip_tangents is None:
+        equivalent = equivalent_te(np.deg2rad(angles), lengths, relax, T2, threads)
+        return equivalent.reshape(*shape, echoes)
+    tangents = np.asarray(flip_tangents, dtype=np.float64)
+    if tangents.ndim < 2 or tangents.shape[1:] != (*shape, echoes):
+        raise ValueError("flip_tangents must be shaped (directions, *flip.shape)")
+    if not np.all(np.isfinite(tangents)):
+        raise ValueError("flip_tangents must be finite")
+    directions = tangents.shape[0]
+    d_flip = np.deg2rad(np.moveaxis(tangents.reshape(directions, -1, echoes), 0, 1))
+    rad = np.deg2rad(angles)
+    relaxed, d_relaxed = forward_rows_tangents(rad, d_flip, lengths, relax, threads)
+    free, d_free = forward_rows_tangents(
+        rad, d_flip, lengths, (1.0, 1.0, 1.0, 1.0), threads
     )
-    return equivalent.reshape(*shape, echoes)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        equivalent = -T2 * np.log(np.abs(relaxed) / np.abs(free))
+        slope = -T2 * (d_relaxed / relaxed[:, None] - d_free / free[:, None])
+    valid = np.abs(free) > 1e-12
+    equivalent = np.where(valid, equivalent, np.nan)
+    slope = np.where(valid[:, None], slope, np.nan)
+    return (
+        equivalent.reshape(*shape, echoes),
+        np.moveaxis(slope, 1, 0).reshape(directions, *shape, echoes),
+    )
