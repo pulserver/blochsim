@@ -510,18 +510,24 @@ tissue and <code class="docutils literal notranslate"><span class="pre">S0</span
 <li><p><strong>T1</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><em>default=1000.0</em>) – Longitudinal relaxation time of the reference tissue, in ms.</p></li>
 <li><p><strong>T2</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><em>default=100.0</em>) – Transverse relaxation time of the reference tissue, in ms.</p></li>
 <li><p><strong>threads</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>default=0</em>) – Threads to spread the trains over; 0 sizes the pool to the batch.</p></li>
+<li><p><strong>flip_tangents</strong> (<em>array-like</em><em>, </em><em>default=None</em>) – Directions to differentiate along, in degrees, shape
+<code class="docutils literal notranslate"><span class="pre">(directions,</span> <span class="pre">...,</span> <span class="pre">echoes)</span></code>: each a change of <code class="docutils literal notranslate"><span class="pre">flip</span></code>. Asks for the
+exact derivatives as well.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Contrast-equivalent echo times, in ms, shaped like <code class="docutils literal notranslate"><span class="pre">flip</span></code>. An echo
-with no signal has none, and is <code class="docutils literal notranslate"><span class="pre">nan</span></code>.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>TE</strong> (<em>numpy.ndarray</em>) – Contrast-equivalent echo times, in ms, shaped like <code class="docutils literal notranslate"><span class="pre">flip</span></code>. An echo
+with no signal has none, and is <code class="docutils literal notranslate"><span class="pre">nan</span></code>.</p></li>
+<li><p><strong>TE_tangents</strong> (<em>numpy.ndarray</em>) – Only with <code class="docutils literal notranslate"><span class="pre">flip_tangents</span></code>: the derivative of <code class="docutils literal notranslate"><span class="pre">TE</span></code> along each
+direction, in ms per degree, shaped like <code class="docutils literal notranslate"><span class="pre">flip_tangents</span></code>.</p></li>
+</ul>
+</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If an angle is outside [0, 180] degrees, or the timing or the
-    relaxation times are not positive and finite.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If an angle is outside [0, 180] degrees, the timing or the relaxation
+    times are not positive and finite, or the tangents are not shaped as
+    described.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

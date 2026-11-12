@@ -519,17 +519,23 @@ follows the startup pulses,
 default centre echo.</p></li>
 <li><p><strong>initial_decay</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em> or </em><em>array-like</em><em>, </em><em>default=1.3</em>) – Time constant of the opening transient, in echoes.</p></li>
 <li><p><strong>threads</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>default=0</em>) – Threads to spread the trains over; 0 sizes the pool to the batch.</p></li>
+<li><p><strong>jacobian</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>default=False</em>) – Also return the derivatives of the flip angles with respect to
+<code class="docutils literal notranslate"><span class="pre">min_flip</span></code>, <code class="docutils literal notranslate"><span class="pre">centre_flip</span></code> and <code class="docutils literal notranslate"><span class="pre">max_flip</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Flip angles in degrees: shape <code class="docutils literal notranslate"><span class="pre">(length,)</span></code> for one train, and
-<code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">max(length))</span></code> for a batch, zero past each train’s last pulse.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>flip</strong> (<em>numpy.ndarray</em>) – Flip angles in degrees: shape <code class="docutils literal notranslate"><span class="pre">(length,)</span></code> for one train, and
+<code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">max(length))</span></code> for a batch, zero past each train’s last pulse.</p></li>
+<li><p><strong>jacobian</strong> (<em>numpy.ndarray</em>) – Only with <code class="docutils literal notranslate"><span class="pre">jacobian</span></code>: shape <code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">max(length),</span> <span class="pre">3)</span></code>, in degrees per
+degree of <code class="docutils literal notranslate"><span class="pre">min_flip</span></code>, <code class="docutils literal notranslate"><span class="pre">centre_flip</span></code> and <code class="docutils literal notranslate"><span class="pre">max_flip</span></code>. It is exact,
+carried through the inversion with the angles, and holds where the
+lowest angle stays at the same echo.</p></li>
+</ul>
+</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If a count or an angle is not valid, a centre echo is not after the
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If a count or an angle is not valid, a centre echo is not after the
     sixth pulse and before the last, or no train meets a prescription.</p>
 </dd>
 </dl>

@@ -494,6 +494,12 @@ on it the variable-flip-angle trains of long 3D fast spin echo readouts, and
 <a class="reference internal" href="../generated/blochsim.trains.busse_centre_echo.html#blochsim.trains.busse_centre_echo" title="blochsim.trains.busse_centre_echo"><code class="xref py py-func docutils literal notranslate"><span class="pre">busse_centre_echo()</span></code></a> places their centre echo for a contrast-equivalent
 echo time, which <a class="reference internal" href="../generated/blochsim.trains.effective_te.html#blochsim.trains.effective_te" title="blochsim.trains.effective_te"><code class="xref py py-func docutils literal notranslate"><span class="pre">effective_te()</span></code></a> computes for any train. A batch of
 trains is solved in one call, across threads.</p>
+<p>Each of them also gives exact derivatives, for designing a train against a
+cost: <a class="reference internal" href="../generated/blochsim.trains.prescribed_flips.html#blochsim.trains.prescribed_flips" title="blochsim.trains.prescribed_flips"><code class="xref py py-func docutils literal notranslate"><span class="pre">prescribed_flips()</span></code></a> along changes of the prescribed signal and of
+the first angle, <a class="reference internal" href="../generated/blochsim.trains.effective_te.html#blochsim.trains.effective_te" title="blochsim.trains.effective_te"><code class="xref py py-func docutils literal notranslate"><span class="pre">effective_te()</span></code></a> along changes of the flip angles, and
+<a class="reference internal" href="../generated/blochsim.trains.busse_flips.html#blochsim.trains.busse_flips" title="blochsim.trains.busse_flips"><code class="xref py py-func docutils literal notranslate"><span class="pre">busse_flips()</span></code></a> with respect to its three angles. They are carried through
+the same echo-by-echo recursion in forward mode, one extra set of states per
+direction, so a few directions cost a few inversions.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Object</p></th>

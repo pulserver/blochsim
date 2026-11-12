@@ -519,18 +519,27 @@ The default is no relaxation.</p></li>
 <li><p><strong>lengths</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> or </em><em>array-like</em><em>, </em><em>default=None</em>) – Echoes each train plays, when the trains of a batch differ in length;
 what follows a train’s last echo is returned as zero.</p></li>
 <li><p><strong>threads</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>default=0</em>) – Threads to spread the trains over; 0 sizes the pool to the batch.</p></li>
+<li><p><strong>signal_tangents</strong> (<em>array-like</em><em>, </em><em>default=None</em>) – Directions to differentiate along, shape <code class="docutils literal notranslate"><span class="pre">(directions,</span> <span class="pre">...,</span> <span class="pre">echoes)</span></code>:
+each a change of <code class="docutils literal notranslate"><span class="pre">signal</span></code>. Asks for the derivatives as well.</p></li>
+<li><p><strong>first_flip_tangents</strong> (<em>array-like</em><em>, </em><em>default=None</em>) – The change of <code class="docutils literal notranslate"><span class="pre">first_flip</span></code> along each direction, in degrees, shape
+<code class="docutils literal notranslate"><span class="pre">(directions,</span> <span class="pre">...)</span></code>; none by default. Needs <code class="docutils literal notranslate"><span class="pre">signal_tangents</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>flip</strong> (<em>numpy.ndarray</em>) – Refocusing flip angles, in degrees, shaped like <code class="docutils literal notranslate"><span class="pre">signal</span></code>.</p></li>
 <li><p><strong>achieved</strong> (<em>numpy.ndarray</em>) – The echo amplitudes those angles give, shaped like <code class="docutils literal notranslate"><span class="pre">signal</span></code>.</p></li>
+<li><p><strong>flip_tangents</strong> (<em>numpy.ndarray</em>) – Only with <code class="docutils literal notranslate"><span class="pre">signal_tangents</span></code>: the derivative of <code class="docutils literal notranslate"><span class="pre">flip</span></code> along each
+direction, in degrees, shaped like <code class="docutils literal notranslate"><span class="pre">signal_tangents</span></code>.</p></li>
+<li><p><strong>achieved_tangents</strong> (<em>numpy.ndarray</em>) – Only with <code class="docutils literal notranslate"><span class="pre">signal_tangents</span></code>: the derivative of <code class="docutils literal notranslate"><span class="pre">achieved</span></code> along
+each direction, shaped like <code class="docutils literal notranslate"><span class="pre">signal_tangents</span></code>.</p></li>
 </ul>
 </p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If an amplitude or a first angle is not finite, or the timing, the
-    relaxation times or the lengths are not valid.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If an amplitude or a first angle is not finite, the timing, the
+    relaxation times or the lengths are not valid, or the tangents are
+    not shaped as described.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -538,6 +547,10 @@ what follows a train’s last echo is returned as zero.</p></li>
 refocusing axis and refocuses at the pulses, not at the echoes, so an
 echo holds none of it: T1 enters only through the decay of what the
 train stores along z.</p>
+<p>The derivatives are exact: each angle is solved in closed form from the
+states before its pulse, and the derivatives of those states are carried
+through the train alongside them. An echo out of reach takes the angle of
+the nearest one, which moves with the states and not with the target.</p>
 <p class="rubric">Examples</p>
 <p>A constant train of 180 degree pulses is what unit echoes ask for:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>

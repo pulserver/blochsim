@@ -138,8 +138,8 @@ the home directory.
 
  .. code-block:: none
 
-    Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmp5owos99g.zip
-    0it [00:00, ?it/s]      0%|          | 0/233926107 [00:01<?, ?it/s]      3%|▎         | 6930432/233926107 [00:01<00:03, 61495044.70it/s]      8%|▊         | 18857984/233926107 [00:01<00:02, 93614622.30it/s]     13%|█▎        | 29261824/233926107 [00:01<00:02, 98232636.68it/s]     16%|█▋        | 38486016/233926107 [00:01<00:02, 93533541.79it/s]     21%|██        | 48398336/233926107 [00:01<00:01, 95440835.82it/s]     25%|██▍       | 57450496/233926107 [00:01<00:01, 89387280.74it/s]     29%|██▉       | 67928064/233926107 [00:01<00:01, 94189904.63it/s]     33%|███▎      | 77176832/233926107 [00:02<00:01, 89998387.07it/s]     37%|███▋      | 86917120/233926107 [00:02<00:01, 90420643.51it/s]     42%|████▏     | 97435648/233926107 [00:02<00:01, 91186397.15it/s]     46%|████▌     | 106512384/233926107 [00:02<00:01, 90702773.71it/s]     50%|████▉     | 116391936/233926107 [00:02<00:01, 89369713.16it/s]     54%|█████▍    | 126910464/233926107 [00:02<00:01, 91866824.22it/s]     58%|█████▊    | 136093696/233926107 [00:02<00:01, 89622099.14it/s]     62%|██████▏   | 145866752/233926107 [00:02<00:00, 89063480.35it/s]     67%|██████▋   | 156385280/233926107 [00:02<00:00, 90809308.54it/s]     71%|███████▏  | 166920192/233926107 [00:03<00:00, 91080701.61it/s]     76%|███████▌  | 177438720/233926107 [00:03<00:00, 93339745.43it/s]     80%|████████  | 187973632/233926107 [00:03<00:00, 93149415.97it/s]     85%|████████▍ | 198492160/233926107 [00:03<00:00, 93609212.97it/s]     89%|████████▉ | 209018880/233926107 [00:03<00:00, 96856797.09it/s]     94%|█████████▎| 218734592/233926107 [00:03<00:00, 93946176.96it/s]     98%|█████████▊| 228155392/233926107 [00:03<00:00, 92310805.67it/s]    233930752it [00:04, 48552353.29it/s]                               
+    Downloading https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1 to /tmp/tmp954b9iek.zip
+    0it [00:00, ?it/s]      0%|          | 0/233926107 [00:01<?, ?it/s]      1%|          | 2629632/233926107 [00:01<00:10, 22272365.84it/s]      4%|▍         | 9445376/233926107 [00:01<00:04, 46586902.26it/s]      9%|▉         | 21766144/233926107 [00:01<00:02, 79372618.74it/s]     12%|█▏        | 28819456/233926107 [00:01<00:04, 42026750.25it/s]     18%|█▊        | 41263104/233926107 [00:01<00:03, 61108859.53it/s]     29%|██▉       | 68706304/233926107 [00:02<00:01, 114009331.31it/s]     37%|███▋      | 86515712/233926107 [00:02<00:01, 108438319.23it/s]     42%|████▏     | 99336192/233926107 [00:02<00:01, 76904434.28it/s]      47%|████▋     | 109486080/233926107 [00:02<00:01, 75956950.81it/s]     51%|█████     | 118759424/233926107 [00:02<00:01, 68105846.61it/s]     62%|██████▏   | 144728064/233926107 [00:02<00:00, 105741453.73it/s]     68%|██████▊   | 159129600/233926107 [00:03<00:00, 85774833.02it/s]      73%|███████▎  | 170254336/233926107 [00:03<00:00, 85573991.66it/s]     77%|███████▋  | 180584448/233926107 [00:03<00:00, 88534755.91it/s]     82%|████████▏ | 190808064/233926107 [00:03<00:00, 78043538.44it/s]     93%|█████████▎| 216408064/233926107 [00:03<00:00, 115421078.45it/s]    233930752it [00:03, 58855719.07it/s]                                
 
 
 
@@ -204,7 +204,7 @@ phantom contains partial volume.
     Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_patch_17_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_patch_17_model.pt
     Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/segmentation_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/segmentation_model.pt
     Downloaded https://raw.githubusercontent.com/wwu-mmll/deepmriprep/main/deepmriprep/data/models/warp_model.pt to /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/deepmriprep/data/models/warp_model.pt
-    128x128 slice, 5733 brain voxels; 92% are a mixture of two tissues or more
+    128x128 slice, 5735 brain voxels; 92% are a mixture of two tissues or more
 
 
 
@@ -238,9 +238,9 @@ subject would fill the table from data.
 
 
     tissue           voxels     M0  T1 (ms)  T2 (ms)
-    grey matter        2428   0.80     1100     95.0
-    white matter       2297   0.70      650     70.0
-    CSF                 568   1.00     4000   2000.0
+    grey matter        2427   0.80     1100     95.0
+    white matter       2294   0.70      650     70.0
+    CSF                 571   1.00     4000   2000.0
 
 
 
@@ -273,7 +273,7 @@ one call, as three EPG runs instead of one per voxel.
 
  .. code-block:: none
 
-    3 classes x 400 frames in 0.3s -> (3, 400)
+    3 classes x 400 frames in 0.4s -> (3, 400)
 
 
 
@@ -362,7 +362,7 @@ acquisitions.
 
  .. code-block:: none
 
-    400 arms built in 25.7s
+    400 arms built in 29.2s
 
 
 
@@ -394,7 +394,7 @@ The forward transform takes the coil-weighted image of each frame to k-space:
 
  .. code-block:: none
 
-    forward NUFFT 8.1s -> (400, 8, 768)
+    forward NUFFT 11.2s -> (400, 8, 768)
 
 
 
@@ -431,7 +431,7 @@ estimates them.
 
  .. code-block:: none
 
-    adjoint and combine 8.3s
+    adjoint and combine 12.8s
 
 
 
@@ -462,8 +462,8 @@ uses. Both series are normalised to their peak magnitude.
 
  .. code-block:: none
 
-    per-frame error inside the brain :  60.3%
-    time-course agreement            : median 0.894, tenth percentile 0.715
+    per-frame error inside the brain :  60.7%
+    time-course agreement            : median 0.893, tenth percentile 0.714
 
 
 
@@ -580,7 +580,7 @@ What this Application did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 31.053 seconds)
+   **Total running time of the script:** (2 minutes 56.233 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_05-misc_01-synthetic-data.py:
