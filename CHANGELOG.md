@@ -22,6 +22,11 @@
   the kernel's echo-by-echo recursion in forward mode, at the cost of one more
   state vector per direction, and the shooting that pins a Busse train's three
   angles takes its Newton Jacobian from them.
+- **A largest refocusing angle for prescribed trains.** `prescribed_flips`
+  takes `maximum_flip`, one per train: every solved pulse is the angle in
+  `[0, maximum_flip]` whose echo comes nearest the prescription, so a train
+  whose prescription asks for more than the bound holds at it. A pulse held at
+  the bound has zero derivative.
 - **Coarse-to-fine dictionary search.** `DictionaryMatcher(coarse=k)` places
   the atoms on the lattice their parameters were simulated on, scores every
   k-th value along each parameter, then the `2k + 1` values around the winner

@@ -130,7 +130,7 @@ struct States {
 
 // How a solved angle moves with what it was solved from.
 enum class Reached {
-    // An end of [0, pi]: it stays there under a small change.
+    // An end of [0, maximum]: it stays there under a small change.
     END,
     // The angle whose echo comes nearest an unreachable target: it follows
     // the extremum of the echo, delta or delta + pi.
@@ -144,8 +144,8 @@ struct Solved {
     Reached reached;
 };
 
-// The flip angle in [0, pi] whose echo is ``target``, from the first-order
-// states the pulse is about to turn.
+// The flip angle in [0, maximum] whose echo is ``target``, from the
+// first-order states the pulse is about to turn; ``maximum`` is at most pi.
 //
 // The echo is the zeroth F- the pulse leaves, a + b cos(alpha) + c sin(alpha)
 // = a + r cos(alpha - delta), scaled by the transverse relaxation ``e2`` of
@@ -156,7 +156,7 @@ struct Solved {
 // distance from the target plus a term that orders equal scores by angle.
 inline Solved refocusing_angle(
     const double plus, const double minus, const double longitudinal,
-    const double target, const double e2
+    const double target, const double e2, const double maximum
 ) {
     // A prescription that is not a number has no angle, and neither has
     // any echo after it: the states it leaves are not numbers either.
@@ -174,17 +174,20 @@ inline Solved refocusing_angle(
     const double met = a + radius * reach;
     const bool within = wanted > -1.0 && wanted < 1.0;
     const double angles[8] = {
-        0.0, PI, delta, delta + PI, delta - turn, delta + turn,
+        0.0, maximum, delta, delta + PI, delta - turn, delta + turn,
         delta - turn + 2.0 * PI, delta + turn + 2.0 * PI,
     };
+    const double at_maximum = maximum == PI
+        ? a - b
+        : a + b * std::cos(maximum) + c * std::sin(maximum);
     const double echoes[8] = {
-        a + b, a - b, a + radius, a - radius, met, met, met, met,
+        a + b, at_maximum, a + radius, a - radius, met, met, met, met,
     };
     Solved best{NAN, Reached::END};
     double best_score = INFINITY;
     for (int candidate = 0; candidate < 8; ++candidate) {
         const double angle = angles[candidate];
-        if (!(angle >= 0.0 && angle <= PI)) {
+        if (!(angle >= 0.0 && angle <= maximum)) {
             continue;
         }
         const double score =
@@ -237,6 +240,8 @@ struct Inverse {
     // The first pulse's flip angle per train, or null for it to be solved
     // like the others.
     const double* first_flip;
+    // The largest angle a solved pulse may take, per train, or null for pi.
+    const double* maximum;
     double* flip;
     double* achieved;
 };
@@ -272,7 +277,8 @@ void inverse_range(
                 ? problem.first_flip[train]
                 : refocusing_angle(
                     along.plus[1], along.minus[1], along.longitudinal[1],
-                    problem.target[row + echo], e2
+                    problem.target[row + echo], e2,
+                    problem.maximum == nullptr ? PI : problem.maximum[train]
                 ).angle;
             along.rotate(angle);
             if (relaxing) {
@@ -402,6 +408,7 @@ struct InverseTangents {
     Tangents along;
     const double* target;
     const double* first_flip;
+    const double* maximum;
     const double* d_target;
     // ``(trains, directions)``, or null when the first angle is solved too.
     const double* d_first_flip;
@@ -437,7 +444,8 @@ void inverse_tangents_range(
                 ? Solved{problem.first_flip[train], Reached::END}
                 : refocusing_angle(
                     along.plus[1], along.minus[1], along.longitudinal[1],
-                    problem.target[row + echo], e2
+                    problem.target[row + echo], e2,
+                    problem.maximum == nullptr ? PI : problem.maximum[train]
                 );
             for (std::int64_t direction = 0; direction < directions; ++direction) {
                 States& slope = slopes[direction];
@@ -614,13 +622,14 @@ PyObject* inverse(PyObject*, PyObject* arguments) {
         return nullptr;
     }
     std::vector<void*> raw;
-    if (!unpack(pointers, 5, raw) || !describe(batch, count, echoes, raw[0])) {
+    if (!unpack(pointers, 6, raw) || !describe(batch, count, echoes, raw[0])) {
         return nullptr;
     }
     problem.target = static_cast<const double*>(raw[1]);
     problem.first_flip = static_cast<const double*>(raw[2]);
-    problem.flip = static_cast<double*>(raw[3]);
-    problem.achieved = static_cast<double*>(raw[4]);
+    problem.maximum = static_cast<const double*>(raw[3]);
+    problem.flip = static_cast<double*>(raw[4]);
+    problem.achieved = static_cast<double*>(raw[5]);
     Py_BEGIN_ALLOW_THREADS
     run(problem, threads, inverse_range);
     Py_END_ALLOW_THREADS
@@ -671,18 +680,19 @@ PyObject* inverse_tangents(PyObject*, PyObject* arguments) {
         return nullptr;
     }
     std::vector<void*> raw;
-    if (!unpack(pointers, 9, raw) || !describe(batch, count, echoes, raw[0])) {
+    if (!unpack(pointers, 10, raw) || !describe(batch, count, echoes, raw[0])) {
         return nullptr;
     }
     problem.along.directions = directions;
     problem.target = static_cast<const double*>(raw[1]);
     problem.first_flip = static_cast<const double*>(raw[2]);
-    problem.d_target = static_cast<const double*>(raw[3]);
-    problem.d_first_flip = static_cast<const double*>(raw[4]);
-    problem.flip = static_cast<double*>(raw[5]);
-    problem.achieved = static_cast<double*>(raw[6]);
-    problem.d_flip = static_cast<double*>(raw[7]);
-    problem.d_achieved = static_cast<double*>(raw[8]);
+    problem.maximum = static_cast<const double*>(raw[3]);
+    problem.d_target = static_cast<const double*>(raw[4]);
+    problem.d_first_flip = static_cast<const double*>(raw[5]);
+    problem.flip = static_cast<double*>(raw[6]);
+    problem.achieved = static_cast<double*>(raw[7]);
+    problem.d_flip = static_cast<double*>(raw[8]);
+    problem.d_achieved = static_cast<double*>(raw[9]);
     Py_BEGIN_ALLOW_THREADS
     run(problem, threads, inverse_tangents_range);
     Py_END_ALLOW_THREADS
