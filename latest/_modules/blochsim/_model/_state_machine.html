@@ -949,6 +949,9 @@
     <span class="n">across_slice</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">crusher_dephasing_rad</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">voxel_size_m</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># The constant every recorded sample is multiplied by: the receiver phase</span>
+    <span class="c1"># that puts a sequence's signal on the axis its readers expect.</span>
+    <span class="n">receiver</span><span class="p">:</span> <span class="nb">complex</span> <span class="o">=</span> <span class="mf">1.0</span>
 
     <span class="c1"># Every attribute the constructor sets has a value here as well, so a</span>
     <span class="c1"># closed form that writes an __init__ of its own -- taking the two blocks</span>
@@ -1452,6 +1455,7 @@
                     <span class="n">nstates</span><span class="o">=</span><span class="n">states</span><span class="p">,</span>
                     <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
                     <span class="n">across_slice</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+                    <span class="n">_receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">settings</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="o">.</span><span class="n">signal</span>

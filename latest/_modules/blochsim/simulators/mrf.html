@@ -494,6 +494,7 @@
         <span class="n">operators</span><span class="o">=</span><span class="n">UNBALANCED</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">states</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span>
 
 <div class="viewcode-block" id="MRFSimulator.layout">
 <a class="viewcode-back" href="../../../generated/blochsim.simulators.MRFSimulator.html#blochsim.simulators.MRFSimulator.layout">[docs]</a>
@@ -526,7 +527,7 @@
         <span class="n">signal</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="o">**</span><span class="n">sequence</span><span class="p">)</span>
         <span class="n">played</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">played</span><span class="p">(</span><span class="o">**</span><span class="n">sequence</span><span class="p">)</span>
         <span class="n">echoes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">played</span><span class="p">[</span><span class="s2">"flip"</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">signal</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="n">echoes</span><span class="p">:]</span></div>
+        <span class="k">return</span> <span class="n">signal</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="n">echoes</span><span class="p">:]</span></div>
 </div>
 
 </pre></div>

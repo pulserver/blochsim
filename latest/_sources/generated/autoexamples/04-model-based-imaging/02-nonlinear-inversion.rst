@@ -271,7 +271,7 @@ reconstruction has no such step, because its result is the maps.
             ...,
             [400.0000, 400.0000, 305.5711,  ...,  23.0461,  43.6072,  27.6152],
             [ 78.6373,  84.7295, 190.5812,  ...,  20.0000,  39.0381,  39.7996],
-            [ 41.3226, 363.4469, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
+            [ 41.3226, 362.6854, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
 
 
 
@@ -360,15 +360,15 @@ encoding are BART's.
 
  .. code-block:: none
 
-    model-based            4.9s   T2 error  11.6 ms ( 9.4%)
+    model-based            4.4s   T2 error  11.6 ms ( 9.4%)
 
-    tensor([[100.6485, 100.7202, 101.6285,  ..., 101.3273, 102.0833,  98.8517],
-            [100.9671,  98.9119,  97.5817,  ..., 101.4050,  98.1353,  95.5978],
-            [101.0628, 100.0185,  98.4362,  ..., 105.0742, 104.9474, 104.2501],
+    tensor([[100.6599, 100.7362, 101.6446,  ..., 101.3332, 102.0920,  98.8412],
+            [100.9760,  98.9134,  97.5945,  ..., 101.4106,  98.1081,  95.5713],
+            [101.0719, 100.0212,  98.4344,  ..., 105.0602, 104.9652, 104.2936],
             ...,
-            [101.5603, 101.8524, 101.8485,  ..., 100.1827, 102.1851, 100.2868],
-            [100.4932, 100.6068, 101.2182,  ...,  99.1220, 104.5265, 106.3573],
-            [100.9880, 100.9246, 101.3378,  ...,  94.5218,  98.9739, 103.9938]])
+            [101.5598, 101.8553, 101.8542,  ..., 100.2069, 102.2180, 100.3509],
+            [100.4984, 100.6146, 101.2237,  ...,  99.1370, 104.5606, 106.4103],
+            [100.9966, 100.9298, 101.3413,  ...,  94.5250,  98.9798, 104.0367]])
 
 
 
@@ -403,7 +403,7 @@ Timing the four shows which part a faster reconstruction has to speed up.
  .. code-block:: none
 
     per conjugate-gradient step, 3 channels solved for:
-      model    J  v      3.8 ms
+      model    J  v      3.4 ms
       model    J^H v     1.5 ms
       encoding A         1.1 ms
       encoding A^H       1.0 ms
@@ -477,7 +477,7 @@ What this Application did, stated the way you would ask an agent for it:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.926 seconds)
+   **Total running time of the script:** (0 minutes 5.320 seconds)
 
 
 .. _sphx_glr_download_generated_autoexamples_04-model-based-imaging_02-nonlinear-inversion.py:

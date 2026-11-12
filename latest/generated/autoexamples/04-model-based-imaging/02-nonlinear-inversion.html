@@ -641,7 +641,7 @@ tensor([[ 48.9379,  20.7615,  32.1844,  ..., 164.6894, 400.0000, 400.0000],
         ...,
         [400.0000, 400.0000, 305.5711,  ...,  23.0461,  43.6072,  27.6152],
         [ 78.6373,  84.7295, 190.5812,  ...,  20.0000,  39.0381,  39.7996],
-        [ 41.3226, 363.4469, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
+        [ 41.3226, 362.6854, 223.3266,  ...,  21.5230,  23.0461,  20.0000]])
 </pre></div>
 </div>
 <p>Gridding is the adjoint with density compensation. 16 spokes of 192 samples are
@@ -684,15 +684,15 @@ encoding are BART’s.</p>
 </span><span class="w">
 </span><span class="n">modelled</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">found</span><span class="p">)</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">T2</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model-based            4.9s   T2 error  11.6 ms ( 9.4%)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model-based            4.4s   T2 error  11.6 ms ( 9.4%)
 
-tensor([[100.6485, 100.7202, 101.6285,  ..., 101.3273, 102.0833,  98.8517],
-        [100.9671,  98.9119,  97.5817,  ..., 101.4050,  98.1353,  95.5978],
-        [101.0628, 100.0185,  98.4362,  ..., 105.0742, 104.9474, 104.2501],
+tensor([[100.6599, 100.7362, 101.6446,  ..., 101.3332, 102.0920,  98.8412],
+        [100.9760,  98.9134,  97.5945,  ..., 101.4106,  98.1081,  95.5713],
+        [101.0719, 100.0212,  98.4344,  ..., 105.0602, 104.9652, 104.2936],
         ...,
-        [101.5603, 101.8524, 101.8485,  ..., 100.1827, 102.1851, 100.2868],
-        [100.4932, 100.6068, 101.2182,  ...,  99.1220, 104.5265, 106.3573],
-        [100.9880, 100.9246, 101.3378,  ...,  94.5218,  98.9739, 103.9938]])
+        [101.5598, 101.8553, 101.8542,  ..., 100.2069, 102.2180, 100.3509],
+        [100.4984, 100.6146, 101.2237,  ...,  99.1370, 104.5606, 106.4103],
+        [100.9966, 100.9298, 101.3413,  ...,  94.5250,  98.9798, 104.0367]])
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">found</span></code> holds the solved variables and <code class="docutils literal notranslate"><span class="pre">M.split</span></code> separates them into named
@@ -709,7 +709,7 @@ Timing the four shows which part a faster reconstruction has to speed up.</p>
 </span><span class="n">adjoint_image</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">kspace</span><span class="p">)</span><span class="o">.</span><span class="n">movedim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>per conjugate-gradient step, 3 channels solved for:
-  model    J  v      3.8 ms
+  model    J  v      3.4 ms
   model    J^H v     1.5 ms
   encoding A         1.1 ms
   encoding A^H       1.0 ms
@@ -762,7 +762,7 @@ Report time and mean T2 error over the brain, the time of each Jacobian
 product, and the size of the Jacobian that the operator avoids storing.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.926 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.320 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-autoexamples-04-model-based-imaging-02-nonlinear-inversion-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/pulserver/blochsim/gh-pages?urlpath=lab/tree/latest/notebooks/generated/autoexamples/04-model-based-imaging/02-nonlinear-inversion.ipynb"><img alt="Launch binder" src="../../../_images/binder_badge_logo3.svg" style="width: 150px;" />

@@ -494,6 +494,7 @@
     <span class="p">)</span>
     <span class="n">states</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">record</span> <span class="o">=</span> <span class="s2">"acquired"</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span>
 
 <div class="viewcode-block" id="MPRAGESimulator.layout">
 <a class="viewcode-back" href="../../../generated/blochsim.simulators.MPRAGESimulator.html#blochsim.simulators.MPRAGESimulator.layout">[docs]</a>
@@ -550,7 +551,7 @@
 <a class="viewcode-back" href="../../../generated/blochsim.simulators.MPRAGESimulator.html#blochsim.simulators.MPRAGESimulator.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">sequence</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the acquired sample."""</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="o">**</span><span class="n">sequence</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="o">**</span><span class="n">sequence</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span></div>
 </div>
 
 
