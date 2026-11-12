@@ -70,8 +70,12 @@ def inverse_rows(
     first_rad: np.ndarray | None,
     relax: tuple[float, float, float, float],
     threads: int = AUTO_THREADS,
+    maximum_rad: np.ndarray | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Flip angles (rad) and achieved echoes of ``(trains, echoes)`` targets."""
+    """Flip angles (rad) and achieved echoes of ``(trains, echoes)`` targets.
+
+    ``maximum_rad``, one per train, bounds every solved angle; none is pi.
+    """
     target = np.ascontiguousarray(target, dtype=np.float64)
     lengths = np.ascontiguousarray(lengths, dtype=np.int64)
     count, echoes = target.shape
@@ -79,11 +83,14 @@ def inverse_rows(
     achieved = np.empty_like(target)
     if first_rad is not None:
         first_rad = np.ascontiguousarray(first_rad, dtype=np.float64)
+    if maximum_rad is not None:
+        maximum_rad = np.ascontiguousarray(maximum_rad, dtype=np.float64)
     inverse(
         (
             lengths.ctypes.data,
             target.ctypes.data,
             0 if first_rad is None else first_rad.ctypes.data,
+            0 if maximum_rad is None else maximum_rad.ctypes.data,
             flip.ctypes.data,
             achieved.ctypes.data,
         ),
@@ -103,6 +110,7 @@ def inverse_rows_tangents(
     d_first_rad: np.ndarray | None,
     relax: tuple[float, float, float, float],
     threads: int = AUTO_THREADS,
+    maximum_rad: np.ndarray | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """What :func:`inverse_rows` returns, and its derivatives along directions.
 
@@ -127,11 +135,14 @@ def inverse_rows_tangents(
         d_first_rad = np.ascontiguousarray(d_first_rad, dtype=np.float64)
         if d_first_rad.shape != (count, directions):
             raise ValueError("first-angle tangents must be (trains, directions)")
+    if maximum_rad is not None:
+        maximum_rad = np.ascontiguousarray(maximum_rad, dtype=np.float64)
     inverse_tangents(
         (
             lengths.ctypes.data,
             target.ctypes.data,
             0 if first_rad is None else first_rad.ctypes.data,
+            0 if maximum_rad is None else maximum_rad.ctypes.data,
             d_target.ctypes.data,
             0 if d_first_rad is None else d_first_rad.ctypes.data,
             flip.ctypes.data,
@@ -234,6 +245,7 @@ def prescribed_flips(
     threads: int = AUTO_THREADS,
     signal_tangents: npt.ArrayLike | None = None,
     first_flip_tangents: npt.ArrayLike | None = None,
+    maximum_flip: npt.ArrayLike | None = None,
 ) -> tuple[np.ndarray, ...]:
     """Refocusing flip angles whose echoes take prescribed amplitudes.
 
@@ -241,8 +253,9 @@ def prescribed_flips(
     turn from the refocusing pulses, each pulse midway between two echoes. The
     extended phase graph is inverted one echo at a time: the states before a
     pulse fix the echo after it as a function of its flip angle alone, and the
-    smallest angle in [0, 180] degrees giving the prescribed amplitude is
-    taken. An amplitude no angle reaches gets the angle that comes nearest,
+    smallest angle in [0, 180] degrees, or in [0, ``maximum_flip``], giving
+    the prescribed amplitude is taken. An amplitude no angle reaches gets the
+    angle that comes nearest,
     so the returned echoes are the test of a prescription: they equal it
     exactly where it can be met.
 
@@ -275,6 +288,11 @@ def prescribed_flips(
     first_flip_tangents : array-like, default=None
         The change of ``first_flip`` along each direction, in degrees, shape
         ``(directions, ...)``; none by default. Needs ``signal_tangents``.
+    maximum_flip : float or array-like, default=None
+        Largest flip angle a solved pulse may take, in degrees, in (0, 180],
+        one per train; 180 by default. A pulse held at it does not move with
+        the prescription, so its derivative is zero. ``first_flip`` is not
+        bounded by it.
 
     Returns
     -------
@@ -330,10 +348,17 @@ def prescribed_flips(
         if not np.all(np.isfinite(first)):
             raise ValueError("first_flip must be finite")
     played = _lengths(lengths, shape, echoes)
+    maximum = None
+    if maximum_flip is not None:
+        maximum = np.deg2rad(
+            np.broadcast_to(np.asarray(maximum_flip, dtype=float), shape).reshape(count)
+        )
+        if not np.all((maximum > 0) & (maximum <= np.pi)):
+            raise ValueError("maximum_flip must lie in (0, 180] degrees")
     if signal_tangents is None:
         if first_flip_tangents is not None:
             raise ValueError("first_flip_tangents needs signal_tangents")
-        flip, achieved = inverse_rows(target, played, first, relax, threads)
+        flip, achieved = inverse_rows(target, played, first, relax, threads, maximum)
         return (
             np.rad2deg(flip).reshape(*shape, echoes),
             achieved.reshape(*shape, echoes),
@@ -357,7 +382,7 @@ def prescribed_flips(
     ):
         raise ValueError("tangents must be finite")
     flip, achieved, d_flip, d_achieved = inverse_rows_tangents(
-        target, d_target, played, first, d_first, relax, threads
+        target, d_target, played, first, d_first, relax, threads, maximum
     )
 
     def back(values: np.ndarray) -> np.ndarray:

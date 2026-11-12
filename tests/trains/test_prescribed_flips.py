@@ -107,6 +107,9 @@ def test_trains_of_a_batch_are_solved_as_they_are_alone():
         {"ESP": 4.0, "first_ESP": np.inf},
         {"lengths": 0},
         {"lengths": 9},
+        {"maximum_flip": 0.0},
+        {"maximum_flip": 181.0},
+        {"maximum_flip": np.nan},
     ],
 )
 def test_an_invalid_prescription_is_refused(arguments):
@@ -185,3 +188,85 @@ def test_an_echo_out_of_reach_has_an_angle_that_ignores_its_target():
 def test_tangents_not_shaped_as_the_signal_are_refused(arguments):
     with pytest.raises(ValueError):
         prescribed_flips(np.full(4, 0.5), **arguments)
+
+
+def test_a_maximum_of_180_degrees_is_no_bound():
+    target = np.stack([np.linspace(0.9, 0.2, 40), np.full(40, 0.95)])
+    timing = {"ESP": 4.0, "T1": 900.0, "T2": 70.0, "first_flip": 150.0}
+    np.testing.assert_array_equal(
+        prescribed_flips(target, maximum_flip=180.0, **timing),
+        prescribed_flips(target, **timing),
+    )
+
+
+def test_a_bounded_train_holds_at_its_maximum_and_echoes_what_it_plays():
+    # Unit echoes ask for 180 degree pulses; a bound of 150 degrees plays
+    # 150 degree pulses instead, and their echoes are what those give.
+    flip, achieved = prescribed_flips(np.ones(12), maximum_flip=150.0)
+    np.testing.assert_allclose(flip, 150.0, rtol=0, atol=1e-12)
+    np.testing.assert_allclose(achieved, cpmg_echoes(flip).real, atol=1e-6)
+
+
+def test_each_train_of_a_batch_keeps_its_own_maximum():
+    target = np.full((2, 20), 0.97)
+    flip, _ = prescribed_flips(target, maximum_flip=[140.0, 160.0])
+    assert flip[0].max() <= 140.0 + 1e-12
+    assert flip[1].max() <= 160.0 + 1e-12
+    alone = prescribed_flips(target[1], maximum_flip=160.0)[0]
+    np.testing.assert_array_equal(flip[1], alone)
+
+
+def test_a_bounded_angle_comes_nearest_its_target_within_the_bound():
+    # Within [0, maximum] the echo of the chosen angle is the nearest any
+    # angle gives after the same pulses, searched on a fine grid.
+    from blochsim.trains._prescribed import forward_rows
+
+    target = np.concatenate([[0.5], np.full(9, 0.99)])
+    flip, achieved = prescribed_flips(target, maximum_flip=130.0)
+    grid = np.linspace(0.0, 130.0, 2601)
+    free = (1.0, 1.0, 1.0, 1.0)
+    for echo in range(1, 10):
+        trials = np.column_stack([np.tile(flip[:echo], (len(grid), 1)), grid])
+        played = np.full(len(grid), echo + 1)
+        echoes = forward_rows(np.deg2rad(trials), played, free)[:, -1]
+        assert abs(achieved[echo] - target[echo]) <= (
+            abs(echoes - target[echo]).min() + 1e-9
+        )
+
+
+@pytest.mark.parametrize(
+    "timing", [{}, {"ESP": 4.0, "first_ESP": 5.0, "T1": 900.0, "T2": 70.0}]
+)
+def test_bounded_flip_tangents_are_the_derivative_of_the_inversion(timing):
+    rng = np.random.default_rng(5)
+    target = np.stack([np.linspace(0.995, 0.35, 48), np.full(48, 0.6)])
+    first = np.array([110.0, 130.0])
+    maximum = np.array([140.0, 150.0])
+    signal_tangents = 0.01 * rng.standard_normal((3, *target.shape))
+    first_tangents = rng.standard_normal((3, 2))
+    flip, achieved, d_flip, d_achieved = prescribed_flips(
+        target,
+        first_flip=first,
+        maximum_flip=maximum,
+        signal_tangents=signal_tangents,
+        first_flip_tangents=first_tangents,
+        **timing,
+    )
+    held = np.isclose(flip[:, 1:], maximum[:, None], rtol=0, atol=1e-9)
+    assert held.any() and not held.all()
+    for direction in range(3):
+        moved = [
+            prescribed_flips(
+                target + sign * 1e-6 * signal_tangents[direction],
+                first_flip=first + sign * 1e-6 * first_tangents[direction],
+                maximum_flip=maximum,
+                **timing,
+            )
+            for sign in (1, -1)
+        ]
+        np.testing.assert_allclose(
+            d_flip[direction], (moved[0][0] - moved[1][0]) / 2e-6, atol=1e-6
+        )
+        np.testing.assert_allclose(
+            d_achieved[direction], (moved[0][1] - moved[1][1]) / 2e-6, atol=1e-8
+        )
