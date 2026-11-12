@@ -344,6 +344,59 @@ struct Tangents {
     }
 };
 
+// The derivative states of one train, one copy per direction. What is linear
+// in the states -- relaxation and the shift -- moves them as it moves the
+// states themselves.
+struct Slopes {
+    std::vector<States> along;
+
+    Slopes(const std::int64_t directions, const std::size_t capacity)
+        : along(static_cast<std::size_t>(directions), States(capacity)) {}
+
+    void clear(const std::size_t states) {
+        for (States& slope : along) {
+            slope.clear(states);
+        }
+    }
+
+    void relax(const double e1, const double e2) {
+        for (States& slope : along) {
+            slope.relax(e1, e2);
+        }
+    }
+
+    void shift(const std::size_t states) {
+        for (States& slope : along) {
+            slope.shift(states, subspace::ALONG_AXIS<double>);
+        }
+    }
+
+    States& operator[](const std::int64_t direction) {
+        return along[static_cast<std::size_t>(direction)];
+    }
+};
+
+// A train's states and their derivatives, back at the excitation.
+inline void start(States& states, Slopes& slopes, const std::size_t count) {
+    states.clear(count);
+    states.plus[0] = 1.0;
+    states.minus[0] = 1.0;
+    slopes.clear(count);
+}
+
+// Relaxation over half an interval, then the shift, for states and slopes.
+inline void advance(
+    States& states, Slopes& slopes, const std::size_t count, const bool relaxing,
+    const double e1, const double e2
+) {
+    if (relaxing) {
+        states.relax(e1, e2);
+        slopes.relax(e1, e2);
+    }
+    states.shift(count, subspace::ALONG_AXIS<double>);
+    slopes.shift(count);
+}
+
 struct InverseTangents {
     Batch batch;
     Tangents along;
@@ -369,32 +422,16 @@ void inverse_tangents_range(
     const std::int64_t directions = problem.along.directions;
     const bool relaxing = batch.relaxing();
     States along(echoes + 1);
-    std::vector<States> slopes(
-        static_cast<std::size_t>(directions), States(echoes + 1)
-    );
+    Slopes slopes(directions, echoes + 1);
     for (std::int64_t train = begin; train < end; ++train) {
         const std::size_t row = static_cast<std::size_t>(train) * echoes;
         const std::size_t length = static_cast<std::size_t>(batch.lengths[train]);
         const std::size_t states = length + 1;
-        along.clear(states);
-        along.plus[0] = 1.0;
-        along.minus[0] = 1.0;
-        for (States& slope : slopes) {
-            slope.clear(states);
-        }
+        start(along, slopes, states);
         for (std::size_t echo = 0; echo < length; ++echo) {
             const double e1 = echo == 0 ? batch.e1_first : batch.e1;
             const double e2 = echo == 0 ? batch.e2_first : batch.e2;
-            if (relaxing) {
-                along.relax(e1, e2);
-                for (States& slope : slopes) {
-                    slope.relax(e1, e2);
-                }
-            }
-            along.shift(states, subspace::ALONG_AXIS<double>);
-            for (States& slope : slopes) {
-                slope.shift(states, subspace::ALONG_AXIS<double>);
-            }
+            advance(along, slopes, states, relaxing, e1, e2);
             const bool given = echo == 0 && problem.first_flip != nullptr;
             const Solved solved = given
                 ? Solved{problem.first_flip[train], Reached::END}
@@ -403,7 +440,7 @@ void inverse_tangents_range(
                     problem.target[row + echo], e2
                 );
             for (std::int64_t direction = 0; direction < directions; ++direction) {
-                States& slope = slopes[static_cast<std::size_t>(direction)];
+                States& slope = slopes[direction];
                 const std::size_t at = problem.along.at(train, direction, echoes);
                 const double d_angle = given
                     ? (problem.d_first_flip == nullptr
@@ -418,20 +455,12 @@ void inverse_tangents_range(
                 problem.d_flip[at + echo] = d_angle;
             }
             along.rotate(solved.angle);
-            if (relaxing) {
-                along.relax(e1, e2);
-                for (States& slope : slopes) {
-                    slope.relax(e1, e2);
-                }
-            }
-            along.shift(states, subspace::ALONG_AXIS<double>);
+            advance(along, slopes, states, relaxing, e1, e2);
             problem.flip[row + echo] = solved.angle;
             problem.achieved[row + echo] = along.plus[0];
             for (std::int64_t direction = 0; direction < directions; ++direction) {
-                States& slope = slopes[static_cast<std::size_t>(direction)];
-                slope.shift(states, subspace::ALONG_AXIS<double>);
                 problem.d_achieved[problem.along.at(train, direction, echoes) + echo] =
-                    slope.plus[0];
+                    slopes[direction].plus[0];
             }
         }
         for (std::size_t echo = length; echo < echoes; ++echo) {
@@ -466,52 +495,29 @@ void forward_tangents_range(
     const std::int64_t directions = problem.along.directions;
     const bool relaxing = batch.relaxing();
     States along(echoes + 1);
-    std::vector<States> slopes(
-        static_cast<std::size_t>(directions), States(echoes + 1)
-    );
+    Slopes slopes(directions, echoes + 1);
     for (std::int64_t train = begin; train < end; ++train) {
         const std::size_t row = static_cast<std::size_t>(train) * echoes;
         const std::size_t length = static_cast<std::size_t>(batch.lengths[train]);
         const std::size_t states = length + 1;
-        along.clear(states);
-        along.plus[0] = 1.0;
-        along.minus[0] = 1.0;
-        for (States& slope : slopes) {
-            slope.clear(states);
-        }
+        start(along, slopes, states);
         for (std::size_t echo = 0; echo < length; ++echo) {
             const double e1 = echo == 0 ? batch.e1_first : batch.e1;
             const double e2 = echo == 0 ? batch.e2_first : batch.e2;
-            if (relaxing) {
-                along.relax(e1, e2);
-                for (States& slope : slopes) {
-                    slope.relax(e1, e2);
-                }
-            }
-            along.shift(states, subspace::ALONG_AXIS<double>);
+            advance(along, slopes, states, relaxing, e1, e2);
             const double angle = problem.flip[row + echo];
             for (std::int64_t direction = 0; direction < directions; ++direction) {
-                States& slope = slopes[static_cast<std::size_t>(direction)];
-                slope.shift(states, subspace::ALONG_AXIS<double>);
-                slope.rotate_tangent(
+                slopes[direction].rotate_tangent(
                     along, angle,
                     problem.d_flip[problem.along.at(train, direction, echoes) + echo]
                 );
             }
             along.rotate(angle);
-            if (relaxing) {
-                along.relax(e1, e2);
-                for (States& slope : slopes) {
-                    slope.relax(e1, e2);
-                }
-            }
-            along.shift(states, subspace::ALONG_AXIS<double>);
+            advance(along, slopes, states, relaxing, e1, e2);
             problem.echo[row + echo] = along.plus[0];
             for (std::int64_t direction = 0; direction < directions; ++direction) {
-                States& slope = slopes[static_cast<std::size_t>(direction)];
-                slope.shift(states, subspace::ALONG_AXIS<double>);
                 problem.d_echo[problem.along.at(train, direction, echoes) + echo] =
-                    slope.plus[0];
+                    slopes[direction].plus[0];
             }
         }
         for (std::size_t echo = length; echo < echoes; ++echo) {
