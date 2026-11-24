@@ -24,6 +24,8 @@ LARGEST_REASONABLE_BYTES = 16 * 1024 * 1024
 #: The card's module carries compressed machine code for each architecture it
 #: was compiled for, and links the CUDA runtime rather than carrying it.
 LARGEST_REASONABLE_GPU_BYTES = 96 * 1024 * 1024
+#: The host kernels every wheel carries.
+HOST_KERNELS = {"_epg_cpu", "_perk_cpu", "_spinor_cpu", "_trains_cpu"}
 #: The CUDA major versions a blochsim-cudaNN package is built for.
 CUDA_MAJORS = (12, 13)
 
@@ -77,8 +79,9 @@ def main() -> int:
     if root is None:
         raise SystemExit("blochsim is not installed")
     kernels = extensions(root, "_*_cpu.*")
-    if len(kernels) != 3:
-        raise SystemExit(f"expected three kernels in {root}, found {kernels}")
+    names = {path.name.split(".")[0] for path in kernels}
+    if names != HOST_KERNELS:
+        raise SystemExit(f"expected {sorted(HOST_KERNELS)} in {root}, found {kernels}")
     for path in kernels:
         load(path, "blochsim", LARGEST_REASONABLE_BYTES)
     # A build from source keeps the card's module beside the package.

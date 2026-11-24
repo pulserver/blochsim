@@ -65,6 +65,7 @@ if(NOT BLOCHSIM_CUDA_PACKAGE)
     blochsim_add_kernel(_epg_cpu  src/blochsim/_epg_cpu.cpp)
     blochsim_add_kernel(_perk_cpu src/blochsim/_perk_cpu.cpp)
     blochsim_add_kernel(_trains_cpu src/blochsim/_trains_cpu.cpp)
+    blochsim_add_kernel(_spinor_cpu src/blochsim/_spinor_cpu.cpp)
 endif()
 
 # The GPU kernels compiled for the host, one program at a time. Nothing in the

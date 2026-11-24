@@ -45,6 +45,7 @@ from itertools import chain, repeat
 from typing import Any
 
 import torch
+from torch.autograd.forward_ad import unpack_dual
 
 from .._derivative import directional_derivatives
 from ._description import RfDefinition
@@ -191,6 +192,11 @@ def compose_spinor(
     ValueError
         If an iterable ``turn_z`` and ``drive`` differ in length.
     """
+    if not isinstance(turn_z, torch.Tensor):
+        turn_z = list(turn_z)
+    native = _composed_natively(drive, turn_z)
+    if native is not None:
+        return native
     held = isinstance(turn_z, torch.Tensor)
     if held:
         turns: Iterator[torch.Tensor] = repeat(turn_z)
@@ -227,6 +233,67 @@ def compose_spinor(
         step_b = -1j * (turn_x - 1j * turn_y) * scale
         a, b = step_a * a - step_b * b.conj(), step_b * a.conj() + step_a * b
     return a, b
+
+
+def _carries_derivatives(tensor: torch.Tensor) -> bool:
+    """Whether autograd, forward mode or a :mod:`torch.func` transform tracks ``tensor``."""
+    return (
+        (torch.is_grad_enabled() and tensor.requires_grad)
+        or unpack_dual(tensor).tangent is not None
+        or torch._C._functorch.is_functorch_wrapped_tensor(tensor)
+    )
+
+
+def _composed_natively(
+    drive: Any, turn_z: torch.Tensor | list[torch.Tensor]
+) -> tuple[torch.Tensor, torch.Tensor] | None:
+    """The pair :func:`compose_spinor` returns, from the host kernel; ``None`` where it does not apply.
+
+    The kernel takes a drive tensor on the host and carries no derivatives,
+    so a call that needs them, or holds anything on a card, takes the
+    per-sample composition.
+    """
+    turns = [turn_z] if isinstance(turn_z, torch.Tensor) else turn_z
+    if not isinstance(drive, torch.Tensor) or not turns:
+        return None
+    if any(not isinstance(turn, torch.Tensor) for turn in turns):
+        return None
+    tensors = [drive, *turns]
+    if any(tensor.device.type != "cpu" for tensor in tensors):
+        return None
+    if any(_carries_derivatives(tensor) for tensor in tensors):
+        return None
+    varies = not isinstance(turn_z, torch.Tensor)
+    if varies and len(turns) != drive.shape[0]:
+        raise ValueError(f"turn_z has {len(turns)} samples and drive {drive.shape[0]}")
+    from .. import _spinor_cpu
+
+    spins = turns[0]
+    samples = int(drive.shape[0])
+    count = spins.numel()
+    turn = (
+        (torch.stack([t.expand_as(spins) for t in turns]) if varies else spins)
+        .detach()
+        .to(torch.float64)
+        .reshape(-1)
+        .contiguous()
+    )
+    per_spin = drive[0].numel() > 1
+    field = drive.detach().to(torch.complex128)
+    if per_spin:
+        field = field.expand(samples, *spins.shape)
+    field = field.reshape(samples, -1 if per_spin else 1).contiguous()
+    a = torch.empty(count, dtype=torch.complex128)
+    b = torch.empty_like(a)
+    _spinor_cpu.compose(
+        tuple(tensor.data_ptr() for tensor in (field, turn, a, b)),
+        samples,
+        count,
+        per_spin,
+        varies,
+        0,
+    )
+    return a.reshape(spins.shape), b.reshape(spins.shape)
 
 
 @dataclass(frozen=True)
