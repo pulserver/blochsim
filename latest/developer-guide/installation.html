@@ -526,7 +526,7 @@ documentation build.</p>
 <a class="reference internal" href="../user-guide/index.html"><span class="doc">user guide</span></a>, you need:</p>
 <ul>
 <li><p><strong>A C++17 compiler and CMake.</strong> The CPU kernels (<code class="docutils literal notranslate"><span class="pre">src/blochsim/_epg_cpu.cpp</span></code>,
-<code class="docutils literal notranslate"><span class="pre">_perk_cpu.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">_trains_cpu.cpp</span></code>) are compiled at install, and there is no Python fallback.</p>
+<code class="docutils literal notranslate"><span class="pre">_perk_cpu.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">_trains_cpu.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">_spinor_cpu.cpp</span></code>) are compiled at install, and there is no Python fallback.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label aria-controls="sd-tab-item-0-content" class="sd-tab-label" data-sync-group="tab" data-sync-id="linux" for="sd-tab-item-0">
@@ -595,16 +595,19 @@ python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/_trains_cpu.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">trains/</span></code></p></td>
 <td><p>The train-design kernels, in double precision on the host only, and their NumPy interface.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/_epg_kernels.hpp</span></code>, <code class="docutils literal notranslate"><span class="pre">_pools_kernels.hpp</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/_spinor_cpu.cpp</span></code></p></td>
+<td><p>The forward composition of a shaped pulse’s Cayley-Klein pair (<code class="docutils literal notranslate"><span class="pre">compose_spinor</span></code>) for a batch of spins, in double precision on the host. A call that carries derivatives, or holds a tensor on a card, composes in PyTorch instead.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/_epg_kernels.hpp</span></code>, <code class="docutils literal notranslate"><span class="pre">_pools_kernels.hpp</span></code></p></td>
 <td><p>The GPU kernels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/_operator.py</span></code>, <code class="docutils literal notranslate"><span class="pre">_subspace.py</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/_operator.py</span></code>, <code class="docutils literal notranslate"><span class="pre">_subspace.py</span></code></p></td>
 <td><p>The model operator and the temporal basis a reconstruction composes with.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/simulators/</span></code>, <code class="docutils literal notranslate"><span class="pre">estimators/</span></code>, <code class="docutils literal notranslate"><span class="pre">optim/</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">src/blochsim/simulators/</span></code>, <code class="docutils literal notranslate"><span class="pre">estimators/</span></code>, <code class="docutils literal notranslate"><span class="pre">optim/</span></code></p></td>
 <td><p>Shipped sequences, and what is built on them.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tests/</span></code>, <code class="docutils literal notranslate"><span class="pre">examples/</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tests/</span></code>, <code class="docutils literal notranslate"><span class="pre">examples/</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/</span></code></p></td>
 <td><p>Tests mirrored by subpackage, gallery scripts, Sphinx sources.</p></td>
 </tr>
 </tbody>

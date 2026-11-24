@@ -14,7 +14,7 @@ Besides the environment and PyTorch build of the
 {doc}`user guide <../user-guide/index>`, you need:
 
 - **A C++17 compiler and CMake.** The CPU kernels (`src/blochsim/_epg_cpu.cpp`,
-  `_perk_cpu.cpp`, `_trains_cpu.cpp`) are compiled at install, and there is no Python fallback.
+  `_perk_cpu.cpp`, `_trains_cpu.cpp`, `_spinor_cpu.cpp`) are compiled at install, and there is no Python fallback.
 
   ::::{tab-set}
 
@@ -77,6 +77,7 @@ python -c "import blochsim._epg_cpu as k; print(k.__file__)"
 | `src/blochsim/_model/` | The signal model: physics, the simulator that orders events, and the binding that resolves a protocol's structure once. |
 | `src/blochsim/_epg_cpu.cpp`, `_perk_cpu.cpp` | The CPU kernels. Every GPU path exists here too; the two agree to float32 round-off. |
 | `src/blochsim/_trains_cpu.cpp`, `trains/` | The train-design kernels, in double precision on the host only, and their NumPy interface. |
+| `src/blochsim/_spinor_cpu.cpp` | The forward composition of a shaped pulse's Cayley-Klein pair (`compose_spinor`) for a batch of spins, in double precision on the host. A call that carries derivatives, or holds a tensor on a card, composes in PyTorch instead. |
 | `src/blochsim/_epg_kernels.hpp`, `_pools_kernels.hpp` | The GPU kernels. |
 | `src/blochsim/_operator.py`, `_subspace.py` | The model operator and the temporal basis a reconstruction composes with. |
 | `src/blochsim/simulators/`, `estimators/`, `optim/` | Shipped sequences, and what is built on them. |

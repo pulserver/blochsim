@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:14.048** total execution time for 5 files **from generated/autoexamples/01-framework**:
+**00:18.400** total execution time for 5 files **from generated/autoexamples/01-framework**:
 
 .. container::
 
@@ -33,17 +33,17 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_generated_autoexamples_01-framework_02-advanced-physics.py` (``02-advanced-physics.py``)
-     - 00:10.318
+     - 00:13.733
      - 0.0
    * - :ref:`sphx_glr_generated_autoexamples_01-framework_04-description-based-simulation.py` (``04-description-based-simulation.py``)
-     - 00:01.579
+     - 00:02.252
      - 0.0
    * - :ref:`sphx_glr_generated_autoexamples_01-framework_01-first-simulation.py` (``01-first-simulation.py``)
-     - 00:01.504
+     - 00:01.579
      - 0.0
    * - :ref:`sphx_glr_generated_autoexamples_01-framework_03-custom-signal-model.py` (``03-custom-signal-model.py``)
-     - 00:00.428
+     - 00:00.515
      - 0.0
    * - :ref:`sphx_glr_generated_autoexamples_01-framework_05-custom-operator.py` (``05-custom-operator.py``)
-     - 00:00.219
+     - 00:00.320
      - 0.0

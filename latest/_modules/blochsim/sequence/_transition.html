@@ -463,6 +463,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.autograd.forward_ad</span><span class="w"> </span><span class="kn">import</span> <span class="n">unpack_dual</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._derivative</span><span class="w"> </span><span class="kn">import</span> <span class="n">directional_derivatives</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._description</span><span class="w"> </span><span class="kn">import</span> <span class="n">RfDefinition</span>
@@ -611,6 +612,11 @@
 <span class="sd">    ValueError</span>
 <span class="sd">        If an iterable ``turn_z`` and ``drive`` differ in length.</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turn_z</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">turn_z</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">turn_z</span><span class="p">)</span>
+    <span class="n">native</span> <span class="o">=</span> <span class="n">_composed_natively</span><span class="p">(</span><span class="n">drive</span><span class="p">,</span> <span class="n">turn_z</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">native</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">native</span>
     <span class="n">held</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turn_z</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">held</span><span class="p">:</span>
         <span class="n">turns</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="n">repeat</span><span class="p">(</span><span class="n">turn_z</span><span class="p">)</span>
@@ -648,6 +654,67 @@
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">step_a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="n">step_b</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">step_b</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">+</span> <span class="n">step_a</span> <span class="o">*</span> <span class="n">b</span>
     <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_carries_derivatives</span><span class="p">(</span><span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether autograd, forward mode or a :mod:`torch.func` transform tracks ``tensor``."""</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">is_grad_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tensor</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">unpack_dual</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span><span class="o">.</span><span class="n">tangent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">or</span> <span class="n">torch</span><span class="o">.</span><span class="n">_C</span><span class="o">.</span><span class="n">_functorch</span><span class="o">.</span><span class="n">is_functorch_wrapped_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_composed_natively</span><span class="p">(</span>
+    <span class="n">drive</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">turn_z</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The pair :func:`compose_spinor` returns, from the host kernel; ``None`` where it does not apply.</span>
+
+<span class="sd">    The kernel takes a drive tensor on the host and carries no derivatives,</span>
+<span class="sd">    so a call that needs them, or holds anything on a card, takes the</span>
+<span class="sd">    per-sample composition.</span>
+<span class="sd">    """</span>
+    <span class="n">turns</span> <span class="o">=</span> <span class="p">[</span><span class="n">turn_z</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turn_z</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">turn_z</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">drive</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">turns</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turn</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">turns</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">tensors</span> <span class="o">=</span> <span class="p">[</span><span class="n">drive</span><span class="p">,</span> <span class="o">*</span><span class="n">turns</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">"cpu"</span> <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">tensors</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">_carries_derivatives</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span> <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">tensors</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">varies</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turn_z</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">varies</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">turns</span><span class="p">)</span> <span class="o">!=</span> <span class="n">drive</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"turn_z has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">turns</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples and drive </span><span class="si">{</span><span class="n">drive</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">_spinor_cpu</span>
+
+    <span class="n">spins</span> <span class="o">=</span> <span class="n">turns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">drive</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">spins</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+    <span class="n">turn</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">turns</span><span class="p">])</span> <span class="k">if</span> <span class="n">varies</span> <span class="k">else</span> <span class="n">spins</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">per_spin</span> <span class="o">=</span> <span class="n">drive</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">drive</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">per_spin</span><span class="p">:</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="o">*</span><span class="n">spins</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">per_spin</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">_spinor_cpu</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">()</span> <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)),</span>
+        <span class="n">samples</span><span class="p">,</span>
+        <span class="n">count</span><span class="p">,</span>
+        <span class="n">per_spin</span><span class="p">,</span>
+        <span class="n">varies</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">spins</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">spins</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
