@@ -18,6 +18,7 @@ carried out under them.
 | `src/blochsim/_model/` | What a signal model *is*: the physics, the simulator that orders its events, and the binding that resolves a protocol's structure once and rebinds its values per call. |
 | `src/blochsim/_epg_cpu.cpp`, `_perk_cpu.cpp` | The CPU kernels. Every path the GPU has exists here too, and the two agree to float32 round-off. |
 | `src/blochsim/_trains_cpu.cpp`, `trains/` | Refocusing-train design: the prescribed-signal inverse of a CPMG train, in double precision on the host only, over NumPy with no PyTorch import. It shares the real-subspace operators of `_real_subspace.hpp` with `_epg_cpu.cpp`. |
+| `src/blochsim/_spinor_cpu.cpp` | The forward composition of a shaped pulse's Cayley-Klein pair (`compose_spinor`) for a batch of spins, in double precision on the host. A call that carries derivatives, or holds a tensor on a card, composes in PyTorch instead. |
 | `src/blochsim/_epg_kernels.hpp`, `_pools_kernels.hpp`, `_perk_kernels.hpp` | The GPU kernels, written over the tiles of `_tile.hpp`. `_kernels.hpp` is the table a launch reads: each kernel's parameters, and which of them size the block. |
 | `src/blochsim/_gpu.cu`, `_gpu_kernel.cu.in`, `_gpu_host.cpp`, `_gpu_launch.py` | The same kernels compiled ahead of time for the card (`_gpu`), and for the host (`_gpu_host`), which is how the suite checks them without one; and the launcher both answer to. |
 | `src/blochsim/sequence/_epg_gpu.py`, `_pools_gpu.py`, `estimators/_perk_gpu.py` | What a GPU launch is given: the tiling and the arguments. |
